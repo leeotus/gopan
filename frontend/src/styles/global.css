@@ -1,0 +1,40 @@
+:root {
+  --gopan-primary: #1989fa;
+  --gopan-bg: #f7f8fa;
+  --gopan-text: #323233;
+  --gopan-text-secondary: #969799;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  background: var(--gopan-bg);
+  color: var(--gopan-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-container {
+  min-height: 100vh;
+  background: var(--gopan-bg);
+}
+
+.page-content {
+  padding: 12px;
+  padding-bottom: 70px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 0 8px;
+}
