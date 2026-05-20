@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "./search";
+
+// 搜索服务
+service Search {
+  // 搜索视频
+  rpc SearchVideos(SearchVideosReq) returns (SearchVideosResp);
+  // 索引视频(创建/更新)
+  rpc IndexVideo(IndexVideoReq) returns (IndexVideoResp);
+  // 从索引中移除
+  rpc RemoveVideo(RemoveVideoReq) returns (RemoveVideoResp);
+}
+
+message SearchVideosReq {
+  string keyword = 1;
+  int32 page = 2;
+  int32 size = 3;
+  string category = 4;       // 分类过滤
+  string sort = 5;            // relevance/newest/hot
+}
+
+message SearchVideosResp {
+  repeated SearchVideoInfo videos = 1;
+  int64 total = 2;
+  int32 page = 3;
+  int32 size = 4;
+}
+
+message SearchVideoInfo {
+  int64 id = 1;
+  string title = 2;
+  string cover_url = 3;
+  int64 user_id = 4;
+  string username = 5;
+  int64 play_count = 6;
+  int64 like_count = 7;
+  string description = 8;
+  int32 duration = 9;
+  string category = 10;
+  int64 created_at = 11;
+  double score = 12;          // 相关性得分
+}
+
+message IndexVideoReq {
+  int64 video_id = 1;
+  string title = 2;
+  string description = 3;
+  string category = 4;
+  int64 user_id = 5;
+  string username = 6;
+  string cover_url = 7;
+  int64 play_count = 8;
+  int64 like_count = 9;
+  int32 duration = 10;
+}
+
+message IndexVideoResp {
+}
+
+message RemoveVideoReq {
+  int64 video_id = 1;
+}
+
+message RemoveVideoResp {
+}

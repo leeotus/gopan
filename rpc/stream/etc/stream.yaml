@@ -1,0 +1,9 @@
+Name: stream.rpc
+ListenOn: 0.0.0.0:8084
+Etcd:
+  Hosts:
+  - etcd:2379
+  Key: stream.rpc
+CDN:
+  BaseURL: http://localhost:9000/gopan-videos
+  SecretKey: gopan-cdn-secret

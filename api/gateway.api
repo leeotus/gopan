@@ -1,0 +1,269 @@
+syntax = "v1"
+
+info (
+	title:   "GoPan VOD Platform"
+	desc:    "视频点播平台 API 网关"
+	author:  "gopan"
+	version: "1.0.0"
+)
+
+// ============ 用户相关 ============
+type RegisterReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+}
+
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	Token    string `json:"token"`
+	UserId   int64  `json:"user_id"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
+}
+
+type UserProfileResp {
+	UserId    int64  `json:"user_id"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Avatar    string `json:"avatar"`
+	Signature string `json:"signature"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+type UpdateProfileReq {
+	Avatar    string `json:"avatar,optional"`
+	Signature string `json:"signature,optional"`
+	Email     string `json:"email,optional"`
+}
+
+type BaseResp {
+	Message string `json:"message"`
+}
+
+// ============ 视频相关 ============
+type InitUploadReq {
+	Filename string `json:"filename"`
+	FileSize int64  `json:"file_size"`
+	Title    string `json:"title"`
+}
+
+type InitUploadResp {
+	VideoId  int64  `json:"video_id"`
+	UploadId string `json:"upload_id"`
+}
+
+type VideoInfo {
+	Id         int64           `json:"id"`
+	Title      string          `json:"title"`
+	CoverUrl   string          `json:"cover_url"`
+	UserId     int64           `json:"user_id"`
+	Username   string          `json:"username"`
+	PlayCount  int64           `json:"play_count"`
+	LikeCount  int64           `json:"like_count"`
+	Duration   int             `json:"duration"`
+	Status     int             `json:"status"`
+	Category   string          `json:"category,optional"`
+	CreatedAt  int64           `json:"created_at"`
+	Transcodes []TranscodeInfo `json:"transcodes,optional"`
+}
+
+type TranscodeInfo {
+	Resolution string `json:"resolution"`
+	M3u8Url    string `json:"m3u8_url"`
+	Bitrate    int    `json:"bitrate"`
+}
+
+type ListVideosReq {
+	Cursor   int64  `json:"cursor,default=0"`
+	Limit    int    `json:"limit,default=20,range=[1:50]"`
+	Category string `json:"category,optional"`
+	Sort     string `json:"sort,optional"`
+}
+
+type ListVideosResp {
+	Videos     []VideoInfo `json:"videos"`
+	NextCursor int64       `json:"next_cursor"`
+	HasMore    bool        `json:"has_more"`
+}
+
+type VideoDetailResp {
+	Video VideoInfo `json:"video"`
+}
+
+type UpdateVideoReq {
+	Title       string `json:"title,optional"`
+	Description string `json:"description,optional"`
+	Category    string `json:"category,optional"`
+}
+
+// ============ 播放相关 ============
+type PlayUrlReq {
+	Resolution string `json:"resolution,optional"`
+}
+
+type PlayUrlResp {
+	M3u8Url string       `json:"m3u8_url"`
+	Streams []PlayStream `json:"streams"`
+}
+
+type PlayStream {
+	Resolution string `json:"resolution"`
+	Url        string `json:"url"`
+	Bitrate    int    `json:"bitrate"`
+}
+
+// ============ 互动相关 ============
+type LikeResp {
+	LikeCount int64 `json:"like_count"`
+	Liked     bool  `json:"liked"`
+}
+
+type PostCommentReq {
+	Content  string `json:"content"`
+	ParentId int64  `json:"parent_id,default=0"`
+}
+
+type CommentInfo {
+	Id         int64  `json:"id"`
+	UserId     int64  `json:"user_id"`
+	Username   string `json:"username"`
+	Avatar     string `json:"avatar"`
+	Content    string `json:"content"`
+	LikeCount  int64  `json:"like_count"`
+	ReplyCount int    `json:"reply_count"`
+	ParentId   int64  `json:"parent_id"`
+	CreatedAt  int64  `json:"created_at"`
+}
+
+type ListCommentsResp {
+	Comments   []CommentInfo `json:"comments"`
+	NextCursor int64         `json:"next_cursor"`
+	HasMore    bool          `json:"has_more"`
+}
+
+type DanmakuMsg {
+	Content string  `json:"content"`
+	Time    float64 `json:"time"`
+	Color   string  `json:"color,default=#ffffff"`
+	Mode    int     `json:"mode,default=1"`
+}
+
+// ============ 搜索相关 ============
+type SearchReq {
+	Keyword  string `json:"keyword"`
+	Page     int    `json:"page,default=1"`
+	Size     int    `json:"size,default=20,range=[1:50]"`
+	Category string `json:"category,optional"`
+	Sort     string `json:"sort,optional"`
+}
+
+type SearchVideoInfo {
+	Id          int64   `json:"id"`
+	Title       string  `json:"title"`
+	CoverUrl    string  `json:"cover_url"`
+	UserId      int64   `json:"user_id"`
+	Username    string  `json:"username"`
+	PlayCount   int64   `json:"play_count"`
+	LikeCount   int64   `json:"like_count"`
+	Description string  `json:"description"`
+	Duration    int     `json:"duration"`
+	Category    string  `json:"category"`
+	CreatedAt   int64   `json:"created_at"`
+	Score       float64 `json:"score"`
+}
+
+type SearchResp {
+	Videos []SearchVideoInfo `json:"videos"`
+	Total  int64             `json:"total"`
+	Page   int               `json:"page"`
+	Size   int               `json:"size"`
+}
+
+// ============ API 路由 ============
+@server (
+	group:  user
+	prefix: /api/user
+)
+service gateway {
+	@handler Register
+	post /register (RegisterReq) returns (BaseResp)
+
+	@handler Login
+	post /login (LoginReq) returns (LoginResp)
+
+	@handler GetProfile
+	get /profile returns (UserProfileResp)
+
+	@handler UpdateProfile
+	put /profile (UpdateProfileReq) returns (BaseResp)
+}
+
+@server (
+	group:      video
+	prefix:     /api/video
+	middleware: Auth
+)
+service gateway {
+	@handler InitUpload
+	post /init-upload (InitUploadReq) returns (InitUploadResp)
+
+	@handler UploadChunk
+	post /upload-chunk returns (BaseResp)
+
+	@handler MergeChunks
+	post /merge-chunks returns (BaseResp)
+
+	@handler ListVideos
+	get /list (ListVideosReq) returns (ListVideosResp)
+
+	@handler GetVideo
+	get /detail returns (VideoDetailResp)
+
+	@handler UpdateVideo
+	put /update (UpdateVideoReq) returns (BaseResp)
+
+	@handler DeleteVideo
+	delete /delete returns (BaseResp)
+
+	@handler GetPlayUrl
+	get /play-url (PlayUrlReq) returns (PlayUrlResp)
+
+	@handler LikeVideo
+	post /like returns (LikeResp)
+
+	@handler UnlikeVideo
+	delete /like returns (LikeResp)
+
+	@handler FavoriteVideo
+	post /favorite returns (BaseResp)
+
+	@handler UnfavoriteVideo
+	delete /favorite returns (BaseResp)
+
+	@handler PostComment
+	post /comment (PostCommentReq) returns (BaseResp)
+
+	@handler ListComments
+	get /comments returns (ListCommentsResp)
+
+	@handler DeleteComment
+	delete /comment returns (BaseResp)
+
+	@handler SendDanmaku
+	post /danmaku (DanmakuMsg) returns (BaseResp)
+}
+
+@server (
+	group:  search
+	prefix: /api/search
+)
+service gateway {
+	@handler Search
+	get /videos (SearchReq) returns (SearchResp)
+}
+

@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package interact;
+
+option go_package = "./interact";
+
+// 互动服务
+service Interact {
+  // 点赞
+  rpc Like(LikeReq) returns (LikeResp);
+  // 取消点赞
+  rpc Unlike(UnlikeReq) returns (UnlikeResp);
+  // 获取点赞状态
+  rpc GetLikeStatus(GetLikeStatusReq) returns (GetLikeStatusResp);
+  // 收藏
+  rpc Favorite(FavoriteReq) returns (FavoriteResp);
+  // 取消收藏
+  rpc Unfavorite(UnfavoriteReq) returns (UnfavoriteResp);
+  // 获取收藏状态
+  rpc GetFavoriteStatus(GetFavoriteStatusReq) returns (GetFavoriteStatusResp);
+  // 发送评论
+  rpc PostComment(PostCommentReq) returns (PostCommentResp);
+  // 获取评论列表
+  rpc ListComments(ListCommentsReq) returns (ListCommentsResp);
+  // 删除评论
+  rpc DeleteComment(DeleteCommentReq) returns (DeleteCommentResp);
+  // 发送弹幕
+  rpc SendDanmaku(SendDanmakuReq) returns (SendDanmakuResp);
+  // 获取弹幕列表
+  rpc GetDanmakus(GetDanmakusReq) returns (GetDanmakusResp);
+}
+
+message LikeReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message LikeResp {
+  int64 like_count = 1;
+}
+
+message UnlikeReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message UnlikeResp {
+  int64 like_count = 1;
+}
+
+message GetLikeStatusReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message GetLikeStatusResp {
+  bool liked = 1;
+  int64 like_count = 2;
+}
+
+message FavoriteReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message FavoriteResp {
+}
+
+message UnfavoriteReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message UnfavoriteResp {
+}
+
+message GetFavoriteStatusReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message GetFavoriteStatusResp {
+  bool favorited = 1;
+}
+
+message PostCommentReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+  string content = 3;
+  int64 parent_id = 4;    // 回复的评论ID(0表示顶级评论)
+}
+
+message PostCommentResp {
+  int64 comment_id = 1;
+}
+
+message ListCommentsReq {
+  int64 video_id = 1;
+  int64 cursor = 2;
+  int32 limit = 3;
+  string sort = 4;           // hot/newest
+}
+
+message ListCommentsResp {
+  repeated CommentInfo comments = 1;
+  int64 next_cursor = 2;
+  bool has_more = 3;
+}
+
+message CommentInfo {
+  int64 id = 1;
+  int64 user_id = 2;
+  string username = 3;
+  string avatar = 4;
+  string content = 5;
+  int64 like_count = 6;
+  int32 reply_count = 7;
+  int64 parent_id = 8;
+  int64 created_at = 9;
+}
+
+message DeleteCommentReq {
+  int64 comment_id = 1;
+  int64 user_id = 2;
+}
+
+message DeleteCommentResp {
+}
+
+message SendDanmakuReq {
+  int64 user_id = 1;
+  int64 video_id = 2;
+  string content = 3;
+  double time = 4;           // 弹幕出现时间(秒)
+  string color = 5;          // 颜色
+  int32 mode = 6;            // 弹幕模式: 1:滚动 2:顶部 3:底部
+}
+
+message SendDanmakuResp {
+  int64 danmaku_id = 1;
+}
+
+message GetDanmakusReq {
+  int64 video_id = 1;
+  double time = 2;           // 获取该时间点附近的弹幕
+}
+
+message GetDanmakusResp {
+  repeated DanmakuInfo danmakus = 1;
+}
+
+message DanmakuInfo {
+  int64 id = 1;
+  int64 user_id = 2;
+  string content = 3;
+  double time = 4;
+  string color = 5;
+  int32 mode = 6;
+}

@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package video;
+
+option go_package = "./video";
+
+// 视频服务
+service Video {
+  // 上传视频(分片)
+  rpc UploadChunk(stream UploadChunkReq) returns (UploadChunkResp);
+  // 合并分片
+  rpc MergeChunks(MergeChunksReq) returns (MergeChunksResp);
+  // 获取视频列表
+  rpc ListVideos(ListVideosReq) returns (ListVideosResp);
+  // 获取视频详情
+  rpc GetVideo(GetVideoReq) returns (GetVideoResp);
+  // 更新视频信息
+  rpc UpdateVideo(UpdateVideoReq) returns (UpdateVideoResp);
+  // 删除视频
+  rpc DeleteVideo(DeleteVideoReq) returns (DeleteVideoResp);
+  // 转码完成回调
+  rpc TranscodeCallback(TranscodeCallbackReq) returns (TranscodeCallbackResp);
+  // 获取用户视频列表
+  rpc ListUserVideos(ListUserVideosReq) returns (ListVideosResp);
+}
+
+message UploadChunkReq {
+  string upload_id = 1;   // 上传会话ID
+  int32 chunk_index = 2;   // 分片序号
+  bytes data = 3;          // 分片数据
+  int64 video_id = 4;      // 视频ID(首次为0)
+  string filename = 5;     // 文件名(首次上传时带)
+  int64 file_size = 6;     // 文件总大小
+  int64 user_id = 7;       // 上传用户ID
+  string title = 8;        // 视频标题
+}
+
+message UploadChunkResp {
+  int64 video_id = 1;      // 视频ID
+  string upload_id = 2;    // 上传会话ID
+  int64 received_bytes = 3; // 已接收字节
+}
+
+message MergeChunksReq {
+  int64 video_id = 1;
+  string upload_id = 2;
+}
+
+message MergeChunksResp {
+  string object_key = 1;   // 合并后的文件key
+  string file_hash = 2;    // 文件哈希(用于秒传)
+}
+
+message ListVideosReq {
+  int64 cursor = 1;        // 游标(分页)
+  int32 limit = 2;         // 每页数量
+  string category = 3;     // 分类
+  string sort = 4;          // 排序: newest/hot
+}
+
+message ListVideosResp {
+  repeated VideoInfo videos = 1;
+  int64 next_cursor = 2;
+  bool has_more = 3;
+}
+
+message VideoInfo {
+  int64 id = 1;
+  string title = 2;
+  string cover_url = 3;
+  int64 user_id = 4;
+  string username = 5;
+  int64 play_count = 6;
+  int64 like_count = 7;
+  int32 duration = 8;      // 秒
+  int32 status = 9;        // 0:转码中 1:正常 2:审核中 3:下架
+  int64 created_at = 10;
+  repeated TranscodeInfo transcodes = 11; // 多码率信息
+}
+
+message TranscodeInfo {
+  string resolution = 1;   // 360p/480p/720p/1080p
+  string m3u8_url = 2;
+  int32 bitrate = 3;       // kbps
+}
+
+message GetVideoReq {
+  int64 video_id = 1;
+}
+
+message GetVideoResp {
+  VideoInfo video = 1;
+}
+
+message UpdateVideoReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  string title = 3;
+  string description = 4;
+  string category = 5;
+}
+
+message UpdateVideoResp {
+}
+
+message DeleteVideoReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+}
+
+message DeleteVideoResp {
+}
+
+message TranscodeCallbackReq {
+  int64 video_id = 1;
+  int32 status = 2;        // 2:成功 3:失败
+  repeated TranscodeInfo transcodes = 3;
+  string cover_url = 4;
+  int32 duration = 5;
+}
+
+message TranscodeCallbackResp {
+}
+
+message ListUserVideosReq {
+  int64 user_id = 1;
+  int64 cursor = 2;
+  int32 limit = 3;
+}

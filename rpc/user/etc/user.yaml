@@ -1,0 +1,11 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:8081
+Etcd:
+  Hosts:
+  - etcd:2379
+  Key: user.rpc
+DB:
+  DataSource: root:gopan123@tcp(mysql:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
+JWT:
+  AccessSecret: "gopan-secret-key-change-in-production"
+  AccessExpire: 86400

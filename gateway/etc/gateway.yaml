@@ -1,0 +1,43 @@
+Name: gateway
+Host: 0.0.0.0
+Port: 8888
+
+Auth:
+  AccessSecret: "gopan-secret-key-change-in-production"
+  AccessExpire: 86400
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: user.rpc
+
+VideoRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: video.rpc
+
+TranscodeRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: transcode.rpc
+
+StreamRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: stream.rpc
+
+InteractRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: interact.rpc
+
+SearchRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: search.rpc

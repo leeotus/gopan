@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package transcode;
+
+option go_package = "./transcode";
+
+// 转码服务
+service Transcode {
+  // 提交转码任务
+  rpc SubmitTask(SubmitTaskReq) returns (SubmitTaskResp);
+  // 查询转码状态
+  rpc QueryTask(QueryTaskReq) returns (QueryTaskResp);
+}
+
+message SubmitTaskReq {
+  int64 video_id = 1;
+  string object_key = 2;     // 源文件在对象存储的key
+  repeated string resolutions = 3; // 目标分辨率: 360p/480p/720p/1080p
+}
+
+message SubmitTaskResp {
+  string task_id = 1;
+}
+
+message QueryTaskReq {
+  string task_id = 1;
+  int64 video_id = 2;
+}
+
+message QueryTaskResp {
+  int32 status = 1;          // 0:排队 1:转码中 2:成功 3:失败
+  string error_msg = 2;
+  repeated TranscodeResult results = 3;
+}
+
+message TranscodeResult {
+  string resolution = 1;
+  string m3u8_url = 2;
+  int32 bitrate = 3;
+  string cover_url = 4;
+  int32 duration = 5;
+}

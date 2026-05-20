@@ -1,0 +1,13 @@
+Name: interact.rpc
+ListenOn: 0.0.0.0:8085
+Etcd:
+  Hosts:
+  - etcd:2379
+  Key: interact.rpc
+DB:
+  DataSource: root:gopan123@tcp(mysql:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
+CacheRedis:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0

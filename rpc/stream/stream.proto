@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package stream;
+
+option go_package = "./stream";
+
+// 流媒体服务
+service Stream {
+  // 获取播放地址(带防盗链签名)
+  rpc GetPlayUrl(GetPlayUrlReq) returns (GetPlayUrlResp);
+  // 增加播放计数
+  rpc IncrPlayCount(IncrPlayCountReq) returns (IncrPlayCountResp);
+}
+
+message GetPlayUrlReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  string resolution = 3;    // 可选指定分辨率
+}
+
+message GetPlayUrlResp {
+  string m3u8_url = 1;
+  repeated PlayStream streams = 2;
+}
+
+message PlayStream {
+  string resolution = 1;
+  string url = 2;
+  int32 bitrate = 3;
+}
+
+message IncrPlayCountReq {
+  int64 video_id = 1;
+}
+
+message IncrPlayCountResp {
+  int64 play_count = 1;
+}

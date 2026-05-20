@@ -1,0 +1,14 @@
+Name: transcode.rpc
+ListenOn: 0.0.0.0:8083
+Etcd:
+  Hosts:
+  - etcd:2379
+  Key: transcode.rpc
+FFmpeg:
+  Path: /usr/bin/ffmpeg
+MinIO:
+  Endpoint: minio:9000
+  AccessKey: minioadmin
+  SecretKey: minioadmin
+  Bucket: gopan-videos
+  UseSSL: false
