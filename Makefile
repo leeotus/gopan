@@ -122,60 +122,69 @@ build-search:
 LOG_DIR := logs
 PID_DIR := $(LOG_DIR)/pids
 
+# 本地运行时优先使用 .local.yaml（连接 localhost），否则用 Docker 版 yaml
+GW_YAML := $(shell [ -f gateway/etc/gateway.local.yaml ] && echo "gateway.local.yaml" || echo "gateway.yaml")
+USR_YAML := $(shell [ -f rpc/user/etc/user.local.yaml ] && echo "user.local.yaml" || echo "user.yaml")
+VID_YAML := $(shell [ -f rpc/video/etc/video.local.yaml ] && echo "video.local.yaml" || echo "video.yaml")
+TRANS_YAML := $(shell [ -f rpc/transcode/etc/transcode.local.yaml ] && echo "transcode.local.yaml" || echo "transcode.yaml")
+STRM_YAML := $(shell [ -f rpc/stream/etc/stream.local.yaml ] && echo "stream.local.yaml" || echo "stream.yaml")
+INT_YAML := $(shell [ -f rpc/interact/etc/interact.local.yaml ] && echo "interact.local.yaml" || echo "interact.yaml")
+SRCH_YAML := $(shell [ -f rpc/search/etc/search.local.yaml ] && echo "search.local.yaml" || echo "search.yaml")
+
 run: stop build
 	@mkdir -p $(LOG_DIR) $(PID_DIR) logs/gateway logs/user logs/video logs/transcode logs/stream logs/interact logs/search
-	@echo ">>> 启动所有服务..."
+	@echo ">>> 启动所有服务 (使用 *.local.yaml)..."
 
-	@nohup $(BUILD_DIR)/user-svc -f rpc/user/etc/user.yaml > logs/user/user.log 2>&1 & echo $$! > $(PID_DIR)/user.pid
+	@nohup $(BUILD_DIR)/user-svc -f rpc/user/etc/$(USR_YAML) > logs/user/user.log 2>&1 & echo $$! > $(PID_DIR)/user.pid
 	@sleep 1
-	@nohup $(BUILD_DIR)/video-svc -f rpc/video/etc/video.yaml > logs/video/video.log 2>&1 & echo $$! > $(PID_DIR)/video.pid
+	@nohup $(BUILD_DIR)/video-svc -f rpc/video/etc/$(VID_YAML) > logs/video/video.log 2>&1 & echo $$! > $(PID_DIR)/video.pid
 	@sleep 1
-	@nohup $(BUILD_DIR)/transcode-svc -f rpc/transcode/etc/transcode.yaml > logs/transcode/transcode.log 2>&1 & echo $$! > $(PID_DIR)/transcode.pid
+	@nohup $(BUILD_DIR)/transcode-svc -f rpc/transcode/etc/$(TRANS_YAML) > logs/transcode/transcode.log 2>&1 & echo $$! > $(PID_DIR)/transcode.pid
 	@sleep 1
-	@nohup $(BUILD_DIR)/stream-svc -f rpc/stream/etc/stream.yaml > logs/stream/stream.log 2>&1 & echo $$! > $(PID_DIR)/stream.pid
+	@nohup $(BUILD_DIR)/stream-svc -f rpc/stream/etc/$(STRM_YAML) > logs/stream/stream.log 2>&1 & echo $$! > $(PID_DIR)/stream.pid
 	@sleep 1
-	@nohup $(BUILD_DIR)/interact-svc -f rpc/interact/etc/interact.yaml > logs/interact/interact.log 2>&1 & echo $$! > $(PID_DIR)/interact.pid
+	@nohup $(BUILD_DIR)/interact-svc -f rpc/interact/etc/$(INT_YAML) > logs/interact/interact.log 2>&1 & echo $$! > $(PID_DIR)/interact.pid
 	@sleep 1
-	@nohup $(BUILD_DIR)/search-svc -f rpc/search/etc/search.yaml > logs/search/search.log 2>&1 & echo $$! > $(PID_DIR)/search.pid
+	@nohup $(BUILD_DIR)/search-svc -f rpc/search/etc/$(SRCH_YAML) > logs/search/search.log 2>&1 & echo $$! > $(PID_DIR)/search.pid
 	@sleep 2
-	@nohup $(BUILD_DIR)/gateway -f gateway/etc/gateway.yaml > logs/gateway/gateway.log 2>&1 & echo $$! > $(PID_DIR)/gateway.pid
+	@nohup $(BUILD_DIR)/gateway -f gateway/etc/$(GW_YAML) > logs/gateway/gateway.log 2>&1 & echo $$! > $(PID_DIR)/gateway.pid
 
 	@echo ">>> 全部启动完成"
 	@make status
 
 run-gateway:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/gateway -f gateway/etc/gateway.yaml > logs/gateway.log 2>&1 & echo $$! > $(PID_DIR)/gateway.pid
+	@nohup $(BUILD_DIR)/gateway -f gateway/etc/$(GW_YAML) > logs/gateway.log 2>&1 & echo $$! > $(PID_DIR)/gateway.pid
 	@echo "  gateway → :$(GATEWAY_PORT)"
 
 run-user:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/user-svc -f rpc/user/etc/user.yaml > logs/user.log 2>&1 & echo $$! > $(PID_DIR)/user.pid
+	@nohup $(BUILD_DIR)/user-svc -f rpc/user/etc/$(USR_YAML) > logs/user.log 2>&1 & echo $$! > $(PID_DIR)/user.pid
 	@echo "  user-svc → :$(USER_PORT)"
 
 run-video:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/video-svc -f rpc/video/etc/video.yaml > logs/video.log 2>&1 & echo $$! > $(PID_DIR)/video.pid
+	@nohup $(BUILD_DIR)/video-svc -f rpc/video/etc/$(VID_YAML) > logs/video.log 2>&1 & echo $$! > $(PID_DIR)/video.pid
 	@echo "  video-svc → :$(VIDEO_PORT)"
 
 run-transcode:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/transcode-svc -f rpc/transcode/etc/transcode.yaml > logs/transcode.log 2>&1 & echo $$! > $(PID_DIR)/transcode.pid
+	@nohup $(BUILD_DIR)/transcode-svc -f rpc/transcode/etc/$(TRANS_YAML) > logs/transcode.log 2>&1 & echo $$! > $(PID_DIR)/transcode.pid
 	@echo "  transcode-svc → :$(TRANSCODE_PORT)"
 
 run-stream:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/stream-svc -f rpc/stream/etc/stream.yaml > logs/stream.log 2>&1 & echo $$! > $(PID_DIR)/stream.pid
+	@nohup $(BUILD_DIR)/stream-svc -f rpc/stream/etc/$(STRM_YAML) > logs/stream.log 2>&1 & echo $$! > $(PID_DIR)/stream.pid
 	@echo "  stream-svc → :$(STREAM_PORT)"
 
 run-interact:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/interact-svc -f rpc/interact/etc/interact.yaml > logs/interact.log 2>&1 & echo $$! > $(PID_DIR)/interact.pid
+	@nohup $(BUILD_DIR)/interact-svc -f rpc/interact/etc/$(INT_YAML) > logs/interact.log 2>&1 & echo $$! > $(PID_DIR)/interact.pid
 	@echo "  interact-svc → :$(INTERACT_PORT)"
 
 run-search:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
-	@nohup $(BUILD_DIR)/search-svc -f rpc/search/etc/search.yaml > logs/search.log 2>&1 & echo $$! > $(PID_DIR)/search.pid
+	@nohup $(BUILD_DIR)/search-svc -f rpc/search/etc/$(SRCH_YAML) > logs/search.log 2>&1 & echo $$! > $(PID_DIR)/search.pid
 	@echo "  search-svc → :$(SEARCH_PORT)"
 
 # ─── 停止 ────────────────────────────────────────

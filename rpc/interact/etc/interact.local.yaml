@@ -1,0 +1,12 @@
+# 本地开发配置 — 将 Docker 内部服务名替换为 localhost
+Name: interact.rpc
+ListenOn: 0.0.0.0:8085
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: interact.rpc
+DB:
+  DataSource: root:gopan123@tcp(127.0.0.1:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
+JWT:
+  AccessSecret: "gopan-secret-key-change-in-production"
+  AccessExpire: 86400

@@ -24,8 +24,13 @@ FROM alpine:3.21
 RUN apk add --no-cache ca-certificates tzdata ffmpeg
 ENV TZ=Asia/Shanghai
 
+# 先创建所有目录，再分别 COPY 二进制 + 配置
+RUN mkdir -p /app/gateway/etc /app/rpc/user/etc /app/rpc/video/etc \
+             /app/rpc/transcode/etc /app/rpc/stream/etc \
+             /app/rpc/interact/etc /app/rpc/search/etc
+
 # gateway
-COPY --from=builder /build/gateway /app/gateway
+COPY --from=builder /build/gateway /app/gateway/gateway
 COPY gateway/etc/gateway.yaml /app/gateway/etc/gateway.yaml
 
 # user-svc
