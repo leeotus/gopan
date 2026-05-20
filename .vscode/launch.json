@@ -1,0 +1,77 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug user-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/user",
+      "args": ["-f", "etc/user.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/user"
+    },
+    {
+      "name": "Debug video-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/video",
+      "args": ["-f", "etc/video.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/video"
+    },
+    {
+      "name": "Debug transcode-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/transcode",
+      "args": ["-f", "etc/transcode.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/transcode"
+    },
+    {
+      "name": "Debug stream-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/stream",
+      "args": ["-f", "etc/stream.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/stream"
+    },
+    {
+      "name": "Debug interact-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/interact",
+      "args": ["-f", "etc/interact.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/interact"
+    },
+    {
+      "name": "Debug search-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/search",
+      "args": ["-f", "etc/search.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/search"
+    },
+    {
+      "name": "Debug gateway",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/gateway",
+      "args": ["-f", "etc/gateway.local.yaml"],
+      "cwd": "${workspaceFolder}/gateway"
+    },
+    {
+      "name": "Debug gateway + user-svc (复合)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/gateway",
+      "args": ["-f", "etc/gateway.local.yaml"],
+      "cwd": "${workspaceFolder}/gateway"
+    }
+  ]
+}
