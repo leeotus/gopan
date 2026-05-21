@@ -1,37 +1,16 @@
 <template>
-  <div class="page-container">
-    <van-nav-bar title="登录" left-arrow @click-left="$router.back()" />
-
-    <div class="form-wrapper">
+  <div class="page-container auth-page">
+    <div class="auth-card card">
+      <div class="auth-logo">✦ GoPan</div>
+      <div class="auth-subtitle">欢迎回来</div>
       <van-form @submit="handleLogin">
-        <van-cell-group inset>
-          <van-field
-            v-model="form.username"
-            name="username"
-            label="用户名"
-            placeholder="请输入用户名"
-            :rules="[{ required: true, message: '请输入用户名' }]"
-          />
-          <van-field
-            v-model="form.password"
-            type="password"
-            name="password"
-            label="密码"
-            placeholder="请输入密码"
-            :rules="[{ required: true, message: '请输入密码' }]"
-          />
-        </van-cell-group>
-
-        <div style="margin: 16px">
-          <van-button round block type="primary" native-type="submit" :loading="loading">
-            登录
-          </van-button>
-        </div>
-
-        <div class="link-row">
-          <router-link to="/register">没有账号？立即注册</router-link>
-        </div>
+        <van-field v-model="form.username" placeholder="用户名" :style="fieldStyle" :rules="[{ required: true }]" />
+        <van-field v-model="form.password" type="password" placeholder="密码" :style="fieldStyle" :rules="[{ required: true }]" />
+        <button class="btn-primary" type="submit" :disabled="loading" style="width:100%;margin-top:20px">
+          {{ loading ? "登录中..." : "登 录" }}
+        </button>
       </van-form>
+      <p class="auth-link">没有账号？<router-link to="/register">立即注册</router-link></p>
     </div>
   </div>
 </template>
@@ -43,39 +22,24 @@ import { showToast } from "vant";
 import { useAuthStore } from "../stores/auth";
 
 const router = useRouter();
-const authStore = useAuthStore();
+const auth = useAuthStore();
 const loading = ref(false);
-
-const form = ref({
-  username: "",
-  password: "",
-});
+const form = ref({ username: "", password: "" });
+const fieldStyle = { '--van-field-background': '#1e1e32', '--van-field-input-text-color': '#e8e6f0', '--van-field-placeholder-text-color': '#5a5a7a' };
 
 async function handleLogin() {
   loading.value = true;
-  try {
-    await authStore.login(form.value.username, form.value.password);
-    showToast("登录成功");
-    router.replace("/");
-  } catch (e) {
-    showToast(e.message || "登录失败");
-  } finally {
-    loading.value = false;
-  }
+  try { await auth.login(form.value.username, form.value.password); showToast("登录成功"); router.replace("/"); }
+  catch (e) { showToast(e.message || "登录失败"); }
+  finally { loading.value = false; }
 }
 </script>
 
 <style scoped>
-.form-wrapper {
-  padding-top: 40px;
-}
-
-.link-row {
-  text-align: center;
-  font-size: 14px;
-}
-
-.link-row a {
-  color: var(--gopan-primary);
-}
+.auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+.auth-card { padding: 36px 28px; width: 100%; max-width: 360px; text-align: center; }
+.auth-logo { font-size: 32px; font-weight: 900; background: linear-gradient(135deg, var(--accent), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.auth-subtitle { color: var(--text-secondary); font-size: 14px; margin: 8px 0 24px; }
+.auth-link { margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+.auth-link a { color: var(--accent); font-weight: 500; }
 </style>

@@ -5,18 +5,13 @@ import { userApi } from "../api";
 export const useAuthStore = defineStore("auth", () => {
   const token = ref(localStorage.getItem("token") || "");
   const user = ref(JSON.parse(localStorage.getItem("user") || "null"));
-
   const isLoggedIn = computed(() => !!token.value);
 
   async function login(username, password) {
     const res = await userApi.login({ username, password });
-    token.value = res.data.token;
-    user.value = {
-      userId: res.data.user_id,
-      username: res.data.username,
-      avatar: res.data.avatar,
-    };
-    localStorage.setItem("token", res.data.token);
+    token.value = res.token;
+    user.value = { userId: res.user_id, username: res.username, avatar: res.avatar };
+    localStorage.setItem("token", res.token);
     localStorage.setItem("user", JSON.stringify(user.value));
     return res;
   }
@@ -35,17 +30,9 @@ export const useAuthStore = defineStore("auth", () => {
   async function fetchProfile() {
     try {
       const res = await userApi.getProfile();
-      user.value = {
-        userId: res.data.user_id,
-        username: res.data.username,
-        email: res.data.email,
-        avatar: res.data.avatar,
-        signature: res.data.signature,
-      };
-      localStorage.setItem("user", JSON.stringify(user.value));
-    } catch {
-      // ignore
-    }
+      user.value = res.data;
+      localStorage.setItem("user", JSON.stringify(res.data));
+    } catch { /* ignore */ }
   }
 
   return { token, user, isLoggedIn, login, register, logout, fetchProfile };

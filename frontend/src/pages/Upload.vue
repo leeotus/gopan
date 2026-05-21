@@ -1,46 +1,39 @@
 <template>
   <div class="page-container">
-    <van-nav-bar title="上传视频" />
-
-    <div class="page-content" v-if="authStore.isLoggedIn">
+    <div class="page-content" style="padding:14px" v-if="auth.isLoggedIn">
       <van-form @submit="handleUpload">
-        <van-cell-group inset>
-          <van-field v-model="form.title" name="title" label="标题" placeholder="请输入视频标题" :rules="[{ required: true, message: '请输入标题' }]" />
-          <van-field v-model="form.description" name="description" label="简介" type="textarea" rows="2" placeholder="视频简介（选填）" />
-          <van-field v-model="form.category" name="category" label="分类" placeholder="如：技术、前端" />
-        </van-cell-group>
-
-        <div class="upload-area">
-          <van-uploader
-            v-model="fileList"
-            :max-count="1"
-            accept="video/*"
-            :before-read="beforeRead"
-            :after-read="afterRead"
-          >
-            <template #default>
-              <div class="upload-btn">
-                <van-icon name="plus" size="24" />
-                <span>选择视频文件</span>
-              </div>
-            </template>
-          </van-uploader>
-          <p class="upload-hint">支持 mp4 / mov / avi</p>
+        <div class="card" style="padding:16px;margin-bottom:14px">
+          <van-field v-model="form.title" placeholder="视频标题" :rules="[{ required: true }]" :style="fieldStyle" />
+          <van-field v-model="form.description" placeholder="视频简介（选填）" type="textarea" rows="2" :style="fieldStyle" />
+          <van-field v-model="form.category" placeholder="分类（选填）" :style="fieldStyle" />
         </div>
 
-        <div style="margin: 16px">
-          <van-button round block type="primary" native-type="submit" :loading="uploading" :disabled="!selectedFile">
-            开始上传
-          </van-button>
+        <div class="card" style="padding:16px;margin-bottom:14px">
+          <div class="label">封面图片</div>
+          <van-uploader v-model="coverList" :max-count="1" accept="image/*" :after-read="onCoverRead" />
         </div>
+
+        <div class="card" style="padding:16px;margin-bottom:20px">
+          <div class="label">视频文件</div>
+          <div class="upload-btn" v-if="!selectedFile" @click="triggerFileInput">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5a5a7a" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>选择视频</span>
+          </div>
+          <div v-else class="file-selected" style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg-input);border-radius:var(--radius-sm)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            <span style="flex:1;font-size:13px">{{ selectedFile.name }}</span>
+            <svg @click="clearFile" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="cursor:pointer"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <input ref="fileInput" type="file" accept="video/*" style="display:none" @change="onFileChange" />
+        </div>
+
+        <button class="btn-primary" type="submit" :disabled="uploading || !selectedFile" style="width:100%">
+          {{ uploading ? "上传中..." : "开始上传" }}
+        </button>
       </van-form>
     </div>
-
-    <!-- 未登录 -->
-    <div v-else class="page-content">
-      <van-empty description="登录后即可上传视频">
-        <van-button type="primary" to="/login">去登录</van-button>
-      </van-empty>
+    <div v-else class="page-content" style="padding:14px">
+      <van-empty description="登录后上传"><button class="btn-primary" @click="$router.push('/login')">去登录</button></van-empty>
     </div>
   </div>
 </template>
@@ -51,93 +44,42 @@ import { showToast } from "vant";
 import { useAuthStore } from "../stores/auth";
 import { videoApi } from "../api";
 
-const authStore = useAuthStore();
+const auth = useAuthStore();
 const uploading = ref(false);
 const selectedFile = ref(null);
-const fileList = ref([]);
+const coverList = ref([]);
+const coverFile = ref(null);
+const fileInput = ref(null);
+const form = ref({ title: "", description: "", category: "" });
+const fieldStyle = { '--van-field-background': 'transparent', '--van-field-input-text-color': '#e8e6f0', '--van-field-placeholder-text-color': '#5a5a7a' };
 
-const form = ref({
-  title: "",
-  description: "",
-  category: "",
-});
-
-function beforeRead(file) {
-  if (!file.type.startsWith("video/")) {
-    showToast("请选择视频文件");
-    return false;
-  }
-  return true;
-}
-
-function afterRead(file) {
-  selectedFile.value = file.file;
-  fileList.value = [file];
-}
+function triggerFileInput() { fileInput.value?.click(); }
+function onFileChange(e) { selectedFile.value = e.target.files?.[0] || null; }
+function onCoverRead(file) { coverFile.value = file.file; }
+function clearFile() { selectedFile.value = null; }
 
 async function handleUpload() {
-  if (!selectedFile.value) {
-    showToast("请选择视频文件");
-    return;
-  }
+  if (!selectedFile.value) return;
   uploading.value = true;
   try {
-    // 1. 初始化上传
-    const initRes = await videoApi.initUpload({
-      filename: selectedFile.value.name,
-      file_size: selectedFile.value.size,
-      title: form.value.title,
-    });
-
-    // 2. 模拟分片上传（完整实现需前端切片）
-    const formData = new FormData();
-    formData.append("file", selectedFile.value);
-    formData.append("video_id", initRes.data.video_id);
-    formData.append("upload_id", initRes.data.upload_id);
-
-    await videoApi.uploadChunk(formData);
-
-    // 3. 合并分片
-    await videoApi.mergeChunks({
-      video_id: initRes.data.video_id,
-      upload_id: initRes.data.upload_id,
-    });
-
-    showToast("上传成功！等待转码完成后即可播放");
-    form.value = { title: "", description: "", category: "" };
-    selectedFile.value = null;
-    fileList.value = [];
-  } catch (e) {
-    showToast(e.message || "上传失败，请稍后再试");
-  } finally {
-    uploading.value = false;
-  }
+    const initRes = await videoApi.initUpload({ filename: selectedFile.value.name, file_size: selectedFile.value.size, title: form.value.title });
+    const fd = new FormData(); fd.append("file", selectedFile.value); fd.append("video_id", initRes.video_id || initRes.data?.video_id); fd.append("upload_id", initRes.upload_id || initRes.data?.upload_id);
+    if (coverFile.value) fd.append("cover", coverFile.value);
+    await videoApi.uploadChunk(fd);
+    await videoApi.mergeChunks({ video_id: initRes.video_id || initRes.data?.video_id, upload_id: initRes.upload_id || initRes.data?.upload_id });
+    showToast("上传成功！转码完成后可播放");
+    form.value = { title: "", description: "", category: "" }; selectedFile.value = null; coverList.value = []; coverFile.value = null;
+  } catch (e) { showToast(e.message || "上传失败"); }
+  finally { uploading.value = false; }
 }
 </script>
 
 <style scoped>
-.upload-area {
-  margin: 20px 16px;
-  text-align: center;
-}
-
+.label { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-secondary); }
 .upload-btn {
-  width: 100%;
-  height: 120px;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--gopan-text-secondary);
-  font-size: 14px;
+  width: 100%; height: 110px; border: 2px dashed var(--border); border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all var(--transition);
 }
-
-.upload-hint {
-  font-size: 12px;
-  color: #ccc;
-  margin-top: 8px;
-}
+.upload-btn:active { border-color: var(--accent); background: rgba(139,92,246,0.05); }
 </style>

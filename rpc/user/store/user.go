@@ -36,7 +36,7 @@ func (s *UserStore) Insert(ctx context.Context, u *model.User) (sql.Result, erro
 func (s *UserStore) FindByUsername(ctx context.Context, username string) (*model.User, error) {
 	var u model.User
 	err := s.conn.QueryRowCtx(ctx, &u, `
-		SELECT id, username, password, email, avatar, signature, created_at, updated_at
+		SELECT id, username, password, email, avatar, signature, created_at, updated_at, deleted_at
 		FROM users WHERE username = ? AND deleted_at IS NULL
 	`, username)
 	if err != nil {
@@ -49,7 +49,7 @@ func (s *UserStore) FindByUsername(ctx context.Context, username string) (*model
 func (s *UserStore) FindById(ctx context.Context, id int64) (*model.User, error) {
 	var u model.User
 	err := s.conn.QueryRowCtx(ctx, &u, `
-		SELECT id, username, password, email, avatar, signature, created_at, updated_at
+		SELECT id, username, password, email, avatar, signature, created_at, updated_at, deleted_at
 		FROM users WHERE id = ? AND deleted_at IS NULL
 	`, id)
 	if err != nil {
