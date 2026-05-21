@@ -33,6 +33,10 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	// 创建 gRPC Server 并注册服务实现
+	// zrpc.MustNewServer创建一个gRPC服务器(对内给服务间调用)
+	// 注意和gateway里的区别，gateway是对外提供服务,使用的是
+	// rest.MustNewServer
+	// MustNewServer第二个参数是监听函数，当有gRPC调用过来的时候会执行这个函数
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		user.RegisterUserServer(grpcServer, server.NewUserServer(ctx))
 

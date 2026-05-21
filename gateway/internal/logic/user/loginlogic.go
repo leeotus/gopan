@@ -26,6 +26,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
+	// 调用svcCtx里的UserClient
 	r, err := l.svcCtx.UserClient.Login(l.ctx, &userclient.LoginReq{
 		Username: req.Username,
 		Password: req.Password,

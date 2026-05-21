@@ -4,13 +4,16 @@ package user
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
 	"gopan/gateway/internal/logic/user"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
+// 用于routes.go里注册放行函数
 func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+	// 使用闭包写法，将svcCtx这个上下文对象传入到放行函数中去
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.LoginReq
 		if err := httpx.Parse(r, &req); err != nil {

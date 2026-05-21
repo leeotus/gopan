@@ -11,6 +11,7 @@ import (
 
 // AuthMiddleware JWT 鉴权中间件。
 // 从 Authorization: Bearer <token> 头中提取 token 并验证。
+// 注册到routes.go的middleware中
 type AuthMiddleware struct{}
 
 func NewAuthMiddleware() *AuthMiddleware {
@@ -24,7 +25,7 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusOK) // 发送200状态码但是显示"未登录"信息
 			w.Write([]byte(`{"code":1002,"message":"未登录或登录已过期"}`))
 			return
 		}

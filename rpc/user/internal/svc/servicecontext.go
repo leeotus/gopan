@@ -10,14 +10,14 @@ import (
 )
 
 type ServiceContext struct {
-	Config    config.Config     // 配置（含 DB 连接串和 JWT 密钥）
-	UserStore *store.UserStore  // users 表的数据访问层
+	Config    config.Config    // 配置（含 DB 连接串和 JWT 密钥）
+	UserStore *store.UserStore // users 表的数据访问层
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.DB.DataSource) // 创建 MySQL 连接
 	return &ServiceContext{
 		Config:    c,
-		UserStore: store.NewUserStore(conn),
+		UserStore: store.NewUserStore(conn), // 传入数据库连接对象
 	}
 }

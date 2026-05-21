@@ -20,8 +20,8 @@ import (
 
 // RegisterLogic 注册逻辑。
 type RegisterLogic struct {
-	ctx    context.Context
-	svcCtx *svc.ServiceContext
+	ctx    context.Context     // 请求上下文
+	svcCtx *svc.ServiceContext // 服务上下文，包含数据库连接池
 	logx.Logger
 }
 

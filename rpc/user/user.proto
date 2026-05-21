@@ -1,7 +1,9 @@
 syntax = "proto3";
+// protoc --go_out=. --go-grpc_out=. user.proto
 
 package user;
 
+// proto包名, 生成的代码放到./user目录下, 并作为user包
 option go_package = "./user";
 
 // 用户服务
