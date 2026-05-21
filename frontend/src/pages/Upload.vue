@@ -60,17 +60,10 @@ function clearFile() { selectedFile.value = null; }
 
 async function handleUpload() {
   if (!selectedFile.value) return;
-  uploading.value = true;
-  try {
-    const initRes = await videoApi.initUpload({ filename: selectedFile.value.name, file_size: selectedFile.value.size, title: form.value.title });
-    const fd = new FormData(); fd.append("file", selectedFile.value); fd.append("video_id", initRes.video_id || initRes.data?.video_id); fd.append("upload_id", initRes.upload_id || initRes.data?.upload_id);
-    if (coverFile.value) fd.append("cover", coverFile.value);
-    await videoApi.uploadChunk(fd);
-    await videoApi.mergeChunks({ video_id: initRes.video_id || initRes.data?.video_id, upload_id: initRes.upload_id || initRes.data?.upload_id });
-    showToast("上传成功！转码完成后可播放");
-    form.value = { title: "", description: "", category: "" }; selectedFile.value = null; coverList.value = []; coverFile.value = null;
-  } catch (e) { showToast(e.message || "上传失败"); }
-  finally { uploading.value = false; }
+  showToast("上传功能开发中，敬请期待 🔧");
+  // TODO: 分片上传服务端实现后启用以下逻辑
+  // uploading.value = true;
+  // try { ... } catch { ... } finally { uploading.value = false; }
 }
 </script>
 
