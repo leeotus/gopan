@@ -1,0 +1,2837 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+
+      background: var(--background-color);
+    }
+    :root{--background-color: #f5fffa;--selected-color: #4fe1f4;--edge-color: #548f9e;--edge-incoming-color: #698b69;--edge-outgoing-color: #008acd;--edge-incoming-outgoing-color: black;--cluster-label-bg-color: #e8eaed;--node-bg-color: #f4f5f1;--symbol-default-bg-color: var(--node-bg-color);--symbol-default-border-color: #889f4e;--symbol-default-text-color: #363636;--interface-bg-color: #fff8dc;--interface-border-color: #a69348;--module-bg-color: #ffebcd;--module-border-color: #a67e43;--constructor-bg-color: #ffdab9;--constructor-border-color: #a66e3c;--method-bg-color: #fff8c5;--method-border-color: #d4a72c;--function-bg-color: #bafbd0;--function-border-color: #4ac26b;--struct-bg-color: #ddf4ff;--struct-border-color: #54aeff;--type-icon-color: #8969da;--property-icon-color: #5f9348}.callgraph{--bold-border: 3.2;width:100%;height:100%;outline:none;cursor:default;-webkit-user-select:none;user-select:none}.callgraph>#graph0>polygon:first-of-type{fill:var(--background-color)}.callgraph>#graph0>#faded-group>:where(.node,.cluster){opacity:.2}.callgraph>#graph0>#faded-group>.edge{opacity:.05}.callgraph .edge>path:not(.hover-path){stroke:var(--edge-color);stroke-width:3}.callgraph .edge>polygon{stroke:var(--edge-color);fill:var(--edge-color)}.callgraph .edge>path.hover-path{stroke:transparent;stroke-width:15}.callgraph .edge.impl>path{stroke-dasharray:8,3}.callgraph .edge.impl>polygon{stroke-width:2;fill:none!important}.callgraph .edge:hover{--edge-color: var(--selected-color)}.callgraph .edge.incoming{--edge-color: var(--edge-incoming-color)}.callgraph .edge.outgoing{--edge-color: var(--edge-outgoing-color)}.callgraph .edge.incoming.outgoing{--edge-color: var(--edge-incoming-outgoing-color)}.callgraph .cluster polygon{stroke-width:1.6}.callgraph .cluster .cluster-label{cursor:pointer;fill:var(--cluster-label-bg-color);rx:18px}.callgraph .cluster text{pointer-events:none}.callgraph .cluster.selected{--cluster-label-bg-color: color-mix(in srgb, var(--selected-color) 30%, transparent)}.callgraph .cluster.selected polygon{stroke-width:var(--bold-border);stroke:var(--selected-color)}.callgraph .node>rect{rx:20px;fill:var(--node-bg-color);filter:url(#shadow)}.callgraph .node.selected>rect{stroke:var(--selected-color);stroke-width:var(--bold-border)}.callgraph .node>.title{cursor:pointer}.callgraph .node>.title>text{font-weight:700}.callgraph .cell{--bg-color: var(--symbol-default-bg-color);--border-color: var(--symbol-default-border-color);--border-width: 1.6}.callgraph .cell>rect{rx:10px;fill:var(--bg-color);stroke:var(--border-color);stroke-width:var(--border-width)}.callgraph .cell>text{fill:var(--symbold-default-text-color)}.callgraph .cell:where(.highlight,.selected,:not(:has(>.cell:hover)):hover){--border-width: var(--bold-border)}.callgraph .cell.highlight>rect{stroke:url(#highlightGradient)}.callgraph .cell.selected>rect{filter:drop-shadow(3px 3px 6px var(--border-color))}.callgraph .cell.interface{--bg-color: var(--interface-bg-color);--border-color: var(--interface-border-color)}.callgraph .cell.interface>rect{stroke-dasharray:7,5}.callgraph .cell.module{--bg-color: var(--module-bg-color);--border-color: var(--module-border-color)}.callgraph .cell.constructor{--bg-color: var(--constructor-bg-color);--border-color: var(--constructor-border-color)}.callgraph .cell.function{--bg-color: var(--function-bg-color);--border-color: var(--function-border-color)}.callgraph .cell.method{--bg-color: var(--method-bg-color);--border-color: var(--method-border-color)}.callgraph .cell:where(.class,.struct,.enum){--bg-color: var(--struct-bg-color);--border-color: var(--struct-border-color)}.callgraph .cell:where(.class,.struct,.enum)>rect{rx:unset}.callgraph .cell:where(.class,.struct,.enum)>text{transform:translateY(1.5px)}.callgraph .cell:where(.class,.struct,.enum)>text:first-of-type{fill:var(--type-icon-color)}.callgraph .cell:where(.field,.property)>rect{rx:unset}.callgraph .cell:where(.field,.property)>text:first-of-type{font-style:italic;fill:var(--property-icon-color)}
+
+  </style>
+</head>
+<body>
+  <svg class="callgraph" viewBox="0 0 1702.1700439453125 4170">
+    
+<g id="graph0" class="graph" transform="matrix(0.5213545071714997 0 0 0.5213545071714997 -30.184896430286017 1406.7671409997179)">
+<polygon fill="white" stroke="none" points="-4,4 -4,-4166 1698.17,-4166 1698.17,4 -4,4"></polygon>
+<g id="clust1" class="cluster">
+
+<polygon fill="none" stroke="black" points="8,-8 8,-4154 1686.17,-4154 1686.17,-8 8,-8"></polygon>
+<rect x="784.8200073242188" y="-4150" width="124.52996826171875" height="35.2001953125" class="cluster-label"></rect>
+<text text-anchor="start" x="792.82" y="-4127.6" font-family="Arial" font-size="16.00">gopan/gateway</text>
+</g>
+
+<g id="clust3" class="cluster">
+
+<polygon fill="none" stroke="black" points="432.1,-720 432.1,-3378 1207.89,-3378 1207.89,-720 432.1,-720"></polygon>
+<rect x="756.8499755859375" y="-3374" width="126.2900390625" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="764.85" y="-3351.6" font-family="Arial" font-size="16.00">internal/handler</text>
+</g>
+<g id="clust4" class="cluster">
+
+<polygon fill="none" stroke="black" points="878.88,-3168 878.88,-3327 1169.21,-3327 1169.21,-3168 878.88,-3168"></polygon>
+<rect x="992.030029296875" y="-3323" width="64.02001953125" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="1000.03" y="-3300.6" font-family="Arial" font-size="16.00">search</text>
+</g>
+
+
+
+
+
+
+
+
+<!-- 7 -->
+
+<!-- 28 -->
+
+<!-- 7&#45;&gt;28 -->
+
+<!-- 7&#45;&gt;28 -->
+
+<!-- 21 -->
+
+<!-- 42 -->
+
+<!-- 21&#45;&gt;42 -->
+
+<!-- 21&#45;&gt;42 -->
+
+<!-- 2 -->
+<g id="clust5" class="cluster">
+
+<polygon fill="none" stroke="black" points="856.63,-2650 856.63,-3160 1191.45,-3160 1191.45,-2650 856.63,-2650"></polygon>
+<rect x="1000.47998046875" y="-3156" width="47.1300048828125" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="1008.48" y="-3133.6" font-family="Arial" font-size="16.00">user</text>
+</g><g id="clust6" class="cluster">
+
+<polygon fill="none" stroke="black" points="848.2,-728 848.2,-2642 1199.89,-2642 1199.89,-728 848.2,-728"></polygon>
+<rect x="996.9199829101562" y="-2638" width="54.25006103515625" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="1004.92" y="-2615.6" font-family="Arial" font-size="16.00">video</text>
+</g><g id="7" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/user/updateprofilehandler.go">
+
+<rect x="864.6300048828125" y="-2757.699951171875" width="318.8199462890625" height="99.39990234375"></rect>
+<g id="7_0" class="title">
+<text text-anchor="start" x="886.63" y="-2725.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;updateprofilehandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="7:12_5" data-kind="12" class="cell function">
+<rect x="880.6300048828125" y="-2706.5" width="286.8199462890625" height="27.199951171875"></rect>
+<text text-anchor="start" x="947.55" y="-2688.1" font-family="Arial" font-size="16.00">UpdateProfileHandler</text>
+
+</g>
+</g><g id="21" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/unlikevideohandler.go">
+
+<rect x="870.8599853515625" y="-2473.699951171875" width="306.3599853515625" height="99.39990234375"></rect>
+<g id="21_2" class="title">
+<text text-anchor="start" x="892.86" y="-2441.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;unlikevideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="21:13_5" data-kind="12" class="cell function">
+<rect x="886.8599853515625" y="-2422.5" width="274.3599853515625" height="27.199951171875"></rect>
+<text text-anchor="start" x="953.34" y="-2404.1" font-family="Arial" font-size="16.00">UnlikeVideoHandler</text>
+
+</g>
+</g><g id="20" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/unfavoritevideohandler.go">
+
+<rect x="856.6300048828125" y="-2590.699951171875" width="334.8199462890625" height="99.39990234375"></rect>
+<g id="20_5" class="title">
+<text text-anchor="start" x="878.63" y="-2558.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;unfavoritevideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="20:13_5" data-kind="12" class="cell function">
+<rect x="872.6300048828125" y="-2539.5" width="302.8199462890625" height="27.199951171875"></rect>
+<text text-anchor="start" x="939.11" y="-2521.1" font-family="Arial" font-size="16.00">UnfavoriteVideoHandler</text>
+
+</g>
+</g><g id="9" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/deletevideohandler.go">
+
+<rect x="869.969970703125" y="-835.7000122070312" width="308.1500244140625" height="99.4000244140625"></rect>
+<g id="9_6" class="title">
+<text text-anchor="start" x="891.97" y="-803.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;deletevideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="9:13_5" data-kind="12" class="cell function">
+<rect x="885.969970703125" y="-784.5" width="276.1500244140625" height="27.20001220703125"></rect>
+<text text-anchor="start" x="952.44" y="-766.1" font-family="Arial" font-size="16.00">DeleteVideoHandler</text>
+
+</g>
+</g><g id="13" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/inituploadhandler.go">
+
+<rect x="876.6400146484375" y="-952.7000122070312" width="294.8099365234375" height="99.4000244140625"></rect>
+<g id="13_7" class="title">
+<text text-anchor="start" x="898.64" y="-920.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;inituploadhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="13:14_5" data-kind="12" class="cell function">
+<rect x="892.6400146484375" y="-901.5" width="262.8099365234375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="960" y="-883.1" font-family="Arial" font-size="16.00">InitUploadHandler</text>
+
+</g>
+</g><g id="11" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/getplayurlhandler.go">
+
+<rect x="876.2000122070312" y="-1069.699951171875" width="295.67999267578125" height="99.39996337890625"></rect>
+<g id="11_8" class="title">
+<text text-anchor="start" x="898.2" y="-1037.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;getplayurlhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="11:14_5" data-kind="12" class="cell function">
+<rect x="892.2000122070312" y="-1018.5" width="263.67999267578125" height="27.20001220703125"></rect>
+<text text-anchor="start" x="957.35" y="-1000.1" font-family="Arial" font-size="16.00">GetPlayUrlHandler</text>
+
+</g>
+</g><g id="14" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/likevideohandler.go">
+
+<rect x="879.760009765625" y="-1186.699951171875" width="288.5599365234375" height="99.39990234375"></rect>
+<g id="14_9" class="title">
+<text text-anchor="start" x="901.76" y="-1154.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;likevideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="14:13_5" data-kind="12" class="cell function">
+<rect x="895.760009765625" y="-1135.5" width="256.5599365234375" height="27.199951171875"></rect>
+<text text-anchor="start" x="960.89" y="-1117.1" font-family="Arial" font-size="16.00">LikeVideoHandler</text>
+
+</g>
+</g><g id="16" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/listvideoshandler.go">
+
+<rect x="877.989990234375" y="-1303.699951171875" width="292.1099853515625" height="99.39990234375"></rect>
+<g id="16_10" class="title">
+<text text-anchor="start" x="899.99" y="-1271.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;listvideoshandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="16:14_5" data-kind="12" class="cell function">
+<rect x="893.989990234375" y="-1252.5" width="260.1099853515625" height="27.199951171875"></rect>
+<text text-anchor="start" x="959.12" y="-1234.1" font-family="Arial" font-size="16.00">ListVideosHandler</text>
+
+</g>
+</g><g id="15" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/listcommentshandler.go">
+
+<rect x="864.2100219726562" y="-1420.699951171875" width="319.65997314453125" height="99.39990234375"></rect>
+<g id="15_11" class="title">
+<text text-anchor="start" x="886.21" y="-1388.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;listcommentshandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="15:13_5" data-kind="12" class="cell function">
+<rect x="880.2100219726562" y="-1369.5" width="287.65997314453125" height="27.199951171875"></rect>
+<text text-anchor="start" x="944.9" y="-1351.1" font-family="Arial" font-size="16.00">ListCommentsHandler</text>
+
+</g>
+</g><g id="8" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/deletecommenthandler.go">
+
+<rect x="856.2000122070312" y="-1537.699951171875" width="335.69000244140625" height="99.39990234375"></rect>
+<g id="8_12" class="title">
+<text text-anchor="start" x="878.2" y="-1505.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;deletecommenthandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="8:13_5" data-kind="12" class="cell function">
+<rect x="872.2000122070312" y="-1486.5" width="303.69000244140625" height="27.199951171875"></rect>
+<text text-anchor="start" x="938.23" y="-1468.1" font-family="Arial" font-size="16.00">DeleteCommentHandler</text>
+
+</g>
+</g><g id="22" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/updatevideohandler.go">
+
+<rect x="867.2999877929688" y="-1654.699951171875" width="313.49005126953125" height="99.39990234375"></rect>
+<g id="22_13" class="title">
+<text text-anchor="start" x="889.3" y="-1622.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;updatevideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="22:14_5" data-kind="12" class="cell function">
+<rect x="883.2999877929688" y="-1603.5" width="281.49005126953125" height="27.199951171875"></rect>
+<text text-anchor="start" x="949.77" y="-1585.1" font-family="Arial" font-size="16.00">UpdateVideoHandler</text>
+
+</g>
+</g><g id="6" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/user/registerhandler.go">
+
+<rect x="884.2100219726562" y="-2874.699951171875" width="279.65997314453125" height="99.39990234375"></rect>
+<g id="6_14" class="title">
+<text text-anchor="start" x="906.21" y="-2842.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;registerhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="6:13_5" data-kind="12" class="cell function">
+<rect x="900.2100219726562" y="-2823.5" width="247.65997314453125" height="27.199951171875"></rect>
+<text text-anchor="start" x="966.24" y="-2805.1" font-family="Arial" font-size="16.00">RegisterHandler</text>
+
+</g>
+</g><g id="12" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/getvideohandler.go">
+
+<rect x="880.6400146484375" y="-1771.699951171875" width="286.7999267578125" height="99.39990234375"></rect>
+<g id="12_15" class="title">
+<text text-anchor="start" x="902.64" y="-1739.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;getvideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="12:13_5" data-kind="12" class="cell function">
+<rect x="896.6400146484375" y="-1720.5" width="254.7999267578125" height="27.199951171875"></rect>
+<text text-anchor="start" x="962.67" y="-1702.1" font-family="Arial" font-size="16.00">GetVideoHandler</text>
+
+</g>
+</g><g id="4" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/user/getprofilehandler.go">
+
+<rect x="877.97998046875" y="-2991.699951171875" width="292.1300048828125" height="99.39990234375"></rect>
+<g id="4_16" class="title">
+<text text-anchor="start" x="899.98" y="-2959.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;getprofilehandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="4:11_5" data-kind="12" class="cell function">
+<rect x="893.97998046875" y="-2940.5" width="260.1300048828125" height="27.199951171875"></rect>
+<text text-anchor="start" x="960.46" y="-2922.1" font-family="Arial" font-size="16.00">GetProfileHandler</text>
+
+</g>
+</g><g id="17" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/mergechunkshandler.go">
+
+<rect x="862.8699951171875" y="-1888.699951171875" width="322.3499755859375" height="99.39990234375"></rect>
+<g id="17_17" class="title">
+<text text-anchor="start" x="884.87" y="-1856.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;mergechunkshandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="17:13_5" data-kind="12" class="cell function">
+<rect x="878.8699951171875" y="-1837.5" width="290.3499755859375" height="27.199951171875"></rect>
+<text text-anchor="start" x="946.23" y="-1819.1" font-family="Arial" font-size="16.00">MergeChunksHandler</text>
+
+</g>
+</g><g id="10" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/favoritevideohandler.go">
+
+<rect x="865.530029296875" y="-2005.699951171875" width="317.02001953125" height="99.39990234375"></rect>
+<g id="10_18" class="title">
+<text text-anchor="start" x="887.53" y="-1973.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;favoritevideohandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="10:13_5" data-kind="12" class="cell function">
+<rect x="881.530029296875" y="-1954.5" width="285.02001953125" height="27.199951171875"></rect>
+<text text-anchor="start" x="946.67" y="-1936.1" font-family="Arial" font-size="16.00">FavoriteVideoHandler</text>
+
+</g>
+</g><g id="19" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/senddanmakuhandler.go">
+
+<rect x="860.6300048828125" y="-2122.699951171875" width="326.8199462890625" height="99.39990234375"></rect>
+<g id="19_19" class="title">
+<text text-anchor="start" x="882.63" y="-2090.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;senddanmakuhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="19:14_5" data-kind="12" class="cell function">
+<rect x="876.6300048828125" y="-2071.5" width="294.8199462890625" height="27.199951171875"></rect>
+<text text-anchor="start" x="943.11" y="-2053.1" font-family="Arial" font-size="16.00">SendDanmakuHandler</text>
+
+</g>
+</g><g id="5" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/user/loginhandler.go">
+
+<rect x="893.0399780273438" y="-3108.699951171875" width="262.00006103515625" height="99.39990234375"></rect>
+<g id="5_20" class="title">
+<text text-anchor="start" x="915.99" y="-3076.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;loginhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="5:12_5" data-kind="12" class="cell function">
+<rect x="909.0399780273438" y="-3057.5" width="230.00006103515625" height="27.199951171875"></rect>
+<text text-anchor="start" x="976.45" y="-3039.1" font-family="Arial" font-size="16.00">LoginHandler</text>
+
+</g>
+</g><g id="18" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/postcommenthandler.go">
+
+<rect x="862.8699951171875" y="-2239.699951171875" width="322.3399658203125" height="99.39990234375"></rect>
+<g id="18_21" class="title">
+<text text-anchor="start" x="884.87" y="-2207.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;postcommenthandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="18:14_5" data-kind="12" class="cell function">
+<rect x="878.8699951171875" y="-2188.5" width="290.3399658203125" height="27.199951171875"></rect>
+<text text-anchor="start" x="945.34" y="-2170.1" font-family="Arial" font-size="16.00">PostCommentHandler</text>
+
+</g>
+</g><g id="23" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/video/uploadchunkhandler.go">
+
+<rect x="865.52001953125" y="-2356.699951171875" width="317.0499267578125" height="99.39990234375"></rect>
+<g id="23_23" class="title">
+<text text-anchor="start" x="887.52" y="-2324.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;uploadchunkhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="23:13_5" data-kind="12" class="cell function">
+<rect x="881.52001953125" y="-2305.5" width="285.0499267578125" height="27.199951171875"></rect>
+<text text-anchor="start" x="947.55" y="-2287.1" font-family="Arial" font-size="16.00">UploadChunkHandler</text>
+
+</g>
+</g><g id="3" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/gateway.go">
+
+<rect x="24" y="-3005.699951171875" width="262" height="99.39990234375"></rect>
+<g id="3_45" class="title">
+<text text-anchor="start" x="60.74" y="-2973.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;gateway.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="3:21_5" data-kind="12" class="cell function">
+<rect x="40" y="-2954.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="137.66" y="-2936.1" font-family="Arial" font-size="16.00">main</text>
+
+</g>
+</g><g id="2" class="node selected" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/routes.go">
+
+<rect x="440.1000061035156" y="-2063.699951171875" width="261.9999694824219" height="99.39990234375"></rect>
+<g id="2_4" class="title">
+<text text-anchor="start" x="484.4" y="-2031.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;routes.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="2:16_5" data-kind="12" class="cell function">
+<rect x="456.1000061035156" y="-2012.5" width="229.99996948242188" height="27.199951171875"></rect>
+<text text-anchor="start" x="509.29" y="-1994.1" font-family="Arial" font-size="16.00">RegisterHandlers</text>
+
+</g>
+</g>
+<!-- 2&#45;&gt;7 -->
+
+<!-- 2&#45;&gt;21 -->
+
+<!-- 20 -->
+
+<!-- 2&#45;&gt;20 -->
+
+<!-- 9 -->
+
+<!-- 2&#45;&gt;9 -->
+
+<!-- 13 -->
+
+<!-- 2&#45;&gt;13 -->
+
+<!-- 11 -->
+
+<!-- 2&#45;&gt;11 -->
+
+<!-- 14 -->
+
+<!-- 2&#45;&gt;14 -->
+
+<!-- 16 -->
+
+<!-- 2&#45;&gt;16 -->
+
+<!-- 15 -->
+
+<!-- 2&#45;&gt;15 -->
+
+<!-- 8 -->
+
+<!-- 2&#45;&gt;8 -->
+
+<!-- 22 -->
+
+<!-- 2&#45;&gt;22 -->
+
+<!-- 6 -->
+
+<!-- 2&#45;&gt;6 -->
+
+<!-- 12 -->
+
+<!-- 2&#45;&gt;12 -->
+
+<!-- 4 -->
+
+<!-- 2&#45;&gt;4 -->
+
+<!-- 17 -->
+
+<!-- 2&#45;&gt;17 -->
+
+<!-- 10 -->
+
+<!-- 2&#45;&gt;10 -->
+
+<!-- 19 -->
+
+<!-- 2&#45;&gt;19 -->
+
+<!-- 5 -->
+
+<!-- 2&#45;&gt;5 -->
+
+<!-- 18 -->
+
+<!-- 2&#45;&gt;18 -->
+
+<!-- 1 -->
+<g id="1" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/handler/search/searchhandler.go">
+
+<rect x="886.8800048828125" y="-3275.699951171875" width="274.3299560546875" height="99.39990234375"></rect>
+<g id="1_22" class="title">
+<text text-anchor="start" x="908.88" y="-3243.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;searchhandler.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="1:14_5" data-kind="12" class="cell function">
+<rect x="902.8800048828125" y="-3224.5" width="242.3299560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="970.68" y="-3206.1" font-family="Arial" font-size="16.00">SearchHandler</text>
+
+</g>
+</g>
+<!-- 2&#45;&gt;1 -->
+<g id="2:16_5-1:14_5" class="edge outgoing" data-from="2:16_5" data-to="1:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C752.44,-1998.9 817.15,-3106.5 848.2,-3164 860.25,-3186.32 867.11,-3202.97 885.63,-3208.72"></path>
+<polygon fill="black" stroke="black" points="884.81,-3213.9 900.38,-3210.7 886.21,-3203.5 884.81,-3213.9"></polygon>
+<text text-anchor="middle" x="782.45" y="-2598.2" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C752.44,-1998.9 817.15,-3106.5 848.2,-3164 860.25,-3186.32 867.11,-3202.97 885.63,-3208.72" class="hover-path"></path></g>
+<!-- 23 -->
+
+<!-- 2&#45;&gt;23 -->
+
+<!-- 41 -->
+
+<!-- 20&#45;&gt;41 -->
+
+<!-- 20&#45;&gt;41 -->
+
+<!-- 30 -->
+
+<!-- 9&#45;&gt;30 -->
+
+<!-- 9&#45;&gt;30 -->
+
+<!-- 34 -->
+
+<!-- 13&#45;&gt;34 -->
+
+<!-- 13&#45;&gt;34 -->
+
+<!-- 32 -->
+
+<!-- 11&#45;&gt;32 -->
+
+<!-- 11&#45;&gt;32 -->
+
+<!-- 35 -->
+
+<!-- 14&#45;&gt;35 -->
+
+<!-- 14&#45;&gt;35 -->
+
+<!-- 37 -->
+
+<!-- 16&#45;&gt;37 -->
+
+<!-- 16&#45;&gt;37 -->
+
+<!-- 36 -->
+
+<!-- 15&#45;&gt;36 -->
+
+<!-- 15&#45;&gt;36 -->
+
+<!-- 29 -->
+
+<!-- 8&#45;&gt;29 -->
+
+<!-- 8&#45;&gt;29 -->
+
+<!-- 43 -->
+
+<!-- 22&#45;&gt;43 -->
+
+<!-- 22&#45;&gt;43 -->
+
+<!-- 27 -->
+
+<!-- 6&#45;&gt;27 -->
+
+<!-- 6&#45;&gt;27 -->
+
+<!-- 33 -->
+
+<!-- 12&#45;&gt;33 -->
+
+<!-- 12&#45;&gt;33 -->
+
+<!-- 25 -->
+
+<!-- 4&#45;&gt;25 -->
+
+<!-- 4&#45;&gt;25 -->
+
+<!-- 38 -->
+
+<!-- 17&#45;&gt;38 -->
+
+<!-- 17&#45;&gt;38 -->
+
+<!-- 47 -->
+
+<!-- 46 -->
+
+<!-- 47&#45;&gt;46 -->
+
+<!-- 47&#45;&gt;46 -->
+
+<!-- 31 -->
+
+<!-- 10&#45;&gt;31 -->
+
+<!-- 10&#45;&gt;31 -->
+
+<!-- 40 -->
+
+<!-- 19&#45;&gt;40 -->
+
+<!-- 19&#45;&gt;40 -->
+
+<!-- 26 -->
+
+<!-- 5&#45;&gt;26 -->
+
+<!-- 5&#45;&gt;26 -->
+
+<!-- 39 -->
+
+<!-- 18&#45;&gt;39 -->
+
+<!-- 18&#45;&gt;39 -->
+
+<!-- 24 -->
+
+<!-- 1&#45;&gt;24 -->
+
+<!-- 1&#45;&gt;24 -->
+
+<!-- 44 -->
+
+<!-- 23&#45;&gt;44 -->
+
+<!-- 23&#45;&gt;44 -->
+
+<!-- 3 -->
+
+<!-- 3&#45;&gt;2 -->
+
+<!-- 3&#45;&gt;47 -->
+
+<!-- 45 -->
+
+<!-- 48 -->
+
+<g id="faded-group"><g id="7:12_5-28:27_29" class="edge" data-from="7:12_5" data-to="28:27_29">
+
+<path fill="none" stroke="black" d="M1168.45,-2692.9C1215.77,-2692.9 1237.26,-2695.72 1267.39,-2732.2 1376.05,-2863.79 1206.1,-3099.39 1354.2,-3114.89"></path>
+<polygon fill="black" stroke="black" points="1353.85,-3120.13 1369.09,-3115.63 1354.37,-3109.65 1353.85,-3120.13"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2736.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1168.45,-2692.9C1215.77,-2692.9 1237.26,-2695.72 1267.39,-2732.2 1376.05,-2863.79 1206.1,-3099.39 1354.2,-3114.89" class="hover-path"></path></g><g id="7:12_5-28:19_5" class="edge" data-from="7:12_5" data-to="28:19_5">
+
+<path fill="none" stroke="black" d="M1168.45,-2692.9C1385.2,-2692.9 1160.36,-3127.5 1354.25,-3150"></path>
+<polygon fill="black" stroke="black" points="1353.83,-3155.23 1369.09,-3150.82 1354.41,-3144.75 1353.83,-3155.23"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2784.71" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1168.45,-2692.9C1385.2,-2692.9 1160.36,-3127.5 1354.25,-3150" class="hover-path"></path></g><g id="21:13_5-42:20_5" class="edge" data-from="21:13_5" data-to="42:20_5">
+
+<path fill="none" stroke="black" d="M1162.22,-2408.9C1292.03,-2408.9 1271.6,-2531.78 1331.39,-2647 1346.97,-2677.03 1339.98,-2711.99 1360.91,-2722.65"></path>
+<polygon fill="black" stroke="black" points="1359.61,-2727.74 1375.35,-2725.6 1361.71,-2717.45 1359.61,-2727.74"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2473.35" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1162.22,-2408.9C1292.03,-2408.9 1271.6,-2531.78 1331.39,-2647 1346.97,-2677.03 1339.98,-2711.99 1360.91,-2722.65" class="hover-path"></path></g><g id="21:13_5-42:28_27" class="edge" data-from="21:13_5" data-to="42:28_27">
+
+<path fill="none" stroke="black" d="M1162.22,-2408.9C1212.12,-2408.9 1232.93,-2412.11 1267.39,-2448.2 1344.9,-2529.38 1267.33,-2674.94 1360.39,-2689.52"></path>
+<polygon fill="black" stroke="black" points="1359.99,-2694.75 1375.33,-2690.59 1360.74,-2684.28 1359.99,-2694.75"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2452.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1162.22,-2408.9C1212.12,-2408.9 1232.93,-2412.11 1267.39,-2448.2 1344.9,-2529.38 1267.33,-2674.94 1360.39,-2689.52" class="hover-path"></path></g><g id="20:13_5-41:20_5" class="edge" data-from="20:13_5" data-to="41:20_5">
+
+<path fill="none" stroke="black" d="M1176.45,-2525.9C1253.39,-2525.9 1233.71,-2604.03 1267.39,-2673.2 1314.73,-2770.4 1249.58,-2899.69 1339.92,-2912.81"></path>
+<polygon fill="black" stroke="black" points="1339.32,-2918.04 1354.64,-2913.8 1340.02,-2907.56 1339.32,-2918.04"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2677.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1176.45,-2525.9C1253.39,-2525.9 1233.71,-2604.03 1267.39,-2673.2 1314.73,-2770.4 1249.58,-2899.69 1339.92,-2912.81" class="hover-path"></path></g><g id="20:13_5-41:28_31" class="edge" data-from="20:13_5" data-to="41:28_31">
+
+<path fill="none" stroke="black" d="M1176.45,-2525.9C1330.12,-2525.9 1268.34,-2694.86 1331.39,-2835 1337.4,-2848.36 1336.57,-2863 1341.6,-2871.49"></path>
+<polygon fill="black" stroke="black" points="1339.02,-2876.08 1354.79,-2878.03 1343.68,-2866.67 1339.02,-2876.08"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2570.38" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1176.45,-2525.9C1330.12,-2525.9 1268.34,-2694.86 1331.39,-2835 1337.4,-2848.36 1336.57,-2863 1341.6,-2871.49" class="hover-path"></path></g><g id="9:13_5-30:20_5" class="edge" data-from="9:13_5" data-to="30:20_5">
+
+<path fill="none" stroke="black" d="M1163.12,-770.9C1315.12,-770.9 1225.31,-141.94 1359.84,-96.49"></path>
+<polygon fill="black" stroke="black" points="1360.47,-101.7 1374.45,-94.14 1358.8,-91.34 1360.47,-101.7"></polygon>
+<text text-anchor="middle" x="1265.64" y="-497.24" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1163.12,-770.9C1315.12,-770.9 1225.31,-141.94 1359.84,-96.49" class="hover-path"></path></g><g id="9:13_5-30:28_27" class="edge" data-from="9:13_5" data-to="30:28_27">
+
+<path fill="none" stroke="black" d="M1163.12,-770.9C1240.71,-770.9 1287.45,-142.33 1361.31,-66.22"></path>
+<polygon fill="black" stroke="black" points="1363.65,-70.92 1374.6,-59.39 1358.85,-61.58 1363.65,-70.92"></polygon>
+<text text-anchor="middle" x="1265.64" y="-440.35" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1163.12,-770.9C1240.71,-770.9 1287.45,-142.33 1361.31,-66.22" class="hover-path"></path></g><g id="13:14_5-34:28_26" class="edge" data-from="13:14_5" data-to="34:28_26">
+
+<path fill="none" stroke="black" d="M1156.45,-887.9C1186.22,-887.9 1192.61,-870.55 1207.89,-845 1276.08,-731.01 1246.79,-285.42 1366.43,-249.06"></path>
+<polygon fill="black" stroke="black" points="1367.03,-254.28 1381.12,-246.92 1365.51,-243.89 1367.03,-254.28"></polygon>
+<text text-anchor="middle" x="1265.64" y="-554.43" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1156.45,-887.9C1186.22,-887.9 1192.61,-870.55 1207.89,-845 1276.08,-731.01 1246.79,-285.42 1366.43,-249.06" class="hover-path"></path></g><g id="13:14_5-34:20_5" class="edge" data-from="13:14_5" data-to="34:20_5">
+
+<path fill="none" stroke="black" d="M1156.45,-887.9C1294.57,-887.9 1243.35,-328.32 1366.68,-284.6"></path>
+<polygon fill="black" stroke="black" points="1367.21,-289.84 1381.12,-282.15 1365.45,-279.49 1367.21,-289.84"></polygon>
+<text text-anchor="middle" x="1265.64" y="-625.38" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1156.45,-887.9C1294.57,-887.9 1243.35,-328.32 1366.68,-284.6" class="hover-path"></path></g><g id="11:14_5-32:20_5" class="edge" data-from="11:14_5" data-to="32:20_5">
+
+<path fill="none" stroke="black" d="M1156.88,-1004.9C1186.5,-1004.9 1191.94,-986.96 1207.89,-962 1258.93,-882.12 1234.54,-846.33 1263.89,-756.2 1289.99,-676.07 1298.59,-656.63 1331.39,-579 1349.69,-535.7 1333.74,-484.24 1365.92,-472.41"></path>
+<polygon fill="black" stroke="black" points="1366.66,-477.61 1380.68,-470.13 1365.05,-467.23 1366.66,-477.61"></polygon>
+<text text-anchor="middle" x="1265.64" y="-760.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1156.88,-1004.9C1186.5,-1004.9 1191.94,-986.96 1207.89,-962 1258.93,-882.12 1234.54,-846.33 1263.89,-756.2 1289.99,-676.07 1298.59,-656.63 1331.39,-579 1349.69,-535.7 1333.74,-484.24 1365.92,-472.41" class="hover-path"></path></g><g id="11:14_5-32:28_26" class="edge" data-from="11:14_5" data-to="32:28_26">
+
+<path fill="none" stroke="black" d="M1156.88,-1004.9C1186.5,-1004.9 1192.35,-987.22 1207.89,-962 1269.67,-861.76 1259.87,-472.79 1366.03,-437.3"></path>
+<polygon fill="black" stroke="black" points="1366.71,-442.51 1380.68,-434.94 1365.04,-432.14 1366.71,-442.51"></polygon>
+<text text-anchor="middle" x="1265.64" y="-706.29" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1156.88,-1004.9C1186.5,-1004.9 1192.35,-987.22 1207.89,-962 1269.67,-861.76 1259.87,-472.79 1366.03,-437.3" class="hover-path"></path></g><g id="14:13_5-35:28_25" class="edge" data-from="14:13_5" data-to="35:28_25">
+
+<path fill="none" stroke="black" d="M1153.32,-1121.9C1294.29,-1121.9 1181.9,-966.08 1263.89,-782.2 1297.88,-705.98 1296.84,-632.77 1369.61,-623.65"></path>
+<polygon fill="black" stroke="black" points="1369.56,-628.91 1384.22,-622.79 1368.94,-618.43 1369.56,-628.91"></polygon>
+<text text-anchor="middle" x="1265.64" y="-786.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1153.32,-1121.9C1294.29,-1121.9 1181.9,-966.08 1263.89,-782.2 1297.88,-705.98 1296.84,-632.77 1369.61,-623.65" class="hover-path"></path></g><g id="14:13_5-35:20_5" class="edge" data-from="14:13_5" data-to="35:20_5">
+
+<path fill="none" stroke="black" d="M1153.32,-1121.9C1184.17,-1121.9 1189.45,-1103.73 1207.89,-1079 1213.46,-1071.53 1327.59,-775.51 1331.39,-767 1350.87,-723.32 1336.09,-671.74 1369.63,-660.24"></path>
+<polygon fill="black" stroke="black" points="1370.15,-665.47 1384.24,-658.12 1368.64,-655.08 1370.15,-665.47"></polygon>
+<text text-anchor="middle" x="1265.64" y="-936.71" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1153.32,-1121.9C1184.17,-1121.9 1189.45,-1103.73 1207.89,-1079 1213.46,-1071.53 1327.59,-775.51 1331.39,-767 1350.87,-723.32 1336.09,-671.74 1369.63,-660.24" class="hover-path"></path></g><g id="16:14_5-37:19_5" class="edge" data-from="16:14_5" data-to="37:19_5">
+
+<path fill="none" stroke="black" d="M1155.1,-1238.9C1185.33,-1238.9 1189.93,-1220.32 1207.89,-1196 1307.9,-1060.53 1216.31,-859.77 1367.51,-846.58"></path>
+<polygon fill="black" stroke="black" points="1367.68,-851.83 1382.45,-845.96 1367.24,-841.34 1367.68,-851.83"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1016.43" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1155.1,-1238.9C1185.33,-1238.9 1189.93,-1220.32 1207.89,-1196 1307.9,-1060.53 1216.31,-859.77 1367.51,-846.58" class="hover-path"></path></g><g id="16:14_5-37:27_26" class="edge" data-from="16:14_5" data-to="37:27_26">
+
+<path fill="none" stroke="black" d="M1155.1,-1238.9C1270.86,-1238.9 1218.08,-1060.19 1263.89,-965.2 1299.16,-892.07 1297.43,-820.83 1367.81,-811.69"></path>
+<polygon fill="black" stroke="black" points="1367.8,-816.95 1382.45,-810.79 1367.16,-806.47 1367.8,-816.95"></polygon>
+<text text-anchor="middle" x="1265.64" y="-969.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1155.1,-1238.9C1270.86,-1238.9 1218.08,-1060.19 1263.89,-965.2 1299.16,-892.07 1297.43,-820.83 1367.81,-811.69" class="hover-path"></path></g><g id="15:13_5-36:20_5" class="edge" data-from="15:13_5" data-to="36:20_5">
+
+<path fill="none" stroke="black" d="M1168.87,-1355.9C1247.55,-1355.9 1279.46,-1074.07 1352.12,-1037.74"></path>
+<polygon fill="black" stroke="black" points="1352.96,-1042.94 1366.27,-1034.26 1350.45,-1032.74 1352.96,-1042.94"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1208.75" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1168.87,-1355.9C1247.55,-1355.9 1279.46,-1074.07 1352.12,-1037.74" class="hover-path"></path></g><g id="15:13_5-36:28_28" class="edge" data-from="15:13_5" data-to="36:28_28">
+
+<path fill="none" stroke="black" d="M1168.87,-1355.9C1194.64,-1355.9 1193.89,-1334.64 1207.89,-1313 1289.84,-1186.29 1216.88,-1012.19 1351.26,-999.44"></path>
+<polygon fill="black" stroke="black" points="1351.48,-1004.69 1366.23,-998.77 1351.01,-994.2 1351.48,-1004.69"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1089.1" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1168.87,-1355.9C1194.64,-1355.9 1193.89,-1334.64 1207.89,-1313 1289.84,-1186.29 1216.88,-1012.19 1351.26,-999.44" class="hover-path"></path></g><g id="8:13_5-29:20_5" class="edge" data-from="8:13_5" data-to="29:20_5">
+
+<path fill="none" stroke="black" d="M1176.89,-1472.9C1307.65,-1472.9 1225.56,-1243.01 1338.03,-1223.25"></path>
+<polygon fill="black" stroke="black" points="1338.36,-1228.49 1352.88,-1222.02 1337.5,-1218.03 1338.36,-1228.49"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1359.13" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1176.89,-1472.9C1307.65,-1472.9 1225.56,-1243.01 1338.03,-1223.25" class="hover-path"></path></g><g id="8:13_5-29:28_29" class="edge" data-from="8:13_5" data-to="29:28_29">
+
+<path fill="none" stroke="black" d="M1176.89,-1472.9C1200.41,-1472.9 1195.66,-1450.09 1207.89,-1430 1270.51,-1327.13 1232.1,-1199.08 1338.07,-1187.54"></path>
+<polygon fill="black" stroke="black" points="1338.17,-1192.79 1352.88,-1186.78 1337.63,-1182.31 1338.17,-1192.79"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1250.51" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1176.89,-1472.9C1200.41,-1472.9 1195.66,-1450.09 1207.89,-1430 1270.51,-1327.13 1232.1,-1199.08 1338.07,-1187.54" class="hover-path"></path></g><g id="22:14_5-43:28_27" class="edge" data-from="22:14_5" data-to="43:28_27">
+
+<path fill="none" stroke="black" d="M1165.79,-1589.9C1192.5,-1589.9 1190.62,-1567.38 1207.89,-1547 1272.76,-1470.45 1267.92,-1384.66 1356.86,-1375.5"></path>
+<polygon fill="black" stroke="black" points="1357.03,-1380.75 1371.76,-1374.77 1356.52,-1370.26 1357.03,-1380.75"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1455.57" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1165.79,-1589.9C1192.5,-1589.9 1190.62,-1567.38 1207.89,-1547 1272.76,-1470.45 1267.92,-1384.66 1356.86,-1375.5" class="hover-path"></path></g><g id="22:14_5-43:20_5" class="edge" data-from="22:14_5" data-to="43:20_5">
+
+<path fill="none" stroke="black" d="M1165.79,-1589.9C1282.03,-1589.9 1254.34,-1426.71 1356.8,-1411.1"></path>
+<polygon fill="black" stroke="black" points="1357.18,-1416.33 1371.76,-1410.01 1356.42,-1405.86 1357.18,-1416.33"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1514.88" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1165.79,-1589.9C1282.03,-1589.9 1254.34,-1426.71 1356.8,-1411.1" class="hover-path"></path></g><g id="6:13_5-27:19_5" class="edge" data-from="6:13_5" data-to="27:19_5">
+
+<path fill="none" stroke="black" d="M1148.87,-2809.9C1217.31,-2809.9 1232.84,-2849.12 1267.39,-2908.2 1364.9,-3074.93 1199.92,-3324.05 1372.52,-3338.26"></path>
+<polygon fill="black" stroke="black" points="1372.07,-3343.5 1387.27,-3338.84 1372.49,-3333.01 1372.07,-3343.5"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2912.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1148.87,-2809.9C1217.31,-2809.9 1232.84,-2849.12 1267.39,-2908.2 1364.9,-3074.93 1199.92,-3324.05 1372.52,-3338.26" class="hover-path"></path></g><g id="6:13_5-27:27_24" class="edge" data-from="6:13_5" data-to="27:27_24">
+
+<path fill="none" stroke="black" d="M1148.87,-2809.9C1211.04,-2809.9 1232.81,-2832.53 1267.39,-2884.2 1372.12,-3040.7 1205.19,-3288.41 1372.42,-3303.02"></path>
+<polygon fill="black" stroke="black" points="1372.06,-3308.26 1387.27,-3303.64 1372.5,-3297.77 1372.06,-3308.26"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2888.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1148.87,-2809.9C1211.04,-2809.9 1232.81,-2832.53 1267.39,-2884.2 1372.12,-3040.7 1205.19,-3288.41 1372.42,-3303.02" class="hover-path"></path></g><g id="12:13_5-33:19_5" class="edge" data-from="12:13_5" data-to="33:19_5">
+
+<path fill="none" stroke="black" d="M1152.44,-1706.9C1261.52,-1706.9 1271.09,-1608.49 1370.26,-1598.68"></path>
+<polygon fill="black" stroke="black" points="1370.37,-1603.93 1385.11,-1597.97 1369.87,-1593.45 1370.37,-1603.93"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1659.87" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1152.44,-1706.9C1261.52,-1706.9 1271.09,-1608.49 1370.26,-1598.68" class="hover-path"></path></g><g id="12:13_5-33:27_24" class="edge" data-from="12:13_5" data-to="33:27_24">
+
+<path fill="none" stroke="black" d="M1152.44,-1706.9C1211.34,-1706.9 1213.76,-1666.12 1263.89,-1635.2 1312.76,-1605.06 1321.82,-1570.01 1370.24,-1563.7"></path>
+<polygon fill="black" stroke="black" points="1370.45,-1568.94 1385.11,-1562.79 1369.82,-1558.46 1370.45,-1568.94"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1639.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1152.44,-1706.9C1211.34,-1706.9 1213.76,-1666.12 1263.89,-1635.2 1312.76,-1605.06 1321.82,-1570.01 1370.24,-1563.7" class="hover-path"></path></g><g id="4:11_5-25:27_26" class="edge" data-from="4:11_5" data-to="25:27_26">
+
+<path fill="none" stroke="black" d="M1155.11,-2926.9C1208.43,-2926.9 1234.2,-2927.46 1267.39,-2969.2 1411.92,-3150.99 1158.68,-3475.7 1367.73,-3491.13"></path>
+<polygon fill="black" stroke="black" points="1367.27,-3496.37 1382.44,-3491.65 1367.63,-3485.87 1367.27,-3496.37"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2973.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1155.11,-2926.9C1208.43,-2926.9 1234.2,-2927.46 1267.39,-2969.2 1411.92,-3150.99 1158.68,-3475.7 1367.73,-3491.13" class="hover-path"></path></g><g id="4:11_5-25:19_5" class="edge" data-from="4:11_5" data-to="25:19_5">
+
+<path fill="none" stroke="black" d="M1155.11,-2926.9C1222.02,-2926.9 1235.53,-2968.36 1267.39,-3027.2 1373.28,-3222.74 1166.66,-3512.06 1367.74,-3526.35"></path>
+<polygon fill="black" stroke="black" points="1367.27,-3531.59 1382.44,-3526.85 1367.63,-3521.09 1367.27,-3531.59"></polygon>
+<text text-anchor="middle" x="1265.64" y="-3031.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1155.11,-2926.9C1222.02,-2926.9 1235.53,-2968.36 1267.39,-3027.2 1373.28,-3222.74 1166.66,-3512.06 1367.74,-3526.35" class="hover-path"></path></g><g id="17:13_5-38:20_5" class="edge" data-from="17:13_5" data-to="38:20_5">
+
+<path fill="none" stroke="black" d="M1170.22,-1823.9C1254.48,-1823.9 1276.33,-1790.5 1352.79,-1786.33"></path>
+<polygon fill="black" stroke="black" points="1352.47,-1791.59 1367.33,-1785.94 1352.19,-1781.09 1352.47,-1791.59"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1810.24" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1170.22,-1823.9C1254.48,-1823.9 1276.33,-1790.5 1352.79,-1786.33" class="hover-path"></path></g><g id="17:13_5-38:28_27" class="edge" data-from="17:13_5" data-to="38:28_27">
+
+<path fill="none" stroke="black" d="M1170.22,-1823.9C1215.26,-1823.9 1221.65,-1800.84 1263.89,-1785.2 1304.36,-1770.21 1316.83,-1754.92 1352.6,-1751.44"></path>
+<polygon fill="black" stroke="black" points="1352.58,-1756.69 1367.33,-1750.77 1352.11,-1746.2 1352.58,-1756.69"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1789.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1170.22,-1823.9C1215.26,-1823.9 1221.65,-1800.84 1263.89,-1785.2 1304.36,-1770.21 1316.83,-1754.92 1352.6,-1751.44" class="hover-path"></path></g><g id="47:30_5-46:21_25" class="edge" data-from="47:30_5" data-to="46:21_25">
+
+<path fill="none" stroke="black" d="M693.7,-3428.3C732.36,-3428.3 742.03,-3428.22 780.7,-3428.2 782.25,-3428.2 782.64,-3428.18 784.2,-3428.2 828.11,-3428.69 842.93,-3430.26 880.03,-3430.63"></path>
+<polygon fill="black" stroke="black" points="879.56,-3435.87 894.59,-3430.69 879.61,-3425.37 879.56,-3435.87"></polygon>
+<text text-anchor="middle" x="782.45" y="-3432.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M693.7,-3428.3C732.36,-3428.3 742.03,-3428.22 780.7,-3428.2 782.25,-3428.2 782.64,-3428.18 784.2,-3428.2 828.11,-3428.69 842.93,-3430.26 880.03,-3430.63" class="hover-path"></path></g><g id="47:30_5-46:15_5" class="edge" data-from="47:30_5" data-to="46:15_5">
+
+<path fill="none" stroke="black" d="M693.7,-3428.3C733.07,-3428.3 741.99,-3437.78 780.7,-3445 826.13,-3453.48 840.75,-3463.35 879.81,-3465.48"></path>
+<polygon fill="black" stroke="black" points="879.46,-3470.72 894.59,-3465.86 879.73,-3460.23 879.46,-3470.72"></polygon>
+<text text-anchor="middle" x="782.45" y="-3449.78" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M693.7,-3428.3C733.07,-3428.3 741.99,-3437.78 780.7,-3445 826.13,-3453.48 840.75,-3463.35 879.81,-3465.48" class="hover-path"></path></g><g id="10:13_5-31:28_29" class="edge" data-from="10:13_5" data-to="31:28_29">
+
+<path fill="none" stroke="black" d="M1167.55,-1940.9C1210.4,-1940.9 1221.05,-1938.02 1263.89,-1937.2 1305.65,-1936.4 1320,-1938.15 1354.91,-1938.6"></path>
+<polygon fill="black" stroke="black" points="1354.73,-1943.85 1369.76,-1938.69 1354.79,-1933.35 1354.73,-1943.85"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1941.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1167.55,-1940.9C1210.4,-1940.9 1221.05,-1938.02 1263.89,-1937.2 1305.65,-1936.4 1320,-1938.15 1354.91,-1938.6" class="hover-path"></path></g><g id="10:13_5-31:20_5" class="edge" data-from="10:13_5" data-to="31:20_5">
+
+<path fill="none" stroke="black" d="M1167.55,-1940.9C1253.54,-1940.9 1276.74,-1969.9 1354.88,-1973.53"></path>
+<polygon fill="black" stroke="black" points="1354.65,-1978.78 1369.76,-1973.87 1354.88,-1968.28 1354.65,-1978.78"></polygon>
+<text text-anchor="middle" x="1265.64" y="-1960.61" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1167.55,-1940.9C1253.54,-1940.9 1276.74,-1969.9 1354.88,-1973.53" class="hover-path"></path></g><g id="19:14_5-40:20_5" class="edge" data-from="19:14_5" data-to="40:20_5">
+
+<path fill="none" stroke="black" d="M1172.45,-2057.9C1263.61,-2057.9 1267.13,-2149.88 1347.84,-2160.84"></path>
+<polygon fill="black" stroke="black" points="1347.33,-2166.06 1362.64,-2161.8 1348.01,-2155.59 1347.33,-2166.06"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2110.98" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1172.45,-2057.9C1263.61,-2057.9 1267.13,-2149.88 1347.84,-2160.84" class="hover-path"></path></g><g id="19:14_5-40:28_27" class="edge" data-from="19:14_5" data-to="40:28_27">
+
+<path fill="none" stroke="black" d="M1172.45,-2057.9C1216.48,-2057.9 1225.93,-2071.39 1267.39,-2086.2 1305.63,-2099.86 1315.3,-2120.45 1347.97,-2125.54"></path>
+<polygon fill="black" stroke="black" points="1347.3,-2130.75 1362.64,-2126.59 1348.05,-2120.28 1347.3,-2130.75"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2090.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1172.45,-2057.9C1216.48,-2057.9 1225.93,-2071.39 1267.39,-2086.2 1305.63,-2099.86 1315.3,-2120.45 1347.97,-2125.54" class="hover-path"></path></g><g id="5:12_5-26:27_21" class="edge" data-from="5:12_5" data-to="26:27_21">
+
+<path fill="none" stroke="black" d="M1140.04,-3043.9C1252.75,-3043.9 1228.95,-3157.25 1267.39,-3263.2 1331.2,-3439.05 1203.96,-3665.73 1372.42,-3679.08"></path>
+<polygon fill="black" stroke="black" points="1372.08,-3684.32 1387.27,-3679.64 1372.48,-3673.83 1372.08,-3684.32"></polygon>
+<text text-anchor="middle" x="1265.64" y="-3267.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1140.04,-3043.9C1252.75,-3043.9 1228.95,-3157.25 1267.39,-3263.2 1331.2,-3439.05 1203.96,-3665.73 1372.42,-3679.08" class="hover-path"></path></g><g id="5:12_5-26:19_5" class="edge" data-from="5:12_5" data-to="26:19_5">
+
+<path fill="none" stroke="black" d="M1140.04,-3043.9C1201.35,-3043.9 1183.18,-3107.9 1207.89,-3164 1242.23,-3241.96 1244.96,-3264.02 1267.39,-3346.2 1302.13,-3473.45 1277.23,-3515.73 1331.39,-3636 1346.62,-3669.82 1346.06,-3703.52 1372.73,-3712.55"></path>
+<polygon fill="black" stroke="black" points="1371.68,-3717.7 1387.28,-3714.68 1373.2,-3707.32 1371.68,-3717.7"></polygon>
+<text text-anchor="middle" x="1265.64" y="-3350.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1140.04,-3043.9C1201.35,-3043.9 1183.18,-3107.9 1207.89,-3164 1242.23,-3241.96 1244.96,-3264.02 1267.39,-3346.2 1302.13,-3473.45 1277.23,-3515.73 1331.39,-3636 1346.62,-3669.82 1346.06,-3703.52 1372.73,-3712.55" class="hover-path"></path></g><g id="18:14_5-39:28_27" class="edge" data-from="18:14_5" data-to="39:28_27">
+
+<path fill="none" stroke="black" d="M1170.21,-2174.9C1214.84,-2174.9 1229.36,-2176.84 1267.39,-2200.2 1320.07,-2232.55 1304.45,-2300.86 1352.43,-2312.88"></path>
+<polygon fill="black" stroke="black" points="1351.63,-2318.07 1367.12,-2314.53 1352.8,-2307.64 1351.63,-2318.07"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2204.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1170.21,-2174.9C1214.84,-2174.9 1229.36,-2176.84 1267.39,-2200.2 1320.07,-2232.55 1304.45,-2300.86 1352.43,-2312.88" class="hover-path"></path></g><g id="18:14_5-39:20_5" class="edge" data-from="18:14_5" data-to="39:20_5">
+
+<path fill="none" stroke="black" d="M1170.21,-2174.9C1281.94,-2174.9 1254.32,-2332.9 1352.17,-2348.64"></path>
+<polygon fill="black" stroke="black" points="1351.76,-2353.88 1367.12,-2349.78 1352.56,-2343.41 1351.76,-2353.88"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2261.35" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1170.21,-2174.9C1281.94,-2174.9 1254.32,-2332.9 1352.17,-2348.64" class="hover-path"></path></g><g id="1:14_5-24:28_22" class="edge" data-from="1:14_5" data-to="24:28_22">
+
+<path fill="none" stroke="black" d="M1146.21,-3210.9C1306.39,-3210.9 1228.73,-3869.28 1372.65,-3914.28"></path>
+<polygon fill="black" stroke="black" points="1371.67,-3919.44 1387.28,-3916.48 1373.23,-3909.06 1371.67,-3919.44"></polygon>
+<text text-anchor="middle" x="1265.64" y="-3546.84" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1146.21,-3210.9C1306.39,-3210.9 1228.73,-3869.28 1372.65,-3914.28" class="hover-path"></path></g><g id="1:14_5-24:20_5" class="edge" data-from="1:14_5" data-to="24:20_5">
+
+<path fill="none" stroke="black" d="M1146.21,-3210.9C1227.88,-3210.9 1184.1,-3305.87 1207.89,-3384 1283.4,-3631.96 1130.7,-3938.41 1372.29,-3951.47"></path>
+<polygon fill="black" stroke="black" points="1372.14,-3956.72 1387.27,-3951.86 1372.41,-3946.22 1372.14,-3956.72"></polygon>
+<text text-anchor="middle" x="1265.64" y="-3910.76" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1146.21,-3210.9C1227.88,-3210.9 1184.1,-3305.87 1207.89,-3384 1283.4,-3631.96 1130.7,-3938.41 1372.29,-3951.47" class="hover-path"></path></g><g id="23:13_5-44:20_5" class="edge" data-from="23:13_5" data-to="44:20_5">
+
+<path fill="none" stroke="black" d="M1167.57,-2291.9C1233.68,-2291.9 1225.05,-2351.42 1267.39,-2402.2 1312.26,-2456.02 1298.27,-2525.93 1355.37,-2536.53"></path>
+<polygon fill="black" stroke="black" points="1354.59,-2541.73 1369.98,-2537.77 1355.48,-2531.27 1354.59,-2541.73"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2406.4" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1167.57,-2291.9C1233.68,-2291.9 1225.05,-2351.42 1267.39,-2402.2 1312.26,-2456.02 1298.27,-2525.93 1355.37,-2536.53" class="hover-path"></path></g><g id="23:13_5-44:28_27" class="edge" data-from="23:13_5" data-to="44:28_27">
+
+<path fill="none" stroke="black" d="M1167.57,-2291.9C1271.57,-2291.9 1263.9,-2379.87 1331.39,-2459 1343.95,-2473.73 1345.48,-2490.39 1355.84,-2498.21"></path>
+<polygon fill="black" stroke="black" points="1354.17,-2503.19 1370.04,-2502.28 1357.07,-2493.1 1354.17,-2503.19"></polygon>
+<text text-anchor="middle" x="1265.64" y="-2353.85" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M1167.57,-2291.9C1271.57,-2291.9 1263.9,-2379.87 1331.39,-2459 1343.95,-2473.73 1345.48,-2490.39 1355.84,-2498.21" class="hover-path"></path></g><g id="3:21_5-47:30_5" class="edge" data-from="3:21_5" data-to="47:30_5">
+
+<path fill="none" stroke="black" d="M271,-2940.9C495.8,-2940.9 231.76,-3404.33 432.22,-3427.41"></path>
+<polygon fill="black" stroke="black" points="431.72,-3432.64 446.99,-3428.22 432.3,-3422.15 431.72,-3432.64"></polygon>
+<text text-anchor="middle" x="359.75" y="-3372.11" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M271,-2940.9C495.8,-2940.9 231.76,-3404.33 432.22,-3427.41" class="hover-path"></path></g><g id="28" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/user/updateprofilelogic.go">
+
+<rect x="1355.6099853515625" y="-3250.89990234375" width="298.3499755859375" height="169.7998046875"></rect>
+<g id="28_1" class="title">
+<text text-anchor="start" x="1377.61" y="-3218.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;updateprofilelogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="28:13_5" data-kind="23" class="cell struct">
+<rect x="1371.6099853515625" y="-3199.699951171875" width="266.3499755859375" height="27.199951171875"></rect>
+<text text-anchor="start" x="1427.4" y="-3182.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1438.07" y="-3182.3" font-family="Arial" font-size="16.00"> &#160;UpdateProfileLogic</text>
+
+</g>
+<g id="28:19_5" data-kind="12" class="cell function">
+<rect x="1371.6099853515625" y="-3164.5" width="266.3499755859375" height="27.199951171875"></rect>
+<text text-anchor="start" x="1421.18" y="-3146.1" font-family="Arial" font-size="16.00">NewUpdateProfileLogic</text>
+
+</g>
+<g id="28:27_29" data-kind="6" class="cell method">
+<rect x="1371.6099853515625" y="-3129.300048828125" width="266.3499755859375" height="27.199951171875"></rect>
+<text text-anchor="start" x="1378.05" y="-3110.9" font-family="Arial" font-size="16.00">(*UpdateProfileLogic).UpdateProfile</text>
+
+</g>
+</g><g id="42" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/unlikevideologic.go">
+
+<rect x="1361.8399658203125" y="-2825.89990234375" width="285.8900146484375" height="169.7998046875"></rect>
+<g id="42_3" class="title">
+<text text-anchor="start" x="1383.84" y="-2793.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;unlikevideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="42:14_5" data-kind="23" class="cell struct">
+<rect x="1377.8399658203125" y="-2774.699951171875" width="253.8900146484375" height="27.199951171875"></rect>
+<text text-anchor="start" x="1433.18" y="-2757.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1443.86" y="-2757.3" font-family="Arial" font-size="16.00"> &#160;UnlikeVideoLogic</text>
+
+</g>
+<g id="42:20_5" data-kind="12" class="cell function">
+<rect x="1377.8399658203125" y="-2739.5" width="253.8900146484375" height="27.199951171875"></rect>
+<text text-anchor="start" x="1426.96" y="-2721.1" font-family="Arial" font-size="16.00">NewUnlikeVideoLogic</text>
+
+</g>
+<g id="42:28_27" data-kind="6" class="cell method">
+<rect x="1377.8399658203125" y="-2704.300048828125" width="253.8900146484375" height="27.199951171875"></rect>
+<text text-anchor="start" x="1389.61" y="-2685.9" font-family="Arial" font-size="16.00">(*UnlikeVideoLogic).UnlikeVideo</text>
+
+</g>
+</g><g id="41" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/unfavoritevideologic.go">
+
+<rect x="1341.1500244140625" y="-3013.89990234375" width="327.260009765625" height="169.7998046875"></rect>
+<g id="41_24" class="title">
+<text text-anchor="start" x="1369.61" y="-2981.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;unfavoritevideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="41:14_5" data-kind="23" class="cell struct">
+<rect x="1357.1500244140625" y="-2962.699951171875" width="295.260009765625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1418.95" y="-2945.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1429.62" y="-2945.3" font-family="Arial" font-size="16.00"> &#160;UnfavoriteVideoLogic</text>
+
+</g>
+<g id="41:20_5" data-kind="12" class="cell function">
+<rect x="1357.1500244140625" y="-2927.5" width="295.260009765625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1412.73" y="-2909.1" font-family="Arial" font-size="16.00">NewUnfavoriteVideoLogic</text>
+
+</g>
+<g id="41:28_31" data-kind="6" class="cell method">
+<rect x="1357.1500244140625" y="-2892.300048828125" width="295.260009765625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1361.15" y="-2873.9" font-family="Arial" font-size="16.00">(*UnfavoriteVideoLogic).UnfavoriteVideo</text>
+
+</g>
+</g><g id="30" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/deletevideologic.go">
+
+<rect x="1360.93994140625" y="-193.89999389648438" width="287.6800537109375" height="169.79999351501465"></rect>
+<g id="30_25" class="title">
+<text text-anchor="start" x="1382.94" y="-161.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;deletevideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="30:14_5" data-kind="23" class="cell struct">
+<rect x="1376.93994140625" y="-142.6999969482422" width="255.6800537109375" height="27.199996948242188"></rect>
+<text text-anchor="start" x="1432.29" y="-125.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1442.96" y="-125.3" font-family="Arial" font-size="16.00"> &#160;DeleteVideoLogic</text>
+
+</g>
+<g id="30:20_5" data-kind="12" class="cell function">
+<rect x="1376.93994140625" y="-107.5" width="255.6800537109375" height="27.199996948242188"></rect>
+<text text-anchor="start" x="1426.07" y="-89.1" font-family="Arial" font-size="16.00">NewDeleteVideoLogic</text>
+
+</g>
+<g id="30:28_27" data-kind="6" class="cell method">
+<rect x="1376.93994140625" y="-72.30000305175781" width="255.6800537109375" height="27.20000457763672"></rect>
+<text text-anchor="start" x="1387.82" y="-53.9" font-family="Arial" font-size="16.00">(*DeleteVideoLogic).DeleteVideo</text>
+
+</g>
+</g><g id="34" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/inituploadlogic.go">
+
+<rect x="1367.6099853515625" y="-381.8999938964844" width="274.3399658203125" height="169.79998779296875"></rect>
+<g id="34_26" class="title">
+<text text-anchor="start" x="1389.61" y="-349.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;inituploadlogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="34:14_5" data-kind="23" class="cell struct">
+<rect x="1383.6099853515625" y="-330.70001220703125" width="242.3399658203125" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1439.85" y="-313.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1450.52" y="-313.3" font-family="Arial" font-size="16.00"> &#160;InitUploadLogic</text>
+
+</g>
+<g id="34:20_5" data-kind="12" class="cell function">
+<rect x="1383.6099853515625" y="-295.5" width="242.3399658203125" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1433.63" y="-277.1" font-family="Arial" font-size="16.00">NewInitUploadLogic</text>
+
+</g>
+<g id="34:28_26" data-kind="6" class="cell method">
+<rect x="1383.6099853515625" y="-260.29998779296875" width="242.3399658203125" height="27.199981689453125"></rect>
+<text text-anchor="start" x="1402.95" y="-241.9" font-family="Arial" font-size="16.00">(*InitUploadLogic).InitUpload</text>
+
+</g>
+</g><g id="32" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/getplayurllogic.go">
+
+<rect x="1367.1800537109375" y="-569.9000244140625" width="275.2099609375" height="169.80001831054688"></rect>
+<g id="32_27" class="title">
+<text text-anchor="start" x="1389.18" y="-537.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;getplayurllogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="32:14_5" data-kind="23" class="cell struct">
+<rect x="1383.1800537109375" y="-518.7000122070312" width="243.2099609375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1437.2" y="-501.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1447.87" y="-501.3" font-family="Arial" font-size="16.00"> &#160;GetPlayUrlLogic</text>
+
+</g>
+<g id="32:20_5" data-kind="12" class="cell function">
+<rect x="1383.1800537109375" y="-483.5" width="243.2099609375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1430.98" y="-465.1" font-family="Arial" font-size="16.00">NewGetPlayUrlLogic</text>
+
+</g>
+<g id="32:28_26" data-kind="6" class="cell method">
+<rect x="1383.1800537109375" y="-448.29998779296875" width="243.2099609375" height="27.199981689453125"></rect>
+<text text-anchor="start" x="1397.64" y="-429.9" font-family="Arial" font-size="16.00">(*GetPlayUrlLogic).GetPlayUrl</text>
+
+</g>
+</g><g id="35" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/likevideologic.go">
+
+<rect x="1370.72998046875" y="-757.9000244140625" width="268.0999755859375" height="169.800048828125"></rect>
+<g id="35_28" class="title">
+<text text-anchor="start" x="1392.73" y="-725.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;likevideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="35:14_5" data-kind="23" class="cell struct">
+<rect x="1386.72998046875" y="-706.7000122070312" width="236.0999755859375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1440.74" y="-689.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1451.41" y="-689.3" font-family="Arial" font-size="16.00"> &#160;LikeVideoLogic</text>
+
+</g>
+<g id="35:20_5" data-kind="12" class="cell function">
+<rect x="1386.72998046875" y="-671.5" width="236.0999755859375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1434.52" y="-653.1" font-family="Arial" font-size="16.00">NewLikeVideoLogic</text>
+
+</g>
+<g id="35:28_25" data-kind="6" class="cell method">
+<rect x="1386.72998046875" y="-636.2999877929688" width="236.0999755859375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1404.72" y="-617.9" font-family="Arial" font-size="16.00">(*LikeVideoLogic).LikeVideo</text>
+
+</g>
+</g><g id="37" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/listvideoslogic.go">
+
+<rect x="1368.9599609375" y="-945.9000244140625" width="271.6400146484375" height="169.800048828125"></rect>
+<g id="37_29" class="title">
+<text text-anchor="start" x="1390.96" y="-913.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;listvideoslogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="37:13_5" data-kind="23" class="cell struct">
+<rect x="1384.9599609375" y="-894.7000122070312" width="239.6400146484375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1438.96" y="-877.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1449.64" y="-877.3" font-family="Arial" font-size="16.00"> &#160;ListVideosLogic</text>
+
+</g>
+<g id="37:19_5" data-kind="12" class="cell function">
+<rect x="1384.9599609375" y="-859.5" width="239.6400146484375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1432.74" y="-841.1" font-family="Arial" font-size="16.00">NewListVideosLogic</text>
+
+</g>
+<g id="37:27_26" data-kind="6" class="cell method">
+<rect x="1384.9599609375" y="-824.2999877929688" width="239.6400146484375" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1401.17" y="-805.9" font-family="Arial" font-size="16.00">(*ListVideosLogic).ListVideos</text>
+
+</g>
+</g><g id="36" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/listcommentslogic.go">
+
+<rect x="1352.739990234375" y="-1133.9000244140625" width="304.0799560546875" height="169.800048828125"></rect>
+<g id="36_30" class="title">
+<text text-anchor="start" x="1377.19" y="-1101.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;listcommentslogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="36:14_5" data-kind="23" class="cell struct">
+<rect x="1368.739990234375" y="-1082.699951171875" width="272.0799560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1424.75" y="-1065.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1435.42" y="-1065.3" font-family="Arial" font-size="16.00"> &#160;ListCommentsLogic</text>
+
+</g>
+<g id="36:20_5" data-kind="12" class="cell function">
+<rect x="1368.739990234375" y="-1047.5" width="272.0799560546875" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1418.53" y="-1029.1" font-family="Arial" font-size="16.00">NewListCommentsLogic</text>
+
+</g>
+<g id="36:28_28" data-kind="6" class="cell method">
+<rect x="1368.739990234375" y="-1012.2999877929688" width="272.0799560546875" height="27.20001220703125"></rect>
+<text text-anchor="start" x="1372.74" y="-993.9" font-family="Arial" font-size="16.00">(*ListCommentsLogic).ListComments</text>
+
+</g>
+</g><g id="29" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/deletecommentlogic.go">
+
+<rect x="1339.3900146484375" y="-1321.9000244140625" width="330.780029296875" height="169.800048828125"></rect>
+<g id="29_31" class="title">
+<text text-anchor="start" x="1369.17" y="-1289.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;deletecommentlogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="29:14_5" data-kind="23" class="cell struct">
+<rect x="1355.3900146484375" y="-1270.699951171875" width="298.780029296875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1418.07" y="-1253.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1428.75" y="-1253.3" font-family="Arial" font-size="16.00"> &#160;DeleteCommentLogic</text>
+
+</g>
+<g id="29:20_5" data-kind="12" class="cell function">
+<rect x="1355.3900146484375" y="-1235.5" width="298.780029296875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1411.85" y="-1217.1" font-family="Arial" font-size="16.00">NewDeleteCommentLogic</text>
+
+</g>
+<g id="29:28_29" data-kind="6" class="cell method">
+<rect x="1355.3900146484375" y="-1200.300048828125" width="298.780029296875" height="27.2000732421875"></rect>
+<text text-anchor="start" x="1359.39" y="-1181.9" font-family="Arial" font-size="16.00">(*DeleteCommentLogic).DeleteComment</text>
+
+</g>
+</g><g id="43" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/updatevideologic.go">
+
+<rect x="1358.27001953125" y="-1509.9000244140625" width="293.02001953125" height="169.800048828125"></rect>
+<g id="43_32" class="title">
+<text text-anchor="start" x="1380.27" y="-1477.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;updatevideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="43:14_5" data-kind="23" class="cell struct">
+<rect x="1374.27001953125" y="-1458.699951171875" width="261.02001953125" height="27.199951171875"></rect>
+<text text-anchor="start" x="1429.62" y="-1441.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1440.29" y="-1441.3" font-family="Arial" font-size="16.00"> &#160;UpdateVideoLogic</text>
+
+</g>
+<g id="43:20_5" data-kind="12" class="cell function">
+<rect x="1374.27001953125" y="-1423.5" width="261.02001953125" height="27.199951171875"></rect>
+<text text-anchor="start" x="1423.39" y="-1405.1" font-family="Arial" font-size="16.00">NewUpdateVideoLogic</text>
+
+</g>
+<g id="43:28_27" data-kind="6" class="cell method">
+<rect x="1374.27001953125" y="-1388.300048828125" width="261.02001953125" height="27.2000732421875"></rect>
+<text text-anchor="start" x="1382.48" y="-1369.9" font-family="Arial" font-size="16.00">(*UpdateVideoLogic).UpdateVideo</text>
+
+</g>
+</g><g id="27" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/user/registerlogic.go">
+
+<rect x="1373.780029296875" y="-3438.89990234375" width="262" height="169.7998046875"></rect>
+<g id="27_33" class="title">
+<text text-anchor="start" x="1397.19" y="-3406.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;registerlogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="27:13_5" data-kind="23" class="cell struct">
+<rect x="1389.780029296875" y="-3387.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1446.09" y="-3370.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1456.76" y="-3370.3" font-family="Arial" font-size="16.00"> &#160;RegisterLogic</text>
+
+</g>
+<g id="27:19_5" data-kind="12" class="cell function">
+<rect x="1389.780029296875" y="-3352.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1439.86" y="-3334.1" font-family="Arial" font-size="16.00">NewRegisterLogic</text>
+
+</g>
+<g id="27:27_24" data-kind="6" class="cell method">
+<rect x="1389.780029296875" y="-3317.300048828125" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1415.41" y="-3298.9" font-family="Arial" font-size="16.00">(*RegisterLogic).Register</text>
+
+</g>
+</g><g id="33" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/getvideologic.go">
+
+<rect x="1371.6199951171875" y="-1697.9000244140625" width="266.3299560546875" height="169.800048828125"></rect>
+<g id="33_34" class="title">
+<text text-anchor="start" x="1393.62" y="-1665.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;getvideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="33:13_5" data-kind="23" class="cell struct">
+<rect x="1387.6199951171875" y="-1646.699951171875" width="234.3299560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1442.52" y="-1629.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1453.19" y="-1629.3" font-family="Arial" font-size="16.00"> &#160;GetVideoLogic</text>
+
+</g>
+<g id="33:19_5" data-kind="12" class="cell function">
+<rect x="1387.6199951171875" y="-1611.5" width="234.3299560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1436.3" y="-1593.1" font-family="Arial" font-size="16.00">NewGetVideoLogic</text>
+
+</g>
+<g id="33:27_24" data-kind="6" class="cell method">
+<rect x="1387.6199951171875" y="-1576.300048828125" width="234.3299560546875" height="27.2000732421875"></rect>
+<text text-anchor="start" x="1408.28" y="-1557.9" font-family="Arial" font-size="16.00">(*GetVideoLogic).GetVideo</text>
+
+</g>
+</g><g id="25" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/user/getprofilelogic.go">
+
+<rect x="1368.949951171875" y="-3626.89990234375" width="271.6600341796875" height="169.7998046875"></rect>
+<g id="25_35" class="title">
+<text text-anchor="start" x="1390.95" y="-3594.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;getprofilelogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="25:13_5" data-kind="23" class="cell struct">
+<rect x="1384.949951171875" y="-3575.699951171875" width="239.6600341796875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1440.3" y="-3558.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1450.98" y="-3558.3" font-family="Arial" font-size="16.00"> &#160;GetProfileLogic</text>
+
+</g>
+<g id="25:19_5" data-kind="12" class="cell function">
+<rect x="1384.949951171875" y="-3540.5" width="239.6600341796875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1434.08" y="-3522.1" font-family="Arial" font-size="16.00">NewGetProfileLogic</text>
+
+</g>
+<g id="25:27_26" data-kind="6" class="cell method">
+<rect x="1384.949951171875" y="-3505.300048828125" width="239.6600341796875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1403.85" y="-3486.9" font-family="Arial" font-size="16.00">(*GetProfileLogic).GetProfile</text>
+
+</g>
+</g><g id="38" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/mergechunkslogic.go">
+
+<rect x="1353.8399658203125" y="-1885.9000244140625" width="301.8800048828125" height="169.800048828125"></rect>
+<g id="38_36" class="title">
+<text text-anchor="start" x="1375.84" y="-1853.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;mergechunkslogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="38:14_5" data-kind="23" class="cell struct">
+<rect x="1369.8399658203125" y="-1834.699951171875" width="269.8800048828125" height="27.199951171875"></rect>
+<text text-anchor="start" x="1426.07" y="-1817.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1436.75" y="-1817.3" font-family="Arial" font-size="16.00"> &#160;MergeChunksLogic</text>
+
+</g>
+<g id="38:20_5" data-kind="12" class="cell function">
+<rect x="1369.8399658203125" y="-1799.5" width="269.8800048828125" height="27.199951171875"></rect>
+<text text-anchor="start" x="1419.85" y="-1781.1" font-family="Arial" font-size="16.00">NewMergeChunksLogic</text>
+
+</g>
+<g id="38:28_27" data-kind="6" class="cell method">
+<rect x="1369.8399658203125" y="-1764.300048828125" width="269.8800048828125" height="27.2000732421875"></rect>
+<text text-anchor="start" x="1375.39" y="-1745.9" font-family="Arial" font-size="16.00">(*MergeChunksLogic).MergeChunks</text>
+
+</g>
+</g><g id="47" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/svc/servicecontext.go">
+
+<rect x="433.5" y="-3528.300048828125" width="275.20001220703125" height="134.60009765625"></rect>
+<g id="47_37" class="title">
+<text text-anchor="start" x="455.5" y="-3495.9" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;servicecontext.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="47:17_5" data-kind="23" class="cell struct">
+<rect x="449.5" y="-3477.10009765625" width="243.20001220703125" height="27.2001953125"></rect>
+<text text-anchor="start" x="507.07" y="-3459.7" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="517.74" y="-3459.7" font-family="Arial" font-size="16.00"> &#160;ServiceContext</text>
+
+</g>
+<g id="47:30_5" data-kind="12" class="cell function">
+<rect x="449.5" y="-3441.89990234375" width="243.20001220703125" height="27.199951171875"></rect>
+<text text-anchor="start" x="500.85" y="-3423.5" font-family="Arial" font-size="16.00">NewServiceContext</text>
+
+</g>
+</g><g id="46" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/middleware/authmiddleware.go">
+
+<rect x="881.0999755859375" y="-3565.89990234375" width="285.8800048828125" height="169.7998046875"></rect>
+<g id="46_38" class="title">
+<text text-anchor="start" x="903.1" y="-3533.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;authmiddleware.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="46:13_5" data-kind="23" class="cell struct">
+<rect x="897.0999755859375" y="-3514.699951171875" width="253.8800048828125" height="27.199951171875"></rect>
+<text text-anchor="start" x="956.9" y="-3497.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="967.57" y="-3497.3" font-family="Arial" font-size="16.00"> &#160;AuthMiddleware</text>
+
+</g>
+<g id="46:15_5" data-kind="12" class="cell function">
+<rect x="897.0999755859375" y="-3479.5" width="253.8800048828125" height="27.199951171875"></rect>
+<text text-anchor="start" x="950.68" y="-3461.1" font-family="Arial" font-size="16.00">NewAuthMiddleware</text>
+
+</g>
+<g id="46:21_25" data-kind="6" class="cell method">
+<rect x="897.0999755859375" y="-3444.300048828125" width="253.8800048828125" height="27.199951171875"></rect>
+<text text-anchor="start" x="930.66" y="-3425.9" font-family="Arial" font-size="16.00">(*AuthMiddleware).Handle</text>
+
+</g>
+</g><g id="31" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/favoritevideologic.go">
+
+<rect x="1356.27001953125" y="-2073.89990234375" width="297.02001953125" height="169.7999267578125"></rect>
+<g id="31_39" class="title">
+<text text-anchor="start" x="1378.5" y="-2041.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;favoritevideologic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="31:14_5" data-kind="23" class="cell struct">
+<rect x="1372.27001953125" y="-2022.699951171875" width="265.02001953125" height="27.199951171875"></rect>
+<text text-anchor="start" x="1426.52" y="-2005.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1437.19" y="-2005.3" font-family="Arial" font-size="16.00"> &#160;FavoriteVideoLogic</text>
+
+</g>
+<g id="31:20_5" data-kind="12" class="cell function">
+<rect x="1372.27001953125" y="-1987.5" width="265.02001953125" height="27.199951171875"></rect>
+<text text-anchor="start" x="1420.29" y="-1969.1" font-family="Arial" font-size="16.00">NewFavoriteVideoLogic</text>
+
+</g>
+<g id="31:28_29" data-kind="6" class="cell method">
+<rect x="1372.27001953125" y="-1952.300048828125" width="265.02001953125" height="27.2000732421875"></rect>
+<text text-anchor="start" x="1376.27" y="-1933.9" font-family="Arial" font-size="16.00">(*FavoriteVideoLogic).FavoriteVideo</text>
+
+</g>
+</g><g id="40" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/senddanmakulogic.go">
+
+<rect x="1349.1500244140625" y="-2261.89990234375" width="311.260009765625" height="169.7998046875"></rect>
+<g id="40_40" class="title">
+<text text-anchor="start" x="1373.61" y="-2229.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;senddanmakulogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="40:14_5" data-kind="23" class="cell struct">
+<rect x="1365.1500244140625" y="-2210.699951171875" width="279.260009765625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1422.95" y="-2193.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1433.62" y="-2193.3" font-family="Arial" font-size="16.00"> &#160;SendDanmakuLogic</text>
+
+</g>
+<g id="40:20_5" data-kind="12" class="cell function">
+<rect x="1365.1500244140625" y="-2175.5" width="279.260009765625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1416.73" y="-2157.1" font-family="Arial" font-size="16.00">NewSendDanmakuLogic</text>
+
+</g>
+<g id="40:28_27" data-kind="6" class="cell method">
+<rect x="1365.1500244140625" y="-2140.300048828125" width="279.260009765625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1369.15" y="-2121.9" font-family="Arial" font-size="16.00">(*SendDanmakuLogic).SendDanmaku</text>
+
+</g>
+</g><g id="26" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/user/loginlogic.go">
+
+<rect x="1373.780029296875" y="-3814.89990234375" width="262" height="169.7998046875"></rect>
+<g id="26_41" class="title">
+<text text-anchor="start" x="1406.96" y="-3782.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;loginlogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="26:13_5" data-kind="23" class="cell struct">
+<rect x="1389.780029296875" y="-3763.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1456.3" y="-3746.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1466.97" y="-3746.3" font-family="Arial" font-size="16.00"> &#160;LoginLogic</text>
+
+</g>
+<g id="26:19_5" data-kind="12" class="cell function">
+<rect x="1389.780029296875" y="-3728.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1450.08" y="-3710.1" font-family="Arial" font-size="16.00">NewLoginLogic</text>
+
+</g>
+<g id="26:27_21" data-kind="6" class="cell method">
+<rect x="1389.780029296875" y="-3693.300048828125" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1435.84" y="-3674.9" font-family="Arial" font-size="16.00">(*LoginLogic).Login</text>
+
+</g>
+</g><g id="39" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/postcommentlogic.go">
+
+<rect x="1353.6199951171875" y="-2449.89990234375" width="302.3199462890625" height="169.7998046875"></rect>
+<g id="39_42" class="title">
+<text text-anchor="start" x="1375.84" y="-2417.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;postcommentlogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="39:14_5" data-kind="23" class="cell struct">
+<rect x="1369.6199951171875" y="-2398.699951171875" width="270.3199462890625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1425.19" y="-2381.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1435.86" y="-2381.3" font-family="Arial" font-size="16.00"> &#160;PostCommentLogic</text>
+
+</g>
+<g id="39:20_5" data-kind="12" class="cell function">
+<rect x="1369.6199951171875" y="-2363.5" width="270.3199462890625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1418.97" y="-2345.1" font-family="Arial" font-size="16.00">NewPostCommentLogic</text>
+
+</g>
+<g id="39:28_27" data-kind="6" class="cell method">
+<rect x="1369.6199951171875" y="-2328.300048828125" width="270.3199462890625" height="27.199951171875"></rect>
+<text text-anchor="start" x="1373.62" y="-2309.9" font-family="Arial" font-size="16.00">(*PostCommentLogic).PostComment</text>
+
+</g>
+</g><g id="24" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/search/searchlogic.go">
+
+<rect x="1373.780029296875" y="-4051.89990234375" width="262" height="169.7998046875"></rect>
+<g id="24_43" class="title">
+<text text-anchor="start" x="1399.85" y="-4019.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;searchlogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="24:14_5" data-kind="23" class="cell struct">
+<rect x="1389.780029296875" y="-4000.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1450.53" y="-3983.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1461.2" y="-3983.3" font-family="Arial" font-size="16.00"> &#160;SearchLogic</text>
+
+</g>
+<g id="24:20_5" data-kind="12" class="cell function">
+<rect x="1389.780029296875" y="-3965.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1444.3" y="-3947.1" font-family="Arial" font-size="16.00">NewSearchLogic</text>
+
+</g>
+<g id="24:28_22" data-kind="6" class="cell method">
+<rect x="1389.780029296875" y="-3930.300048828125" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="1424.3" y="-3911.9" font-family="Arial" font-size="16.00">(*SearchLogic).Search</text>
+
+</g>
+</g><g id="44" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/logic/video/uploadchunklogic.go">
+
+<rect x="1356.489990234375" y="-2637.89990234375" width="296.5799560546875" height="169.7998046875"></rect>
+<g id="44_44" class="title">
+<text text-anchor="start" x="1378.49" y="-2605.5" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;uploadchunklogic.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="44:14_5" data-kind="23" class="cell struct">
+<rect x="1372.489990234375" y="-2586.699951171875" width="264.5799560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1427.4" y="-2569.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="1438.07" y="-2569.3" font-family="Arial" font-size="16.00"> &#160;UploadChunkLogic</text>
+
+</g>
+<g id="44:20_5" data-kind="12" class="cell function">
+<rect x="1372.489990234375" y="-2551.5" width="264.5799560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1421.18" y="-2533.1" font-family="Arial" font-size="16.00">NewUploadChunkLogic</text>
+
+</g>
+<g id="44:28_27" data-kind="6" class="cell method">
+<rect x="1372.489990234375" y="-2516.300048828125" width="264.5799560546875" height="27.199951171875"></rect>
+<text text-anchor="start" x="1378.04" y="-2497.9" font-family="Arial" font-size="16.00">(*UploadChunkLogic).UploadChunk</text>
+
+</g>
+</g><g id="45" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/config/config.go">
+
+<rect x="24" y="-734.7000122070312" width="262" height="99.4000244140625"></rect>
+<g id="45_46" class="title">
+<text text-anchor="start" x="69.19" y="-702.3" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;config.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="45:10_5" data-kind="23" class="cell struct">
+<rect x="40" y="-683.5" width="230" height="27.20001220703125"></rect>
+<text text-anchor="start" x="122.09" y="-666.1" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="132.77" y="-666.1" font-family="Arial" font-size="16.00"> &#160;Config</text>
+
+</g>
+</g><g id="48" class="node" data-path="/home/lijianxian/workshop/gopan/gateway/internal/types/types.go">
+
+<rect x="24" y="-2480.10009765625" width="262" height="944.2000732421875"></rect>
+<g id="48_47" class="title">
+<text text-anchor="start" x="71.41" y="-2447.7" font-family="Arial" font-size="16.00"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;types.go &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+
+</g>
+<g id="48:5_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2428.89990234375" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="108.31" y="-2411.5" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="118.98" y="-2411.5" font-family="Arial" font-size="16.00"> &#160;BaseResp</text>
+
+</g>
+<g id="48:9_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2393.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="97.2" y="-2376.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="107.87" y="-2376.3" font-family="Arial" font-size="16.00"> &#160;CommentInfo</text>
+
+</g>
+<g id="48:21_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2358.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="95.87" y="-2341.1" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="106.54" y="-2341.1" font-family="Arial" font-size="16.00"> &#160;DanmakuMsg</text>
+
+</g>
+<g id="48:28_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2323.300048828125" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="94.52" y="-2305.9" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="105.19" y="-2305.9" font-family="Arial" font-size="16.00"> &#160;InitUploadReq</text>
+
+</g>
+<g id="48:34_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2288.10009765625" width="230" height="27.2001953125"></rect>
+<text text-anchor="start" x="90.52" y="-2270.7" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="101.19" y="-2270.7" font-family="Arial" font-size="16.00"> &#160;InitUploadResp</text>
+
+</g>
+<g id="48:39_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2252.89990234375" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="111.87" y="-2235.5" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="122.54" y="-2235.5" font-family="Arial" font-size="16.00"> &#160;LikeResp</text>
+
+</g>
+<g id="48:44_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2217.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="75.42" y="-2200.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="86.09" y="-2200.3" font-family="Arial" font-size="16.00"> &#160;ListCommentsResp</text>
+
+</g>
+<g id="48:50_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2182.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="93.63" y="-2165.1" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="104.3" y="-2165.1" font-family="Arial" font-size="16.00"> &#160;ListVideosReq</text>
+
+</g>
+<g id="48:57_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2147.300048828125" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="89.63" y="-2129.9" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="100.3" y="-2129.9" font-family="Arial" font-size="16.00"> &#160;ListVideosResp</text>
+
+</g>
+<g id="48:63_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2112.10009765625" width="230" height="27.2001953125"></rect>
+<text text-anchor="start" x="110.97" y="-2094.7" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="121.64" y="-2094.7" font-family="Arial" font-size="16.00"> &#160;LoginReq</text>
+
+</g>
+<g id="48:68_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2076.89990234375" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="106.97" y="-2059.5" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="117.64" y="-2059.5" font-family="Arial" font-size="16.00"> &#160;LoginResp</text>
+
+</g>
+<g id="48:75_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2041.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="103.87" y="-2024.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="114.54" y="-2024.3" font-family="Arial" font-size="16.00"> &#160;PlayStream</text>
+
+</g>
+<g id="48:81_5" data-kind="23" class="cell struct">
+<rect x="40" y="-2006.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="104.76" y="-1989.1" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="115.43" y="-1989.1" font-family="Arial" font-size="16.00"> &#160;PlayUrlReq</text>
+
+</g>
+<g id="48:85_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1971.300048828125" width="230" height="27.2000732421875"></rect>
+<text text-anchor="start" x="100.76" y="-1953.9" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="111.43" y="-1953.9" font-family="Arial" font-size="16.00"> &#160;PlayUrlResp</text>
+
+</g>
+<g id="48:90_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1936.0999755859375" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="79.86" y="-1918.7" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="90.53" y="-1918.7" font-family="Arial" font-size="16.00"> &#160;PostCommentReq</text>
+
+</g>
+<g id="48:95_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1900.9000244140625" width="230" height="27.2000732421875"></rect>
+<text text-anchor="start" x="100.75" y="-1883.5" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="111.43" y="-1883.5" font-family="Arial" font-size="16.00"> &#160;RegisterReq</text>
+
+</g>
+<g id="48:101_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1865.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="105.2" y="-1848.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="115.87" y="-1848.3" font-family="Arial" font-size="16.00"> &#160;SearchReq</text>
+
+</g>
+<g id="48:109_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1830.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="101.2" y="-1813.1" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="111.87" y="-1813.1" font-family="Arial" font-size="16.00"> &#160;SearchResp</text>
+
+</g>
+<g id="48:116_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1795.300048828125" width="230" height="27.2000732421875"></rect>
+<text text-anchor="start" x="86.07" y="-1777.9" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="96.74" y="-1777.9" font-family="Arial" font-size="16.00"> &#160;SearchVideoInfo</text>
+
+</g>
+<g id="48:131_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1760.0999755859375" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="94.08" y="-1742.7" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="104.75" y="-1742.7" font-family="Arial" font-size="16.00"> &#160;TranscodeInfo</text>
+
+</g>
+<g id="48:137_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1724.9000244140625" width="230" height="27.2000732421875"></rect>
+<text text-anchor="start" x="82.07" y="-1707.5" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="92.74" y="-1707.5" font-family="Arial" font-size="16.00"> &#160;UpdateProfileReq</text>
+
+</g>
+<g id="48:143_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1689.699951171875" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="84.29" y="-1672.3" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="94.96" y="-1672.3" font-family="Arial" font-size="16.00"> &#160;UpdateVideoReq</text>
+
+</g>
+<g id="48:149_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1654.5" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="86.98" y="-1637.1" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="97.65" y="-1637.1" font-family="Arial" font-size="16.00"> &#160;UserProfileResp</text>
+
+</g>
+<g id="48:158_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1619.300048828125" width="230" height="27.2000732421875"></rect>
+<text text-anchor="start" x="85.63" y="-1601.9" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="96.3" y="-1601.9" font-family="Arial" font-size="16.00"> &#160;VideoDetailResp</text>
+
+</g>
+<g id="48:162_5" data-kind="23" class="cell struct">
+<rect x="40" y="-1584.0999755859375" width="230" height="27.199951171875"></rect>
+<text text-anchor="start" x="111.41" y="-1566.7" font-family="Arial" font-weight="bold" font-size="16.00">S</text>
+<text text-anchor="start" x="122.09" y="-1566.7" font-family="Arial" font-size="16.00"> &#160;VideoInfo</text>
+
+</g>
+</g><g id="clust2" class="cluster">
+
+<polygon fill="none" stroke="black" points="16,-627 16,-786 294,-786 294,-627 16,-627"></polygon>
+<rect x="97.19000244140625" y="-782" width="115.6199951171875" height="35.20001220703125" class="cluster-label"></rect>
+<text text-anchor="start" x="105.19" y="-759.6" font-family="Arial" font-size="16.00">internal/config</text>
+</g><g id="clust7" class="cluster">
+
+<polygon fill="none" stroke="black" points="1365.78,-3874 1365.78,-4103 1643.78,-4103 1643.78,-3874 1365.78,-3874"></polygon>
+<rect x="1425.6300048828125" y="-4099" width="158.300048828125" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="1433.63" y="-4076.6" font-family="Arial" font-size="16.00">internal/logic/search</text>
+</g><g id="clust8" class="cluster">
+
+<polygon fill="none" stroke="black" points="1347.61,-3073 1347.61,-3866 1661.96,-3866 1661.96,-3073 1347.61,-3073"></polygon>
+<rect x="1434.0799560546875" y="-3862" width="141.4000244140625" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="1442.08" y="-3839.6" font-family="Arial" font-size="16.00">internal/logic/user</text>
+</g><g id="clust9" class="cluster">
+
+<polygon fill="none" stroke="black" points="1331.39,-16 1331.39,-3065 1678.17,-3065 1678.17,-16 1331.39,-16"></polygon>
+<rect x="1430.52001953125" y="-3061" width="148.52001953125" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="1438.52" y="-3038.6" font-family="Arial" font-size="16.00">internal/logic/video</text>
+</g><g id="clust10" class="cluster">
+
+<polygon fill="none" stroke="black" points="873.1,-3388 873.1,-3617 1174.98,-3617 1174.98,-3388 873.1,-3388"></polygon>
+<rect x="946.6799926757812" y="-3613" width="154.73004150390625" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="954.68" y="-3590.6" font-family="Arial" font-size="16.00">internal/middleware</text>
+</g><g id="clust11" class="cluster">
+
+<polygon fill="none" stroke="black" points="425.5,-3386 425.5,-3580 716.7,-3580 716.7,-3386 425.5,-3386"></polygon>
+<rect x="522.6400146484375" y="-3576" width="96.91998291015625" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="530.64" y="-3553.6" font-family="Arial" font-size="16.00">internal/svc</text>
+</g><g id="clust12" class="cluster">
+
+<polygon fill="none" stroke="black" points="16,-1528 16,-2531 294,-2531 294,-1528 16,-1528"></polygon>
+<rect x="99.41999816894531" y="-2527" width="111.16000366210938" height="35.199951171875" class="cluster-label"></rect>
+<text text-anchor="start" x="107.42" y="-2504.6" font-family="Arial" font-size="16.00">internal/types</text>
+</g></g><g id="2:16_5-7:12_5" class="edge outgoing" data-from="2:16_5" data-to="7:12_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C762.12,-1998.9 795.36,-2608.86 865.16,-2685.11"></path>
+<polygon fill="black" stroke="black" points="862.6,-2689.69 878.3,-2692.18 867.58,-2680.45 862.6,-2689.69"></polygon>
+<text text-anchor="middle" x="782.45" y="-2350.1" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C762.12,-1998.9 795.36,-2608.86 865.16,-2685.11" class="hover-path"></path></g><g id="2:16_5-21:13_5" class="edge outgoing" data-from="2:16_5" data-to="21:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C782.71,-1998.9 784.7,-2364.53 869.89,-2405.23"></path>
+<polygon fill="black" stroke="black" points="868.59,-2410.32 884.39,-2408.56 870.95,-2400.08 868.59,-2410.32"></polygon>
+<text text-anchor="middle" x="782.45" y="-2195.81" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C782.71,-1998.9 784.7,-2364.53 869.89,-2405.23" class="hover-path"></path></g><g id="2:16_5-20:13_5" class="edge outgoing" data-from="2:16_5" data-to="20:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C805.49,-1998.9 753,-2478.63 855.7,-2522.67"></path>
+<polygon fill="black" stroke="black" points="854.41,-2527.77 870.15,-2525.6 856.49,-2517.48 854.41,-2527.77"></polygon>
+<text text-anchor="middle" x="782.45" y="-2298.15" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C805.49,-1998.9 753,-2478.63 855.7,-2522.67" class="hover-path"></path></g><g id="2:16_5-9:13_5" class="edge outgoing" data-from="2:16_5" data-to="9:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C719.49,-1998.9 838.55,-874.92 848.2,-844 856.99,-815.79 851.76,-785.16 869,-774.67"></path>
+<polygon fill="black" stroke="black" points="870.1,-779.8 883.5,-771.25 867.69,-769.59 870.1,-779.8"></polygon>
+<text text-anchor="middle" x="782.45" y="-1385.99" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C719.49,-1998.9 838.55,-874.92 848.2,-844 856.99,-815.79 851.76,-785.16 869,-774.67" class="hover-path"></path></g><g id="2:16_5-13:14_5" class="edge outgoing" data-from="2:16_5" data-to="13:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C716.27,-1998.9 838.33,-988.46 848.2,-961 858.73,-931.69 855.74,-901.03 875.52,-891.16"></path>
+<polygon fill="black" stroke="black" points="876.5,-896.32 890.16,-888.2 874.41,-886.03 876.5,-896.32"></polygon>
+<text text-anchor="middle" x="782.45" y="-1433.06" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C716.27,-1998.9 838.33,-988.46 848.2,-961 858.73,-931.69 855.74,-901.03 875.52,-891.16" class="hover-path"></path></g><g id="2:16_5-11:14_5" class="edge outgoing" data-from="2:16_5" data-to="11:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C739.04,-1998.9 830.26,-1126.74 848.2,-1078 858.92,-1048.84 855.58,-1018.09 875.17,-1008.18"></path>
+<polygon fill="black" stroke="black" points="876.08,-1013.35 889.72,-1005.2 873.97,-1003.07 876.08,-1013.35"></polygon>
+<text text-anchor="middle" x="782.45" y="-1534.02" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C739.04,-1998.9 830.26,-1126.74 848.2,-1078 858.92,-1048.84 855.58,-1018.09 875.17,-1008.18" class="hover-path"></path></g><g id="2:16_5-14:13_5" class="edge outgoing" data-from="2:16_5" data-to="14:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C732.65,-1998.9 831.2,-1237.26 848.2,-1195 860.16,-1165.27 857.78,-1134.41 878.84,-1124.88"></path>
+<polygon fill="black" stroke="black" points="879.49,-1130.1 893.27,-1122.18 877.56,-1119.77 879.49,-1130.1"></polygon>
+<text text-anchor="middle" x="782.45" y="-1593.5" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C732.65,-1998.9 831.2,-1237.26 848.2,-1195 860.16,-1165.27 857.78,-1134.41 878.84,-1124.88" class="hover-path"></path></g><g id="2:16_5-16:14_5" class="edge outgoing" data-from="2:16_5" data-to="16:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C726.29,-1998.9 833.29,-1348.25 848.2,-1312 860.19,-1282.82 856.91,-1251.84 877.06,-1242.05"></path>
+<polygon fill="black" stroke="black" points="877.81,-1247.25 891.5,-1239.19 875.77,-1236.95 877.81,-1247.25"></polygon>
+<text text-anchor="middle" x="782.45" y="-1653.17" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C726.29,-1998.9 833.29,-1348.25 848.2,-1312 860.19,-1282.82 856.91,-1251.84 877.06,-1242.05" class="hover-path"></path></g><g id="2:16_5-15:13_5" class="edge outgoing" data-from="2:16_5" data-to="15:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C830.55,-1998.9 737.8,-1403.95 863.26,-1358.63"></path>
+<polygon fill="black" stroke="black" points="863.82,-1363.86 877.72,-1356.15 862.05,-1353.51 863.82,-1363.86"></polygon>
+<text text-anchor="middle" x="782.45" y="-1700.88" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C830.55,-1998.9 737.8,-1403.95 863.26,-1358.63" class="hover-path"></path></g><g id="2:16_5-8:13_5" class="edge outgoing" data-from="2:16_5" data-to="8:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C810.41,-1998.9 743.45,-1855.38 784.2,-1739 823.38,-1627.07 753.87,-1486.77 855,-1473.86"></path>
+<polygon fill="black" stroke="black" points="855.02,-1479.12 869.68,-1472.99 854.4,-1468.64 855.02,-1479.12"></polygon>
+<text text-anchor="middle" x="782.45" y="-1750.21" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C810.41,-1998.9 743.45,-1855.38 784.2,-1739 823.38,-1627.07 753.87,-1486.77 855,-1473.86" class="hover-path"></path></g><g id="2:16_5-22:14_5" class="edge outgoing" data-from="2:16_5" data-to="22:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C728.49,-1998.9 830.74,-1700.53 848.2,-1663 860.36,-1636.84 851.82,-1605.45 866.69,-1594.18"></path>
+<polygon fill="black" stroke="black" points="867.76,-1599.33 880.84,-1590.3 864.98,-1589.21 867.76,-1599.33"></polygon>
+<text text-anchor="middle" x="782.45" y="-1834.92" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C728.49,-1998.9 830.74,-1700.53 848.2,-1663 860.36,-1636.84 851.82,-1605.45 866.69,-1594.18" class="hover-path"></path></g><g id="2:16_5-6:13_5" class="edge outgoing" data-from="2:16_5" data-to="6:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C730.7,-1998.9 825.81,-2729.59 848.2,-2767 860.2,-2787.06 866.58,-2802.17 883.29,-2807.66"></path>
+<polygon fill="black" stroke="black" points="882.13,-2812.79 897.72,-2809.69 883.6,-2802.4 882.13,-2812.79"></polygon>
+<text text-anchor="middle" x="782.45" y="-2418.08" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C730.7,-1998.9 825.81,-2729.59 848.2,-2767 860.2,-2787.06 866.58,-2802.17 883.29,-2807.66" class="hover-path"></path></g><g id="2:16_5-12:13_5" class="edge outgoing" data-from="2:16_5" data-to="12:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C761.39,-1998.9 809.05,-1745.46 879.7,-1710.81"></path>
+<polygon fill="black" stroke="black" points="880.86,-1715.93 894.17,-1707.26 878.36,-1705.73 880.86,-1715.93"></polygon>
+<text text-anchor="middle" x="782.45" y="-1874.58" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C761.39,-1998.9 809.05,-1745.46 879.7,-1710.81" class="hover-path"></path></g><g id="2:16_5-4:11_5" class="edge outgoing" data-from="2:16_5" data-to="4:11_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C737.08,-1998.9 824.52,-2839.98 848.2,-2884 858.19,-2902.59 862.98,-2917.86 877.04,-2924"></path>
+<polygon fill="black" stroke="black" points="875.79,-2929.11 891.49,-2926.63 877.67,-2918.78 875.79,-2929.11"></polygon>
+<text text-anchor="middle" x="782.45" y="-2455.05" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C737.08,-1998.9 824.52,-2839.98 848.2,-2884 858.19,-2902.59 862.98,-2917.86 877.04,-2924" class="hover-path"></path></g><g id="2:16_5-17:13_5" class="edge outgoing" data-from="2:16_5" data-to="17:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C796.31,-1998.9 766.41,-1841.22 861.49,-1825.21"></path>
+<polygon fill="black" stroke="black" points="861.82,-1830.45 876.36,-1824.02 860.99,-1819.98 861.82,-1830.45"></polygon>
+<text text-anchor="middle" x="782.45" y="-1915.6" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C796.31,-1998.9 766.41,-1841.22 861.49,-1825.21" class="hover-path"></path></g><g id="2:16_5-10:13_5" class="edge outgoing" data-from="2:16_5" data-to="10:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C771.06,-1998.9 788.67,-1948.14 864.08,-1941.59"></path>
+<polygon fill="black" stroke="black" points="864.25,-1946.84 879.02,-1940.96 863.81,-1936.35 864.25,-1946.84"></polygon>
+<text text-anchor="middle" x="782.45" y="-1975.84" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C771.06,-1998.9 788.67,-1948.14 864.08,-1941.59" class="hover-path"></path></g><g id="2:16_5-19:14_5" class="edge outgoing" data-from="2:16_5" data-to="19:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C769.24,-1998.9 785.85,-2050.54 859.55,-2057.2"></path>
+<polygon fill="black" stroke="black" points="858.91,-2062.42 874.12,-2057.83 859.36,-2051.93 858.91,-2062.42"></polygon>
+<text text-anchor="middle" x="782.45" y="-2032.6" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C769.24,-1998.9 785.85,-2050.54 859.55,-2057.2" class="hover-path"></path></g><g id="2:16_5-5:12_5" class="edge outgoing" data-from="2:16_5" data-to="5:12_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C743.48,-1998.9 818.52,-2953.05 848.2,-3001 862.19,-3023.61 871.35,-3037.8 891.84,-3042.33"></path>
+<polygon fill="black" stroke="black" points="891.1,-3047.53 906.54,-3043.75 892.11,-3037.08 891.1,-3047.53"></polygon>
+<text text-anchor="middle" x="782.45" y="-2515.53" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C743.48,-1998.9 818.52,-2953.05 848.2,-3001 862.19,-3023.61 871.35,-3037.8 891.84,-3042.33" class="hover-path"></path></g><g id="2:16_5-18:14_5" class="edge outgoing" data-from="2:16_5" data-to="18:14_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C796.6,-1998.9 766.17,-2157.48 861.46,-2173.58"></path>
+<polygon fill="black" stroke="black" points="860.99,-2178.81 876.36,-2174.78 861.83,-2168.35 860.99,-2178.81"></polygon>
+<text text-anchor="middle" x="782.45" y="-2091.1" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C796.6,-1998.9 766.17,-2157.48 861.46,-2173.58" class="hover-path"></path></g><g id="2:16_5-23:13_5" class="edge outgoing" data-from="2:16_5" data-to="23:13_5">
+
+<path fill="none" stroke="black" d="M687.1,-1998.9C837.35,-1998.9 732.91,-2270.56 864.25,-2290.72"></path>
+<polygon fill="black" stroke="black" points="863.67,-2295.94 879.01,-2291.79 864.43,-2285.47 863.67,-2295.94"></polygon>
+<text text-anchor="middle" x="782.45" y="-2149.6" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M687.1,-1998.9C837.35,-1998.9 732.91,-2270.56 864.25,-2290.72" class="hover-path"></path></g><g id="3:21_5-2:16_5" class="edge incoming" data-from="3:21_5" data-to="2:16_5">
+
+<path fill="none" stroke="black" d="M271,-2940.9C691.96,-2940.9 45.96,-2023.57 438.79,-1999.39"></path>
+<polygon fill="black" stroke="black" points="438.75,-2004.64 453.58,-1998.95 438.43,-1994.15 438.75,-2004.64"></polygon>
+<text text-anchor="middle" x="359.75" y="-2923.58" font-family="Times,serif" font-size="14.00"> </text>
+<path fill="none" stroke="black" d="M271,-2940.9C691.96,-2940.9 45.96,-2023.57 438.79,-1999.39" class="hover-path"></path></g></g>
+<defs><filter id="shadow"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-opacity="0.5"></feDropShadow></filter>
+    <linearGradient id="highlightGradient">
+      <stop offset="0%" stop-color="var(--edge-incoming-color)"></stop>
+      <stop offset="100%" stop-color="var(--edge-outgoing-color)"></stop>
+    </linearGradient></defs>
+  </svg>
+
+  <script type="module">
+    var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: !0 });
+function getDefaultExportFromCjs(x) {
+  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x.default : x;
+}
+__name(getDefaultExportFromCjs, "getDefaultExportFromCjs");
+var wheel = { exports: {} }, hasRequiredWheel;
+function requireWheel() {
+  if (hasRequiredWheel) return wheel.exports;
+  hasRequiredWheel = 1, wheel.exports = addWheelListener, wheel.exports.addWheelListener = addWheelListener, wheel.exports.removeWheelListener = removeWheelListener;
+  function addWheelListener(element, listener, useCapture) {
+    element.addEventListener("wheel", listener, useCapture);
+  }
+  __name(addWheelListener, "addWheelListener");
+  function removeWheelListener(element, listener, useCapture) {
+    element.removeEventListener("wheel", listener, useCapture);
+  }
+  return __name(removeWheelListener, "removeWheelListener"), wheel.exports;
+}
+__name(requireWheel, "requireWheel");
+var amator = { exports: {} }, src, hasRequiredSrc;
+function requireSrc() {
+  if (hasRequiredSrc) return src;
+  hasRequiredSrc = 1;
+  var NEWTON_ITERATIONS = 4, NEWTON_MIN_SLOPE = 1e-3, SUBDIVISION_PRECISION = 1e-7, SUBDIVISION_MAX_ITERATIONS = 10, kSplineTableSize = 11, kSampleStepSize = 1 / (kSplineTableSize - 1), float32ArraySupported = typeof Float32Array == "function";
+  function A(aA1, aA2) {
+    return 1 - 3 * aA2 + 3 * aA1;
+  }
+  __name(A, "A");
+  function B(aA1, aA2) {
+    return 3 * aA2 - 6 * aA1;
+  }
+  __name(B, "B");
+  function C(aA1) {
+    return 3 * aA1;
+  }
+  __name(C, "C");
+  function calcBezier(aT, aA1, aA2) {
+    return ((A(aA1, aA2) * aT + B(aA1, aA2)) * aT + C(aA1)) * aT;
+  }
+  __name(calcBezier, "calcBezier");
+  function getSlope(aT, aA1, aA2) {
+    return 3 * A(aA1, aA2) * aT * aT + 2 * B(aA1, aA2) * aT + C(aA1);
+  }
+  __name(getSlope, "getSlope");
+  function binarySubdivide(aX, aA, aB, mX1, mX2) {
+    var currentX, currentT, i = 0;
+    do
+      currentT = aA + (aB - aA) / 2, currentX = calcBezier(currentT, mX1, mX2) - aX, currentX > 0 ? aB = currentT : aA = currentT;
+    while (Math.abs(currentX) > SUBDIVISION_PRECISION && ++i < SUBDIVISION_MAX_ITERATIONS);
+    return currentT;
+  }
+  __name(binarySubdivide, "binarySubdivide");
+  function newtonRaphsonIterate(aX, aGuessT, mX1, mX2) {
+    for (var i = 0; i < NEWTON_ITERATIONS; ++i) {
+      var currentSlope = getSlope(aGuessT, mX1, mX2);
+      if (currentSlope === 0)
+        return aGuessT;
+      var currentX = calcBezier(aGuessT, mX1, mX2) - aX;
+      aGuessT -= currentX / currentSlope;
+    }
+    return aGuessT;
+  }
+  __name(newtonRaphsonIterate, "newtonRaphsonIterate");
+  function LinearEasing(x) {
+    return x;
+  }
+  return __name(LinearEasing, "LinearEasing"), src = /* @__PURE__ */ __name(function(mX1, mY1, mX2, mY2) {
+    if (!(0 <= mX1 && mX1 <= 1 && 0 <= mX2 && mX2 <= 1))
+      throw new Error("bezier x values must be in [0, 1] range");
+    if (mX1 === mY1 && mX2 === mY2)
+      return LinearEasing;
+    for (var sampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize), i = 0; i < kSplineTableSize; ++i)
+      sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
+    function getTForX(aX) {
+      for (var intervalStart = 0, currentSample = 1, lastSample = kSplineTableSize - 1; currentSample !== lastSample && sampleValues[currentSample] <= aX; ++currentSample)
+        intervalStart += kSampleStepSize;
+      --currentSample;
+      var dist = (aX - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]), guessForT = intervalStart + dist * kSampleStepSize, initialSlope = getSlope(guessForT, mX1, mX2);
+      return initialSlope >= NEWTON_MIN_SLOPE ? newtonRaphsonIterate(aX, guessForT, mX1, mX2) : initialSlope === 0 ? guessForT : binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
+    }
+    return __name(getTForX, "getTForX"), /* @__PURE__ */ __name(function(x) {
+      return x === 0 ? 0 : x === 1 ? 1 : calcBezier(getTForX(x), mY1, mY2);
+    }, "BezierEasing");
+  }, "bezier"), src;
+}
+__name(requireSrc, "requireSrc");
+var hasRequiredAmator;
+function requireAmator() {
+  if (hasRequiredAmator) return amator.exports;
+  hasRequiredAmator = 1;
+  var BezierEasing = requireSrc(), animations = {
+    ease: BezierEasing(0.25, 0.1, 0.25, 1),
+    easeIn: BezierEasing(0.42, 0, 1, 1),
+    easeOut: BezierEasing(0, 0, 0.58, 1),
+    easeInOut: BezierEasing(0.42, 0, 0.58, 1),
+    linear: BezierEasing(0, 0, 1, 1)
+  };
+  amator.exports = animate, amator.exports.makeAggregateRaf = makeAggregateRaf, amator.exports.sharedScheduler = makeAggregateRaf();
+  function animate(source, target, options) {
+    var start = /* @__PURE__ */ Object.create(null), diff = /* @__PURE__ */ Object.create(null);
+    options = options || {};
+    var easing = typeof options.easing == "function" ? options.easing : animations[options.easing];
+    easing || (options.easing && console.warn("Unknown easing function in amator: " + options.easing), easing = animations.ease);
+    var step = typeof options.step == "function" ? options.step : noop, done = typeof options.done == "function" ? options.done : noop, scheduler = getScheduler(options.scheduler), keys = Object.keys(target);
+    keys.forEach(function(key) {
+      start[key] = source[key], diff[key] = target[key] - source[key];
+    });
+    var durationInMs = typeof options.duration == "number" ? options.duration : 400, durationInFrames = Math.max(1, durationInMs * 0.06), previousAnimationId, frame = 0;
+    return previousAnimationId = scheduler.next(loop), {
+      cancel
+    };
+    function cancel() {
+      scheduler.cancel(previousAnimationId), previousAnimationId = 0;
+    }
+    __name(cancel, "cancel");
+    function loop() {
+      var t = easing(frame / durationInFrames);
+      frame += 1, setValues(t), frame <= durationInFrames ? (previousAnimationId = scheduler.next(loop), step(source)) : (previousAnimationId = 0, setTimeout(function() {
+        done(source);
+      }, 0));
+    }
+    __name(loop, "loop");
+    function setValues(t) {
+      keys.forEach(function(key) {
+        source[key] = diff[key] * t + start[key];
+      });
+    }
+    __name(setValues, "setValues");
+  }
+  __name(animate, "animate");
+  function noop() {
+  }
+  __name(noop, "noop");
+  function getScheduler(scheduler) {
+    if (!scheduler) {
+      var canRaf = typeof window < "u" && window.requestAnimationFrame;
+      return canRaf ? rafScheduler() : timeoutScheduler();
+    }
+    if (typeof scheduler.next != "function") throw new Error("Scheduler is supposed to have next(cb) function");
+    if (typeof scheduler.cancel != "function") throw new Error("Scheduler is supposed to have cancel(handle) function");
+    return scheduler;
+  }
+  __name(getScheduler, "getScheduler");
+  function rafScheduler() {
+    return {
+      next: window.requestAnimationFrame.bind(window),
+      cancel: window.cancelAnimationFrame.bind(window)
+    };
+  }
+  __name(rafScheduler, "rafScheduler");
+  function timeoutScheduler() {
+    return {
+      next: /* @__PURE__ */ __name(function(cb) {
+        return setTimeout(cb, 1e3 / 60);
+      }, "next"),
+      cancel: /* @__PURE__ */ __name(function(id) {
+        return clearTimeout(id);
+      }, "cancel")
+    };
+  }
+  __name(timeoutScheduler, "timeoutScheduler");
+  function makeAggregateRaf() {
+    var frontBuffer = /* @__PURE__ */ new Set(), backBuffer = /* @__PURE__ */ new Set(), frameToken = 0;
+    return {
+      next,
+      cancel: next,
+      clearAll
+    };
+    function clearAll() {
+      frontBuffer.clear(), backBuffer.clear(), cancelAnimationFrame(frameToken), frameToken = 0;
+    }
+    function next(callback) {
+      backBuffer.add(callback), renderNextFrame();
+    }
+    function renderNextFrame() {
+      frameToken || (frameToken = requestAnimationFrame(renderFrame));
+    }
+    function renderFrame() {
+      frameToken = 0;
+      var t = backBuffer;
+      backBuffer = frontBuffer, frontBuffer = t, frontBuffer.forEach(function(callback) {
+        callback();
+      }), frontBuffer.clear();
+    }
+  }
+  return __name(makeAggregateRaf, "makeAggregateRaf"), amator.exports;
+}
+__name(requireAmator, "requireAmator");
+var ngraph_events, hasRequiredNgraph_events;
+function requireNgraph_events() {
+  if (hasRequiredNgraph_events) return ngraph_events;
+  hasRequiredNgraph_events = 1, ngraph_events = /* @__PURE__ */ __name(function(subject) {
+    validateSubject(subject);
+    var eventsStorage = createEventsStorage(subject);
+    return subject.on = eventsStorage.on, subject.off = eventsStorage.off, subject.fire = eventsStorage.fire, subject;
+  }, "eventify");
+  function createEventsStorage(subject) {
+    var registeredEvents = /* @__PURE__ */ Object.create(null);
+    return {
+      on: /* @__PURE__ */ __name(function(eventName, callback, ctx) {
+        if (typeof callback != "function")
+          throw new Error("callback is expected to be a function");
+        var handlers = registeredEvents[eventName];
+        return handlers || (handlers = registeredEvents[eventName] = []), handlers.push({ callback, ctx }), subject;
+      }, "on"),
+      off: /* @__PURE__ */ __name(function(eventName, callback) {
+        var wantToRemoveAll = typeof eventName > "u";
+        if (wantToRemoveAll)
+          return registeredEvents = /* @__PURE__ */ Object.create(null), subject;
+        if (registeredEvents[eventName]) {
+          var deleteAllCallbacksForEvent = typeof callback != "function";
+          if (deleteAllCallbacksForEvent)
+            delete registeredEvents[eventName];
+          else
+            for (var callbacks = registeredEvents[eventName], i = 0; i < callbacks.length; ++i)
+              callbacks[i].callback === callback && callbacks.splice(i, 1);
+        }
+        return subject;
+      }, "off"),
+      fire: /* @__PURE__ */ __name(function(eventName) {
+        var callbacks = registeredEvents[eventName];
+        if (!callbacks)
+          return subject;
+        var fireArguments;
+        arguments.length > 1 && (fireArguments = Array.prototype.splice.call(arguments, 1));
+        for (var i = 0; i < callbacks.length; ++i) {
+          var callbackInfo = callbacks[i];
+          callbackInfo.callback.apply(callbackInfo.ctx, fireArguments);
+        }
+        return subject;
+      }, "fire")
+    };
+  }
+  __name(createEventsStorage, "createEventsStorage");
+  function validateSubject(subject) {
+    if (!subject)
+      throw new Error("Eventify cannot use falsy object as events subject");
+    for (var reservedWords = ["on", "fire", "off"], i = 0; i < reservedWords.length; ++i)
+      if (subject.hasOwnProperty(reservedWords[i]))
+        throw new Error("Subject cannot be eventified, since it already has property '" + reservedWords[i] + "'");
+  }
+  return __name(validateSubject, "validateSubject"), ngraph_events;
+}
+__name(requireNgraph_events, "requireNgraph_events");
+var kinetic_1, hasRequiredKinetic;
+function requireKinetic() {
+  if (hasRequiredKinetic) return kinetic_1;
+  hasRequiredKinetic = 1, kinetic_1 = kinetic;
+  function kinetic(getPoint, scroll, settings) {
+    typeof settings != "object" && (settings = {});
+    var minVelocity = typeof settings.minVelocity == "number" ? settings.minVelocity : 5, amplitude = typeof settings.amplitude == "number" ? settings.amplitude : 0.25, cancelAnimationFrame2 = typeof settings.cancelAnimationFrame == "function" ? settings.cancelAnimationFrame : getCancelAnimationFrame(), requestAnimationFrame2 = typeof settings.requestAnimationFrame == "function" ? settings.requestAnimationFrame : getRequestAnimationFrame(), lastPoint, timestamp, timeConstant = 342, ticker, vx, targetX, ax, vy, targetY, ay, raf;
+    return {
+      start,
+      stop,
+      cancel: dispose
+    };
+    function dispose() {
+      cancelAnimationFrame2(ticker), cancelAnimationFrame2(raf);
+    }
+    function start() {
+      lastPoint = getPoint(), ax = ay = vx = vy = 0, timestamp = /* @__PURE__ */ new Date(), cancelAnimationFrame2(ticker), cancelAnimationFrame2(raf), ticker = requestAnimationFrame2(track);
+    }
+    function track() {
+      var now = Date.now(), elapsed = now - timestamp;
+      timestamp = now;
+      var currentPoint = getPoint(), dx = currentPoint.x - lastPoint.x, dy = currentPoint.y - lastPoint.y;
+      lastPoint = currentPoint;
+      var dt = 1e3 / (1 + elapsed);
+      vx = 0.8 * dx * dt + 0.2 * vx, vy = 0.8 * dy * dt + 0.2 * vy, ticker = requestAnimationFrame2(track);
+    }
+    function stop() {
+      cancelAnimationFrame2(ticker), cancelAnimationFrame2(raf);
+      var currentPoint = getPoint();
+      targetX = currentPoint.x, targetY = currentPoint.y, timestamp = Date.now(), (vx < -minVelocity || vx > minVelocity) && (ax = amplitude * vx, targetX += ax), (vy < -minVelocity || vy > minVelocity) && (ay = amplitude * vy, targetY += ay), raf = requestAnimationFrame2(autoScroll);
+    }
+    function autoScroll() {
+      var elapsed = Date.now() - timestamp, moving = !1, dx = 0, dy = 0;
+      ax && (dx = -ax * Math.exp(-elapsed / timeConstant), dx > 0.5 || dx < -0.5 ? moving = !0 : dx = ax = 0), ay && (dy = -ay * Math.exp(-elapsed / timeConstant), dy > 0.5 || dy < -0.5 ? moving = !0 : dy = ay = 0), moving && (scroll(targetX + dx, targetY + dy), raf = requestAnimationFrame2(autoScroll));
+    }
+  }
+  __name(kinetic, "kinetic");
+  function getCancelAnimationFrame() {
+    return typeof cancelAnimationFrame == "function" ? cancelAnimationFrame : clearTimeout;
+  }
+  __name(getCancelAnimationFrame, "getCancelAnimationFrame");
+  function getRequestAnimationFrame() {
+    return typeof requestAnimationFrame == "function" ? requestAnimationFrame : function(handler) {
+      return setTimeout(handler, 16);
+    };
+  }
+  return __name(getRequestAnimationFrame, "getRequestAnimationFrame"), kinetic_1;
+}
+__name(requireKinetic, "requireKinetic");
+var createTextSelectionInterceptor_1, hasRequiredCreateTextSelectionInterceptor;
+function requireCreateTextSelectionInterceptor() {
+  if (hasRequiredCreateTextSelectionInterceptor) return createTextSelectionInterceptor_1;
+  hasRequiredCreateTextSelectionInterceptor = 1, createTextSelectionInterceptor_1 = createTextSelectionInterceptor;
+  function createTextSelectionInterceptor(useFake) {
+    if (useFake)
+      return {
+        capture: noop,
+        release: noop
+      };
+    var dragObject, prevSelectStart, prevDragStart, wasCaptured = !1;
+    return {
+      capture,
+      release
+    };
+    function capture(domObject) {
+      wasCaptured = !0, prevSelectStart = window.document.onselectstart, prevDragStart = window.document.ondragstart, window.document.onselectstart = disabled, dragObject = domObject, dragObject.ondragstart = disabled;
+    }
+    function release() {
+      wasCaptured && (wasCaptured = !1, window.document.onselectstart = prevSelectStart, dragObject && (dragObject.ondragstart = prevDragStart));
+    }
+  }
+  __name(createTextSelectionInterceptor, "createTextSelectionInterceptor");
+  function disabled(e) {
+    return e.stopPropagation(), !1;
+  }
+  __name(disabled, "disabled");
+  function noop() {
+  }
+  return __name(noop, "noop"), createTextSelectionInterceptor_1;
+}
+__name(requireCreateTextSelectionInterceptor, "requireCreateTextSelectionInterceptor");
+var transform, hasRequiredTransform;
+function requireTransform() {
+  if (hasRequiredTransform) return transform;
+  hasRequiredTransform = 1, transform = Transform;
+  function Transform() {
+    this.x = 0, this.y = 0, this.scale = 1;
+  }
+  return __name(Transform, "Transform"), transform;
+}
+__name(requireTransform, "requireTransform");
+var svgController = { exports: {} }, hasRequiredSvgController;
+function requireSvgController() {
+  if (hasRequiredSvgController) return svgController.exports;
+  hasRequiredSvgController = 1, svgController.exports = makeSvgController, svgController.exports.canAttach = isSVGElement;
+  function makeSvgController(svgElement, options) {
+    if (!isSVGElement(svgElement))
+      throw new Error("svg element is required for svg.panzoom to work");
+    var owner = svgElement.ownerSVGElement;
+    if (!owner)
+      throw new Error(
+        "Do not apply panzoom to the root <svg> element. Use its child instead (e.g. <g></g>). As of March 2016 only FireFox supported transform on the root element"
+      );
+    options.disableKeyboardInteraction || owner.setAttribute("tabindex", 0);
+    var api = {
+      getBBox,
+      getScreenCTM,
+      getOwner,
+      applyTransform,
+      initTransform
+    };
+    return api;
+    function getOwner() {
+      return owner;
+    }
+    function getBBox() {
+      var bbox = svgElement.getBBox();
+      return {
+        left: bbox.x,
+        top: bbox.y,
+        width: bbox.width,
+        height: bbox.height
+      };
+    }
+    function getScreenCTM() {
+      var ctm = owner.getCTM();
+      return ctm || owner.getScreenCTM();
+    }
+    function initTransform(transform2) {
+      var screenCTM = svgElement.getCTM();
+      screenCTM === null && (screenCTM = document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGMatrix()), transform2.x = screenCTM.e, transform2.y = screenCTM.f, transform2.scale = screenCTM.a, owner.removeAttributeNS(null, "viewBox");
+    }
+    function applyTransform(transform2) {
+      svgElement.setAttribute("transform", "matrix(" + transform2.scale + " 0 0 " + transform2.scale + " " + transform2.x + " " + transform2.y + ")");
+    }
+  }
+  __name(makeSvgController, "makeSvgController");
+  function isSVGElement(element) {
+    return element && element.ownerSVGElement && element.getCTM;
+  }
+  return __name(isSVGElement, "isSVGElement"), svgController.exports;
+}
+__name(requireSvgController, "requireSvgController");
+var domController = { exports: {} }, hasRequiredDomController;
+function requireDomController() {
+  if (hasRequiredDomController) return domController.exports;
+  hasRequiredDomController = 1, domController.exports = makeDomController, domController.exports.canAttach = isDomElement;
+  function makeDomController(domElement, options) {
+    var elementValid = isDomElement(domElement);
+    if (!elementValid)
+      throw new Error("panzoom requires DOM element to be attached to the DOM tree");
+    var owner = domElement.parentElement;
+    domElement.scrollTop = 0, options.disableKeyboardInteraction || owner.setAttribute("tabindex", 0);
+    var api = {
+      getBBox,
+      getOwner,
+      applyTransform
+    };
+    return api;
+    function getOwner() {
+      return owner;
+    }
+    function getBBox() {
+      return {
+        left: 0,
+        top: 0,
+        width: domElement.clientWidth,
+        height: domElement.clientHeight
+      };
+    }
+    function applyTransform(transform2) {
+      domElement.style.transformOrigin = "0 0 0", domElement.style.transform = "matrix(" + transform2.scale + ", 0, 0, " + transform2.scale + ", " + transform2.x + ", " + transform2.y + ")";
+    }
+  }
+  __name(makeDomController, "makeDomController");
+  function isDomElement(element) {
+    return element && element.parentElement && element.style;
+  }
+  return __name(isDomElement, "isDomElement"), domController.exports;
+}
+__name(requireDomController, "requireDomController");
+var panzoom, hasRequiredPanzoom;
+function requirePanzoom() {
+  if (hasRequiredPanzoom) return panzoom;
+  hasRequiredPanzoom = 1;
+  var wheel2 = requireWheel(), animate = requireAmator(), eventify = requireNgraph_events(), kinetic = requireKinetic(), createTextSelectionInterceptor = requireCreateTextSelectionInterceptor(), domTextSelectionInterceptor = createTextSelectionInterceptor(), fakeTextSelectorInterceptor = createTextSelectionInterceptor(!0), Transform = requireTransform(), makeSvgController = requireSvgController(), makeDomController = requireDomController(), defaultZoomSpeed = 1, defaultDoubleTapZoomSpeed = 1.75, doubleTapSpeedInMS = 300, clickEventTimeInMS = 200;
+  panzoom = createPanZoom2;
+  function createPanZoom2(domElement, options) {
+    options = options || {};
+    var panController = options.controller;
+    if (panController || (makeSvgController.canAttach(domElement) ? panController = makeSvgController(domElement, options) : makeDomController.canAttach(domElement) && (panController = makeDomController(domElement, options))), !panController)
+      throw new Error(
+        "Cannot create panzoom for the current type of dom element"
+      );
+    var owner = panController.getOwner(), storedCTMResult = { x: 0, y: 0 }, isDirty = !1, transform2 = new Transform();
+    panController.initTransform && panController.initTransform(transform2);
+    var filterKey = typeof options.filterKey == "function" ? options.filterKey : noop, pinchSpeed = typeof options.pinchSpeed == "number" ? options.pinchSpeed : 1, bounds = options.bounds, maxZoom = typeof options.maxZoom == "number" ? options.maxZoom : Number.POSITIVE_INFINITY, minZoom = typeof options.minZoom == "number" ? options.minZoom : 0, boundsPadding = typeof options.boundsPadding == "number" ? options.boundsPadding : 0.05, zoomDoubleClickSpeed = typeof options.zoomDoubleClickSpeed == "number" ? options.zoomDoubleClickSpeed : defaultDoubleTapZoomSpeed, beforeWheel = options.beforeWheel || noop, beforeMouseDown = options.beforeMouseDown || noop, speed = typeof options.zoomSpeed == "number" ? options.zoomSpeed : defaultZoomSpeed, transformOrigin = parseTransformOrigin(options.transformOrigin), textSelection = options.enableTextSelection ? fakeTextSelectorInterceptor : domTextSelectionInterceptor;
+    validateBounds(bounds), options.autocenter && autocenter();
+    var frameAnimation, lastTouchEndTime = 0, lastTouchStartTime = 0, pendingClickEventTimeout = 0, lastMouseDownedEvent = null, lastMouseDownTime = /* @__PURE__ */ new Date(), lastSingleFingerOffset, touchInProgress = !1, panstartFired = !1, mouseX, mouseY, clickX, clickY, pinchZoomLength, smoothScroll;
+    "smoothScroll" in options && !options.smoothScroll ? smoothScroll = rigidScroll() : smoothScroll = kinetic(getPoint, scroll, options.smoothScroll);
+    var moveByAnimation, zoomToAnimation, multiTouch, paused = !1;
+    listenForEvents();
+    var api = {
+      dispose,
+      moveBy: internalMoveBy,
+      moveTo,
+      smoothMoveTo,
+      centerOn,
+      zoomTo: publicZoomTo,
+      zoomAbs,
+      smoothZoom,
+      smoothZoomAbs,
+      showRectangle,
+      pause,
+      resume,
+      isPaused,
+      getTransform: getTransformModel,
+      getMinZoom,
+      setMinZoom,
+      getMaxZoom,
+      setMaxZoom,
+      getTransformOrigin,
+      setTransformOrigin,
+      getZoomSpeed,
+      setZoomSpeed
+    };
+    eventify(api);
+    var initialX = typeof options.initialX == "number" ? options.initialX : transform2.x, initialY = typeof options.initialY == "number" ? options.initialY : transform2.y, initialZoom = typeof options.initialZoom == "number" ? options.initialZoom : transform2.scale;
+    return (initialX != transform2.x || initialY != transform2.y || initialZoom != transform2.scale) && zoomAbs(initialX, initialY, initialZoom), api;
+    function pause() {
+      releaseEvents(), paused = !0;
+    }
+    __name(pause, "pause");
+    function resume() {
+      paused && (listenForEvents(), paused = !1);
+    }
+    __name(resume, "resume");
+    function isPaused() {
+      return paused;
+    }
+    __name(isPaused, "isPaused");
+    function showRectangle(rect) {
+      var clientRect = owner.getBoundingClientRect(), size = transformToScreen(clientRect.width, clientRect.height), rectWidth = rect.right - rect.left, rectHeight = rect.bottom - rect.top;
+      if (!Number.isFinite(rectWidth) || !Number.isFinite(rectHeight))
+        throw new Error("Invalid rectangle");
+      var dw = size.x / rectWidth, dh = size.y / rectHeight, scale = Math.min(dw, dh);
+      transform2.x = -(rect.left + rectWidth / 2) * scale + size.x / 2, transform2.y = -(rect.top + rectHeight / 2) * scale + size.y / 2, transform2.scale = scale;
+    }
+    __name(showRectangle, "showRectangle");
+    function transformToScreen(x, y) {
+      if (panController.getScreenCTM) {
+        var parentCTM = panController.getScreenCTM(), parentScaleX = parentCTM.a, parentScaleY = parentCTM.d, parentOffsetX = parentCTM.e, parentOffsetY = parentCTM.f;
+        storedCTMResult.x = x * parentScaleX - parentOffsetX, storedCTMResult.y = y * parentScaleY - parentOffsetY;
+      } else
+        storedCTMResult.x = x, storedCTMResult.y = y;
+      return storedCTMResult;
+    }
+    __name(transformToScreen, "transformToScreen");
+    function autocenter() {
+      var w, h, left = 0, top = 0, sceneBoundingBox = getBoundingBox();
+      if (sceneBoundingBox)
+        left = sceneBoundingBox.left, top = sceneBoundingBox.top, w = sceneBoundingBox.right - sceneBoundingBox.left, h = sceneBoundingBox.bottom - sceneBoundingBox.top;
+      else {
+        var ownerRect = owner.getBoundingClientRect();
+        w = ownerRect.width, h = ownerRect.height;
+      }
+      var bbox = panController.getBBox();
+      if (!(bbox.width === 0 || bbox.height === 0)) {
+        var dh = h / bbox.height, dw = w / bbox.width, scale = Math.min(dw, dh);
+        transform2.x = -(bbox.left + bbox.width / 2) * scale + w / 2 + left, transform2.y = -(bbox.top + bbox.height / 2) * scale + h / 2 + top, transform2.scale = scale;
+      }
+    }
+    __name(autocenter, "autocenter");
+    function getTransformModel() {
+      return transform2;
+    }
+    __name(getTransformModel, "getTransformModel");
+    function getMinZoom() {
+      return minZoom;
+    }
+    __name(getMinZoom, "getMinZoom");
+    function setMinZoom(newMinZoom) {
+      minZoom = newMinZoom;
+    }
+    __name(setMinZoom, "setMinZoom");
+    function getMaxZoom() {
+      return maxZoom;
+    }
+    __name(getMaxZoom, "getMaxZoom");
+    function setMaxZoom(newMaxZoom) {
+      maxZoom = newMaxZoom;
+    }
+    __name(setMaxZoom, "setMaxZoom");
+    function getTransformOrigin() {
+      return transformOrigin;
+    }
+    __name(getTransformOrigin, "getTransformOrigin");
+    function setTransformOrigin(newTransformOrigin) {
+      transformOrigin = parseTransformOrigin(newTransformOrigin);
+    }
+    __name(setTransformOrigin, "setTransformOrigin");
+    function getZoomSpeed() {
+      return speed;
+    }
+    __name(getZoomSpeed, "getZoomSpeed");
+    function setZoomSpeed(newSpeed) {
+      if (!Number.isFinite(newSpeed))
+        throw new Error("Zoom speed should be a number");
+      speed = newSpeed;
+    }
+    __name(setZoomSpeed, "setZoomSpeed");
+    function getPoint() {
+      return {
+        x: transform2.x,
+        y: transform2.y
+      };
+    }
+    __name(getPoint, "getPoint");
+    function moveTo(x, y) {
+      transform2.x = x, transform2.y = y, keepTransformInsideBounds(), triggerEvent("pan"), makeDirty();
+    }
+    __name(moveTo, "moveTo");
+    function moveBy(dx, dy) {
+      moveTo(transform2.x + dx, transform2.y + dy);
+    }
+    __name(moveBy, "moveBy");
+    function keepTransformInsideBounds() {
+      var boundingBox = getBoundingBox();
+      if (boundingBox) {
+        var adjusted = !1, clientRect = getClientRect(), diff = boundingBox.left - clientRect.right;
+        return diff > 0 && (transform2.x += diff, adjusted = !0), diff = boundingBox.right - clientRect.left, diff < 0 && (transform2.x += diff, adjusted = !0), diff = boundingBox.top - clientRect.bottom, diff > 0 && (transform2.y += diff, adjusted = !0), diff = boundingBox.bottom - clientRect.top, diff < 0 && (transform2.y += diff, adjusted = !0), adjusted;
+      }
+    }
+    __name(keepTransformInsideBounds, "keepTransformInsideBounds");
+    function getBoundingBox() {
+      if (bounds) {
+        if (typeof bounds == "boolean") {
+          var ownerRect = owner.getBoundingClientRect(), sceneWidth = ownerRect.width, sceneHeight = ownerRect.height;
+          return {
+            left: sceneWidth * boundsPadding,
+            top: sceneHeight * boundsPadding,
+            right: sceneWidth * (1 - boundsPadding),
+            bottom: sceneHeight * (1 - boundsPadding)
+          };
+        }
+        return bounds;
+      }
+    }
+    __name(getBoundingBox, "getBoundingBox");
+    function getClientRect() {
+      var bbox = panController.getBBox(), leftTop = client(bbox.left, bbox.top);
+      return {
+        left: leftTop.x,
+        top: leftTop.y,
+        right: bbox.width * transform2.scale + leftTop.x,
+        bottom: bbox.height * transform2.scale + leftTop.y
+      };
+    }
+    __name(getClientRect, "getClientRect");
+    function client(x, y) {
+      return {
+        x: x * transform2.scale + transform2.x,
+        y: y * transform2.scale + transform2.y
+      };
+    }
+    __name(client, "client");
+    function makeDirty() {
+      isDirty = !0, frameAnimation = window.requestAnimationFrame(frame);
+    }
+    __name(makeDirty, "makeDirty");
+    function zoomByRatio(clientX, clientY, ratio) {
+      if (isNaN(clientX) || isNaN(clientY) || isNaN(ratio))
+        throw new Error("zoom requires valid numbers");
+      var newScale = transform2.scale * ratio;
+      if (newScale < minZoom) {
+        if (transform2.scale === minZoom) return;
+        ratio = minZoom / transform2.scale;
+      }
+      if (newScale > maxZoom) {
+        if (transform2.scale === maxZoom) return;
+        ratio = maxZoom / transform2.scale;
+      }
+      var size = transformToScreen(clientX, clientY);
+      if (transform2.x = size.x - ratio * (size.x - transform2.x), transform2.y = size.y - ratio * (size.y - transform2.y), bounds && boundsPadding === 1 && minZoom === 1)
+        transform2.scale *= ratio, keepTransformInsideBounds();
+      else {
+        var transformAdjusted = keepTransformInsideBounds();
+        transformAdjusted || (transform2.scale *= ratio);
+      }
+      triggerEvent("zoom"), makeDirty();
+    }
+    __name(zoomByRatio, "zoomByRatio");
+    function zoomAbs(clientX, clientY, zoomLevel) {
+      var ratio = zoomLevel / transform2.scale;
+      zoomByRatio(clientX, clientY, ratio);
+    }
+    __name(zoomAbs, "zoomAbs");
+    function centerOn(ui) {
+      var parent = ui.ownerSVGElement;
+      if (!parent)
+        throw new Error("ui element is required to be within the scene");
+      var clientRect = ui.getBoundingClientRect(), cx = clientRect.left + clientRect.width / 2, cy = clientRect.top + clientRect.height / 2, container = parent.getBoundingClientRect(), dx = container.width / 2 - cx, dy = container.height / 2 - cy;
+      internalMoveBy(dx, dy, !0);
+    }
+    __name(centerOn, "centerOn");
+    function smoothMoveTo(x, y) {
+      internalMoveBy(x - transform2.x, y - transform2.y, !0);
+    }
+    __name(smoothMoveTo, "smoothMoveTo");
+    function internalMoveBy(dx, dy, smooth) {
+      if (!smooth)
+        return moveBy(dx, dy);
+      moveByAnimation && moveByAnimation.cancel();
+      var from = { x: 0, y: 0 }, to = { x: dx, y: dy }, lastX = 0, lastY = 0;
+      moveByAnimation = animate(from, to, {
+        step: /* @__PURE__ */ __name(function(v) {
+          moveBy(v.x - lastX, v.y - lastY), lastX = v.x, lastY = v.y;
+        }, "step")
+      });
+    }
+    __name(internalMoveBy, "internalMoveBy");
+    function scroll(x, y) {
+      cancelZoomAnimation(), moveTo(x, y);
+    }
+    __name(scroll, "scroll");
+    function dispose() {
+      releaseEvents();
+    }
+    __name(dispose, "dispose");
+    function listenForEvents() {
+      owner.addEventListener("mousedown", onMouseDown, { passive: !1 }), owner.addEventListener("dblclick", onDoubleClick, { passive: !1 }), owner.addEventListener("touchstart", onTouch, { passive: !1 }), owner.addEventListener("keydown", onKeyDown, { passive: !1 }), wheel2.addWheelListener(owner, onMouseWheel, { passive: !1 }), makeDirty();
+    }
+    __name(listenForEvents, "listenForEvents");
+    function releaseEvents() {
+      wheel2.removeWheelListener(owner, onMouseWheel), owner.removeEventListener("mousedown", onMouseDown), owner.removeEventListener("keydown", onKeyDown), owner.removeEventListener("dblclick", onDoubleClick), owner.removeEventListener("touchstart", onTouch), frameAnimation && (window.cancelAnimationFrame(frameAnimation), frameAnimation = 0), smoothScroll.cancel(), releaseDocumentMouse(), releaseTouches(), textSelection.release(), triggerPanEnd();
+    }
+    __name(releaseEvents, "releaseEvents");
+    function frame() {
+      isDirty && applyTransform();
+    }
+    __name(frame, "frame");
+    function applyTransform() {
+      isDirty = !1, panController.applyTransform(transform2), triggerEvent("transform"), frameAnimation = 0;
+    }
+    __name(applyTransform, "applyTransform");
+    function onKeyDown(e) {
+      var x = 0, y = 0, z = 0;
+      if (e.keyCode === 38 ? y = 1 : e.keyCode === 40 ? y = -1 : e.keyCode === 37 ? x = 1 : e.keyCode === 39 ? x = -1 : e.keyCode === 189 || e.keyCode === 109 ? z = 1 : (e.keyCode === 187 || e.keyCode === 107) && (z = -1), !filterKey(e, x, y, z)) {
+        if (x || y) {
+          e.preventDefault(), e.stopPropagation();
+          var clientRect = owner.getBoundingClientRect(), offset = Math.min(clientRect.width, clientRect.height), moveSpeedRatio = 0.05, dx = offset * moveSpeedRatio * x, dy = offset * moveSpeedRatio * y;
+          internalMoveBy(dx, dy);
+        }
+        if (z) {
+          var scaleMultiplier = getScaleMultiplier(z * 100), offset = transformOrigin ? getTransformOriginOffset() : midPoint();
+          publicZoomTo(offset.x, offset.y, scaleMultiplier);
+        }
+      }
+    }
+    __name(onKeyDown, "onKeyDown");
+    function midPoint() {
+      var ownerRect = owner.getBoundingClientRect();
+      return {
+        x: ownerRect.width / 2,
+        y: ownerRect.height / 2
+      };
+    }
+    __name(midPoint, "midPoint");
+    function onTouch(e) {
+      if (beforeTouch(e), clearPendingClickEventTimeout(), e.touches.length === 1)
+        return handleSingleFingerTouch(e, e.touches[0]);
+      e.touches.length === 2 && (pinchZoomLength = getPinchZoomLength(e.touches[0], e.touches[1]), multiTouch = !0, startTouchListenerIfNeeded());
+    }
+    __name(onTouch, "onTouch");
+    function beforeTouch(e) {
+      options.onTouch && !options.onTouch(e) || (e.stopPropagation(), e.preventDefault());
+    }
+    __name(beforeTouch, "beforeTouch");
+    function beforeDoubleClick(e) {
+      clearPendingClickEventTimeout(), !(options.onDoubleClick && !options.onDoubleClick(e)) && (e.preventDefault(), e.stopPropagation());
+    }
+    __name(beforeDoubleClick, "beforeDoubleClick");
+    function handleSingleFingerTouch(e) {
+      lastTouchStartTime = /* @__PURE__ */ new Date();
+      var touch = e.touches[0], offset = getOffsetXY(touch);
+      lastSingleFingerOffset = offset;
+      var point = transformToScreen(offset.x, offset.y);
+      mouseX = point.x, mouseY = point.y, clickX = mouseX, clickY = mouseY, smoothScroll.cancel(), startTouchListenerIfNeeded();
+    }
+    __name(handleSingleFingerTouch, "handleSingleFingerTouch");
+    function startTouchListenerIfNeeded() {
+      touchInProgress || (touchInProgress = !0, document.addEventListener("touchmove", handleTouchMove), document.addEventListener("touchend", handleTouchEnd), document.addEventListener("touchcancel", handleTouchEnd));
+    }
+    __name(startTouchListenerIfNeeded, "startTouchListenerIfNeeded");
+    function handleTouchMove(e) {
+      if (e.touches.length === 1) {
+        e.stopPropagation();
+        var touch = e.touches[0], offset = getOffsetXY(touch), point = transformToScreen(offset.x, offset.y), dx = point.x - mouseX, dy = point.y - mouseY;
+        dx !== 0 && dy !== 0 && triggerPanStart(), mouseX = point.x, mouseY = point.y, internalMoveBy(dx, dy);
+      } else if (e.touches.length === 2) {
+        multiTouch = !0;
+        var t1 = e.touches[0], t2 = e.touches[1], currentPinchLength = getPinchZoomLength(t1, t2), scaleMultiplier = 1 + (currentPinchLength / pinchZoomLength - 1) * pinchSpeed, firstTouchPoint = getOffsetXY(t1), secondTouchPoint = getOffsetXY(t2);
+        if (mouseX = (firstTouchPoint.x + secondTouchPoint.x) / 2, mouseY = (firstTouchPoint.y + secondTouchPoint.y) / 2, transformOrigin) {
+          var offset = getTransformOriginOffset();
+          mouseX = offset.x, mouseY = offset.y;
+        }
+        publicZoomTo(mouseX, mouseY, scaleMultiplier), pinchZoomLength = currentPinchLength, e.stopPropagation(), e.preventDefault();
+      }
+    }
+    __name(handleTouchMove, "handleTouchMove");
+    function clearPendingClickEventTimeout() {
+      pendingClickEventTimeout && (clearTimeout(pendingClickEventTimeout), pendingClickEventTimeout = 0);
+    }
+    __name(clearPendingClickEventTimeout, "clearPendingClickEventTimeout");
+    function handlePotentialClickEvent(e) {
+      if (options.onClick) {
+        clearPendingClickEventTimeout();
+        var dx = mouseX - clickX, dy = mouseY - clickY, l = Math.sqrt(dx * dx + dy * dy);
+        l > 5 || (pendingClickEventTimeout = setTimeout(function() {
+          pendingClickEventTimeout = 0, options.onClick(e);
+        }, doubleTapSpeedInMS));
+      }
+    }
+    __name(handlePotentialClickEvent, "handlePotentialClickEvent");
+    function handleTouchEnd(e) {
+      if (clearPendingClickEventTimeout(), e.touches.length > 0) {
+        var offset = getOffsetXY(e.touches[0]), point = transformToScreen(offset.x, offset.y);
+        mouseX = point.x, mouseY = point.y;
+      } else {
+        var now = /* @__PURE__ */ new Date();
+        if (now - lastTouchEndTime < doubleTapSpeedInMS)
+          if (transformOrigin) {
+            var offset = getTransformOriginOffset();
+            smoothZoom(offset.x, offset.y, zoomDoubleClickSpeed);
+          } else
+            smoothZoom(lastSingleFingerOffset.x, lastSingleFingerOffset.y, zoomDoubleClickSpeed);
+        else now - lastTouchStartTime < clickEventTimeInMS && handlePotentialClickEvent(e);
+        lastTouchEndTime = now, triggerPanEnd(), releaseTouches();
+      }
+    }
+    __name(handleTouchEnd, "handleTouchEnd");
+    function getPinchZoomLength(finger1, finger2) {
+      var dx = finger1.clientX - finger2.clientX, dy = finger1.clientY - finger2.clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+    __name(getPinchZoomLength, "getPinchZoomLength");
+    function onDoubleClick(e) {
+      beforeDoubleClick(e);
+      var offset = getOffsetXY(e);
+      transformOrigin && (offset = getTransformOriginOffset()), smoothZoom(offset.x, offset.y, zoomDoubleClickSpeed);
+    }
+    __name(onDoubleClick, "onDoubleClick");
+    function onMouseDown(e) {
+      if (clearPendingClickEventTimeout(), !beforeMouseDown(e)) {
+        if (lastMouseDownedEvent = e, lastMouseDownTime = /* @__PURE__ */ new Date(), touchInProgress)
+          return e.stopPropagation(), !1;
+        var isLeftButton = e.button === 1 && window.event !== null || e.button === 0;
+        if (isLeftButton) {
+          smoothScroll.cancel();
+          var offset = getOffsetXY(e), point = transformToScreen(offset.x, offset.y);
+          return clickX = mouseX = point.x, clickY = mouseY = point.y, document.addEventListener("mousemove", onMouseMove), document.addEventListener("mouseup", onMouseUp), textSelection.capture(e.target || e.srcElement), !1;
+        }
+      }
+    }
+    __name(onMouseDown, "onMouseDown");
+    function onMouseMove(e) {
+      if (!touchInProgress) {
+        triggerPanStart();
+        var offset = getOffsetXY(e), point = transformToScreen(offset.x, offset.y), dx = point.x - mouseX, dy = point.y - mouseY;
+        mouseX = point.x, mouseY = point.y, internalMoveBy(dx, dy);
+      }
+    }
+    __name(onMouseMove, "onMouseMove");
+    function onMouseUp() {
+      var now = /* @__PURE__ */ new Date();
+      now - lastMouseDownTime < clickEventTimeInMS && handlePotentialClickEvent(lastMouseDownedEvent), textSelection.release(), triggerPanEnd(), releaseDocumentMouse();
+    }
+    __name(onMouseUp, "onMouseUp");
+    function releaseDocumentMouse() {
+      document.removeEventListener("mousemove", onMouseMove), document.removeEventListener("mouseup", onMouseUp), panstartFired = !1;
+    }
+    __name(releaseDocumentMouse, "releaseDocumentMouse");
+    function releaseTouches() {
+      document.removeEventListener("touchmove", handleTouchMove), document.removeEventListener("touchend", handleTouchEnd), document.removeEventListener("touchcancel", handleTouchEnd), panstartFired = !1, multiTouch = !1, touchInProgress = !1;
+    }
+    __name(releaseTouches, "releaseTouches");
+    function onMouseWheel(e) {
+      if (!beforeWheel(e)) {
+        smoothScroll.cancel();
+        var delta = e.deltaY;
+        e.deltaMode > 0 && (delta *= 100);
+        var scaleMultiplier = getScaleMultiplier(delta);
+        if (scaleMultiplier !== 1) {
+          var offset = transformOrigin ? getTransformOriginOffset() : getOffsetXY(e);
+          publicZoomTo(offset.x, offset.y, scaleMultiplier), e.preventDefault();
+        }
+      }
+    }
+    __name(onMouseWheel, "onMouseWheel");
+    function getOffsetXY(e) {
+      var offsetX, offsetY, ownerRect = owner.getBoundingClientRect();
+      return offsetX = e.clientX - ownerRect.left, offsetY = e.clientY - ownerRect.top, { x: offsetX, y: offsetY };
+    }
+    __name(getOffsetXY, "getOffsetXY");
+    function smoothZoom(clientX, clientY, scaleMultiplier) {
+      var fromValue = transform2.scale, from = { scale: fromValue }, to = { scale: scaleMultiplier * fromValue };
+      smoothScroll.cancel(), cancelZoomAnimation(), zoomToAnimation = animate(from, to, {
+        step: /* @__PURE__ */ __name(function(v) {
+          zoomAbs(clientX, clientY, v.scale);
+        }, "step"),
+        done: triggerZoomEnd
+      });
+    }
+    __name(smoothZoom, "smoothZoom");
+    function smoothZoomAbs(clientX, clientY, toScaleValue) {
+      var fromValue = transform2.scale, from = { scale: fromValue }, to = { scale: toScaleValue };
+      smoothScroll.cancel(), cancelZoomAnimation(), zoomToAnimation = animate(from, to, {
+        step: /* @__PURE__ */ __name(function(v) {
+          zoomAbs(clientX, clientY, v.scale);
+        }, "step")
+      });
+    }
+    __name(smoothZoomAbs, "smoothZoomAbs");
+    function getTransformOriginOffset() {
+      var ownerRect = owner.getBoundingClientRect();
+      return {
+        x: ownerRect.width * transformOrigin.x,
+        y: ownerRect.height * transformOrigin.y
+      };
+    }
+    __name(getTransformOriginOffset, "getTransformOriginOffset");
+    function publicZoomTo(clientX, clientY, scaleMultiplier) {
+      return smoothScroll.cancel(), cancelZoomAnimation(), zoomByRatio(clientX, clientY, scaleMultiplier);
+    }
+    __name(publicZoomTo, "publicZoomTo");
+    function cancelZoomAnimation() {
+      zoomToAnimation && (zoomToAnimation.cancel(), zoomToAnimation = null);
+    }
+    __name(cancelZoomAnimation, "cancelZoomAnimation");
+    function getScaleMultiplier(delta) {
+      var sign = Math.sign(delta), deltaAdjustedSpeed = Math.min(0.25, Math.abs(speed * delta / 128));
+      return 1 - sign * deltaAdjustedSpeed;
+    }
+    __name(getScaleMultiplier, "getScaleMultiplier");
+    function triggerPanStart() {
+      panstartFired || (triggerEvent("panstart"), panstartFired = !0, smoothScroll.start());
+    }
+    __name(triggerPanStart, "triggerPanStart");
+    function triggerPanEnd() {
+      panstartFired && (multiTouch || smoothScroll.stop(), triggerEvent("panend"));
+    }
+    __name(triggerPanEnd, "triggerPanEnd");
+    function triggerZoomEnd() {
+      triggerEvent("zoomend");
+    }
+    __name(triggerZoomEnd, "triggerZoomEnd");
+    function triggerEvent(name) {
+      api.fire(name, api);
+    }
+    __name(triggerEvent, "triggerEvent");
+  }
+  __name(createPanZoom2, "createPanZoom");
+  function parseTransformOrigin(options) {
+    if (options) {
+      if (typeof options == "object")
+        return (!isNumber(options.x) || !isNumber(options.y)) && failTransformOrigin(options), options;
+      failTransformOrigin();
+    }
+  }
+  __name(parseTransformOrigin, "parseTransformOrigin");
+  function failTransformOrigin(options) {
+    throw console.error(options), new Error(
+      [
+        "Cannot parse transform origin.",
+        "Some good examples:",
+        '  "center center" can be achieved with {x: 0.5, y: 0.5}',
+        '  "top center" can be achieved with {x: 0.5, y: 0}',
+        '  "bottom right" can be achieved with {x: 1, y: 1}'
+      ].join(`
+`)
+    );
+  }
+  __name(failTransformOrigin, "failTransformOrigin");
+  function noop() {
+  }
+  __name(noop, "noop");
+  function validateBounds(bounds) {
+    var boundsType = typeof bounds;
+    if (!(boundsType === "undefined" || boundsType === "boolean")) {
+      var validBounds = isNumber(bounds.left) && isNumber(bounds.top) && isNumber(bounds.bottom) && isNumber(bounds.right);
+      if (!validBounds)
+        throw new Error(
+          "Bounds object is not valid. It can be: undefined, boolean (true|false) or an object {left, top, right, bottom}"
+        );
+    }
+  }
+  __name(validateBounds, "validateBounds");
+  function isNumber(x) {
+    return Number.isFinite(x);
+  }
+  __name(isNumber, "isNumber");
+  function isNaN(value) {
+    return Number.isNaN ? Number.isNaN(value) : value !== value;
+  }
+  __name(isNaN, "isNaN");
+  function rigidScroll() {
+    return {
+      start: noop,
+      stop: noop,
+      cancel: noop
+    };
+  }
+  __name(rigidScroll, "rigidScroll");
+  function autoRun() {
+    if (typeof document > "u") return;
+    var scripts = document.getElementsByTagName("script");
+    if (!scripts) return;
+    for (var panzoomScript, i = 0; i < scripts.length; ++i) {
+      var x = scripts[i];
+      if (x.src && x.src.match(/\bpanzoom(\.min)?\.js/)) {
+        panzoomScript = x;
+        break;
+      }
+    }
+    if (!panzoomScript) return;
+    var query = panzoomScript.getAttribute("query");
+    if (!query) return;
+    var globalName = panzoomScript.getAttribute("name") || "pz", started = Date.now();
+    tryAttach();
+    function tryAttach() {
+      var el = document.querySelector(query);
+      if (!el) {
+        var now = Date.now(), elapsed = now - started;
+        if (elapsed < 2e3) {
+          setTimeout(tryAttach, 100);
+          return;
+        }
+        console.error("Cannot find the panzoom element", globalName);
+        return;
+      }
+      var options = collectOptions(panzoomScript);
+      console.log(options), window[globalName] = createPanZoom2(el, options);
+    }
+    __name(tryAttach, "tryAttach");
+    function collectOptions(script) {
+      for (var attrs = script.attributes, options = {}, j = 0; j < attrs.length; ++j) {
+        var attr = attrs[j], nameValue = getPanzoomAttributeNameValue(attr);
+        nameValue && (options[nameValue.name] = nameValue.value);
+      }
+      return options;
+    }
+    __name(collectOptions, "collectOptions");
+    function getPanzoomAttributeNameValue(attr) {
+      if (attr.name) {
+        var isPanZoomAttribute = attr.name[0] === "p" && attr.name[1] === "z" && attr.name[2] === "-";
+        if (isPanZoomAttribute) {
+          var name = attr.name.substr(3), value = JSON.parse(attr.value);
+          return { name, value };
+        }
+      }
+    }
+    __name(getPanzoomAttributeNameValue, "getPanzoomAttributeNameValue");
+  }
+  return __name(autoRun, "autoRun"), autoRun(), panzoom;
+}
+__name(requirePanzoom, "requirePanzoom");
+var panzoomExports = requirePanzoom();
+const createPanZoom = /* @__PURE__ */ getDefaultExportFromCjs(panzoomExports), _CallGraph = class _CallGraph {
+  svg;
+  nodes;
+  edges;
+  clusters;
+  width;
+  height;
+  selectedElem = null;
+  panZoomState;
+  focus;
+  incomings;
+  outgoings;
+  constructor(svg, focus, onSelectElem) {
+    if (this.svg = svg, this.nodes = svg.querySelectorAll("g.node"), this.edges = svg.querySelectorAll("g.edge"), this.clusters = svg.querySelectorAll("g.cluster"), this.width = this.svg.viewBox.baseVal.width, this.height = this.svg.viewBox.baseVal.height, this.setUpInteraction(onSelectElem ?? this.onSelectElem), this.focus = focus, focus) {
+      const incomings = /* @__PURE__ */ new Map(), outgoings = /* @__PURE__ */ new Map();
+      this.edges.forEach((edge) => {
+        const fromCell = edge.dataset.from, toCell = edge.dataset.to;
+        incomings.get(toCell)?.push(edge) ?? incomings.set(toCell, [edge]), outgoings.get(fromCell)?.push(edge) ?? outgoings.set(fromCell, [edge]);
+      }), this.incomings = incomings, this.outgoings = outgoings;
+    }
+  }
+  setUpInteraction(onSelectElem) {
+    const svg = this.svg;
+    let clickPoint = [0, 0];
+    svg.onmousedown = function(e) {
+      clickPoint = [e.pageX, e.pageY];
+    }, svg.onmouseup = function(e) {
+      const [x, y] = clickPoint, diffX = Math.abs(e.pageX - x), diffY = Math.abs(e.pageY - y);
+      if (!(diffX > 6 || diffY > 6)) {
+        for (let elem = e.target; elem && elem instanceof SVGElement && elem !== svg; elem = elem.parentNode) {
+          const classes = elem.classList;
+          if (classes.contains("node") || classes.contains("cell") || classes.contains("edge") || classes.contains("cluster-label")) {
+            onSelectElem(elem);
+            return;
+          }
+        }
+        onSelectElem(null);
+      }
+    };
+  }
+  setUpPanZoom() {
+    this.panZoomState = this.createPanZoomState();
+  }
+  createPanZoomState() {
+    const g0 = this.svg.querySelector("#graph0"), pz = createPanZoom(g0, {
+      smoothScroll: !1,
+      autocenter: !0
+    }), { x, y, scale } = structuredClone(pz.getTransform()), cRect = g0.getBoundingClientRect(), cx = cRect.x + cRect.width / 2, cy = cRect.y + cRect.height / 2, sRect = this.svg.getBoundingClientRect();
+    return {
+      pz,
+      scale,
+      x,
+      y,
+      cx,
+      cy,
+      sRect
+    };
+  }
+  resetStyles() {
+    const g0 = this.svg.getElementById("graph0"), fadedGroup = this.svg.getElementById("faded-group");
+    this.selectedElem?.closest(".selected")?.classList.remove("selected"), g0.querySelectorAll(":scope > .edge").forEach(
+      (edge) => edge.classList.remove("incoming", "outgoing")
+    );
+    const firstNode = g0.querySelector(".node");
+    for (const cluster of fadedGroup.querySelectorAll(".cluster"))
+      g0.insertBefore(cluster, firstNode);
+    for (const node of fadedGroup.querySelectorAll(".node"))
+      g0.insertBefore(node, firstNode);
+    g0.append(...fadedGroup.childNodes);
+  }
+  smoothZoom(scale) {
+    if (!this.panZoomState)
+      return;
+    const { pz, cx, cy } = this.panZoomState;
+    pz.smoothZoom(cx, cy, scale);
+  }
+  resetPanZoom() {
+    if (!this.panZoomState)
+      return;
+    const { pz, x, y, scale } = this.panZoomState;
+    pz.moveTo(x, y), pz.zoomAbs(x, y, scale);
+  }
+  onSelectElem = /* @__PURE__ */ __name((elem) => {
+    if (this.resetStyles(), this.selectedElem = elem, !elem)
+      return;
+    const { pz, scale, cx, cy, sRect } = this.panZoomState, eRect = elem.getBoundingClientRect();
+    eRect.width > sRect.width || eRect.height > sRect.height ? (pz.smoothZoomAbs(cx, cy, scale), setTimeout(() => pz.centerOn(elem), 1e3)) : (eRect.left < sRect.left || eRect.top < sRect.top || eRect.right > sRect.right || eRect.bottom > sRect.bottom) && pz.centerOn(elem);
+    const classes = elem.classList;
+    classes.contains("node") ? this.onSelectNode(elem) : classes.contains("cell") ? this.onSelectCell(elem) : classes.contains("edge") ? this.onSelectEdge(elem) : classes.contains("cluster-label") && this.onSelctCluster(elem);
+  }, "onSelectElem");
+  onSelectNode(node) {
+    const id = node.id;
+    this.highlightEdges((edge) => [
+      edge.dataset.to.startsWith(`${id}:`),
+      edge.dataset.from.startsWith(`${id}:`)
+    ]), node.classList.add("selected"), this.fadeOutNodes(/* @__PURE__ */ new Set([id]));
+  }
+  onSelectCell(cell) {
+    const id = cell.id;
+    if (this.focus)
+      this.onSelectCellInFocusMode(id);
+    else {
+      const cellIds = /* @__PURE__ */ new Set([cell.id]);
+      cell.querySelectorAll(".cell").forEach((c) => {
+        cellIds.add(c.id);
+      }), this.highlightEdges((edge) => [
+        cellIds.has(edge.dataset.to),
+        cellIds.has(edge.dataset.from)
+      ]);
+    }
+    cell.classList.add("selected"), this.fadeOutNodes(/* @__PURE__ */ new Set([this.getNodeId(cell.id)]));
+  }
+  onSelectCellInFocusMode(cellId) {
+    const highlights = [/* @__PURE__ */ new Set(), /* @__PURE__ */ new Set()], inout = [this.incomings, this.outgoings];
+    for (let i = 0; i < inout.length; ++i) {
+      const visited = /* @__PURE__ */ new Set([cellId, this.focus]), map = inout[i], highlightEdges = highlights[i];
+      for (let newEdges = map.get(cellId) ?? []; newEdges.length > 0; )
+        newEdges = newEdges.flatMap((edge) => {
+          highlightEdges.add(edge);
+          const id = i == 0 ? edge.dataset.from : edge.dataset.to;
+          return visited.has(id) ? [] : (visited.add(id), map.get(id) ?? []);
+        });
+    }
+    this.highlightEdges((edge) => [
+      highlights[0].has(edge),
+      highlights[1].has(edge)
+    ]), this.fadeOutNodes(/* @__PURE__ */ new Set([this.getNodeId(cellId)]));
+  }
+  onSelectEdge(edge) {
+    const g0 = this.svg.getElementById("graph0");
+    this.svg.getElementById("faded-group").append(...this.edges), g0.appendChild(edge), this.fadeOutNodes();
+  }
+  onSelctCluster(clusterLabel) {
+    const cluster = clusterLabel.parentNode, rect = cluster.getBoundingClientRect();
+    cluster.classList.add("selected");
+    const selected = /* @__PURE__ */ new Set();
+    this.nodes.forEach((node) => {
+      this.rectContains(rect, node.getBoundingClientRect()) && selected.add(node.id);
+    }), this.highlightEdges((edge) => [
+      selected.has(this.getNodeId(edge.dataset.to)),
+      selected.has(this.getNodeId(edge.dataset.from))
+    ]), this.fadeOutNodes(selected);
+  }
+  highlightEdges(judge) {
+    const fadedGroup = this.svg.getElementById("faded-group");
+    for (const edge of this.edges) {
+      const [incoming, outgoing] = judge(edge);
+      incoming && edge.classList.add("incoming"), outgoing && edge.classList.add("outgoing"), incoming || outgoing || fadedGroup.appendChild(edge);
+    }
+  }
+  fadeOutNodes(kept) {
+    kept || (kept = /* @__PURE__ */ new Set());
+    const fadedGroup = this.svg.getElementById("faded-group");
+    for (const edge of this.edges)
+      edge.parentElement !== fadedGroup && kept.add(this.getNodeId(edge.dataset.from)).add(this.getNodeId(edge.dataset.to));
+    const clusters = new Set(this.clusters);
+    for (const node of this.nodes) {
+      if (!kept.has(node.id)) {
+        fadedGroup.appendChild(node);
+        continue;
+      }
+      const rect = node.getBoundingClientRect();
+      for (const cluster of clusters)
+        this.rectContains(cluster.getBoundingClientRect(), rect) && clusters.delete(cluster);
+    }
+    fadedGroup.append(...clusters);
+  }
+  getNodeId(id) {
+    return id.substring(0, id.indexOf(":"));
+  }
+  rectContains(rect1, rect2) {
+    return rect1.left < rect2.left && rect1.right > rect2.right && rect1.bottom > rect2.bottom && rect1.top < rect2.top;
+  }
+};
+__name(_CallGraph, "CallGraph");
+let CallGraph = _CallGraph;
+export {
+  CallGraph
+};
+
+
+    const graph = new CallGraph(document.querySelector(".callgraph"), null);
+    graph.setUpPanZoom();
+  </script>
+</body>
+</html>

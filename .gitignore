@@ -38,3 +38,4 @@ frontend/*.log
 
 # ─── Docker ───
 docker-compose.override.yml
+.vscode/settings.json
