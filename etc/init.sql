@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- 视频表
 CREATE TABLE IF NOT EXISTS `videos` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(255) NOT NULL DEFAULT '',
+    `title` VARCHAR(512) NOT NULL DEFAULT '' COMMENT '视频标题，最大512字符（约170个中文字）',
     `description` TEXT NOT NULL,
     `user_id` BIGINT NOT NULL DEFAULT 0,
     `object_key` VARCHAR(512) NOT NULL DEFAULT '',

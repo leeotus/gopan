@@ -26,7 +26,6 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./etc/init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: --default-authentication-plugin=mysql_native_password
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -89,6 +88,30 @@ services:
     networks:
       - gopan-net
 
+  kafka:
+    image: docker.m.daocloud.io/apache/kafka:4.0.0
+    container_name: gopan-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - gopan-net
+
   # ============ 微服务 ============
 
   user-svc:
@@ -112,6 +135,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
       minio:
         condition: service_healthy
       etcd:
@@ -126,6 +151,8 @@ services:
     container_name: gopan-transcode-svc
     command: /app/rpc/transcode/transcode-svc -f /app/rpc/transcode/etc/transcode.yaml
     depends_on:
+      kafka:
+        condition: service_healthy
       etcd:
         condition: service_started
       minio:
@@ -198,6 +225,7 @@ volumes:
   redis-data:
   minio-data:
   es-data:
+  kafka-data:
 
 networks:
   gopan-net:

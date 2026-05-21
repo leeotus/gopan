@@ -1,12 +1,13 @@
 // PostCommentLogic / ListCommentsLogic / DeleteCommentLogic — 评论相关逻辑。
-// TODO: 集成 comments 表。
 package logic
 
 import (
 	"context"
+	"database/sql"
 
 	"gopan/rpc/interact/internal/svc"
 	"gopan/rpc/interact/interact"
+	"gopan/rpc/interact/store"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/codes"
@@ -24,8 +25,12 @@ func NewPostCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostC
 }
 
 func (l *PostCommentLogic) PostComment(in *interact.PostCommentReq) (*interact.PostCommentResp, error) {
-	l.Logger.Infof("post comment: userId=%d, videoId=%d", in.UserId, in.VideoId)
-	return &interact.PostCommentResp{}, status.Error(codes.Unimplemented, "需要数据库 comments 表")
+	commentId, err := l.svcCtx.InteractStore.InsertComment(l.ctx, in.UserId, in.VideoId, in.ParentId, in.Content)
+	if err != nil {
+		l.Logger.Errorf("insert comment error: %v", err)
+		return nil, status.Error(codes.Internal, "评论失败")
+	}
+	return &interact.PostCommentResp{CommentId: commentId}, nil
 }
 
 type ListCommentsLogic struct {
@@ -39,7 +44,32 @@ func NewListCommentsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *List
 }
 
 func (l *ListCommentsLogic) ListComments(in *interact.ListCommentsReq) (*interact.ListCommentsResp, error) {
-	return &interact.ListCommentsResp{}, status.Error(codes.Unimplemented, "需要数据库 comments 表")
+	rows, err := l.svcCtx.InteractStore.ListComments(l.ctx, in.VideoId, in.Cursor, in.Limit, in.Sort)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "查询失败")
+	}
+
+	hasMore := len(rows) > int(in.Limit)
+	if hasMore {
+		rows = rows[:in.Limit]
+	}
+
+	resp := &interact.ListCommentsResp{HasMore: hasMore}
+	for _, r := range rows {
+		resp.Comments = append(resp.Comments, &interact.CommentInfo{
+			Id:         r.Id,
+			UserId:     r.UserId,
+			Content:    r.Content,
+			LikeCount:  r.LikeCount,
+			ReplyCount: int32(r.ReplyCount),
+			ParentId:   r.ParentId,
+			CreatedAt:  r.CreatedAt,
+		})
+		if !hasMore {
+			resp.NextCursor = r.Id
+		}
+	}
+	return resp, nil
 }
 
 type DeleteCommentLogic struct {
@@ -53,6 +83,15 @@ func NewDeleteCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Del
 }
 
 func (l *DeleteCommentLogic) DeleteComment(in *interact.DeleteCommentReq) (*interact.DeleteCommentResp, error) {
-	l.Logger.Infof("delete comment: commentId=%d, userId=%d", in.CommentId, in.UserId)
-	return &interact.DeleteCommentResp{}, status.Error(codes.Unimplemented, "需要数据库 comments 表")
+	if err := l.svcCtx.InteractStore.DeleteComment(l.ctx, in.CommentId, in.UserId); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Error(codes.NotFound, "评论不存在或无权删除")
+		}
+		l.Logger.Errorf("delete comment error: %v", err)
+		return nil, status.Error(codes.Internal, "删除失败")
+	}
+	return &interact.DeleteCommentResp{}, nil
 }
+
+// 避免 import 未使用
+var _ store.InteractStore

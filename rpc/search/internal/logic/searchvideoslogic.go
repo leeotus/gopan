@@ -1,10 +1,10 @@
-// SearchVideosLogic / IndexVideoLogic / RemoveVideoLogic — 搜索相关逻辑。
-// TODO: 集成 Elasticsearch 客户端，实现全文搜索和索引管理。
+// search-svc logic 层：SearchVideos / IndexVideo / RemoveVideo
 package logic
 
 import (
 	"context"
 
+	"gopan/common/es"
 	"gopan/rpc/search/internal/svc"
 	"gopan/rpc/search/search"
 
@@ -23,11 +23,40 @@ func NewSearchVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Sear
 	return &SearchVideosLogic{ctx: ctx, svcCtx: svcCtx, Logger: logx.WithContext(ctx)}
 }
 
-// SearchVideos 全文搜索视频。
-// TODO: 调用 ES multi_match 查询 title + description 字段。
 func (l *SearchVideosLogic) SearchVideos(in *search.SearchVideosReq) (*search.SearchVideosResp, error) {
-	l.Logger.Infof("search videos: keyword=%s, page=%d", in.Keyword, in.Page)
-	return &search.SearchVideosResp{}, status.Error(codes.Unimplemented, "需要配置 Elasticsearch")
+	if l.svcCtx.ESClient == nil {
+		return nil, status.Error(codes.Internal, "ES 未配置")
+	}
+
+	result, err := l.svcCtx.ESClient.SearchVideos(l.ctx, in.Keyword, in.Category, int(in.Page), int(in.Size))
+	if err != nil {
+		l.Logger.Errorf("es search error: %v", err)
+		return nil, status.Error(codes.Internal, "搜索失败")
+	}
+
+	videos := make([]*search.SearchVideoInfo, 0, len(result.Hits))
+	for _, h := range result.Hits {
+		videos = append(videos, &search.SearchVideoInfo{
+			Id:          h.VideoId,
+			Title:       h.Title,
+			CoverUrl:    h.CoverUrl,
+			UserId:      h.UserId,
+			Username:    h.Username,
+			PlayCount:   h.PlayCount,
+			LikeCount:   h.LikeCount,
+			Description: h.Description,
+			Duration:    h.Duration,
+			Category:    h.Category,
+			CreatedAt:   h.CreatedAt,
+		})
+	}
+
+	return &search.SearchVideosResp{
+		Videos: videos,
+		Total:  result.Total,
+		Page:   in.Page,
+		Size:   in.Size,
+	}, nil
 }
 
 type IndexVideoLogic struct {
@@ -41,7 +70,26 @@ func NewIndexVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *IndexV
 }
 
 func (l *IndexVideoLogic) IndexVideo(in *search.IndexVideoReq) (*search.IndexVideoResp, error) {
-	l.Logger.Infof("index video: videoId=%d, title=%s", in.VideoId, in.Title)
+	if l.svcCtx.ESClient == nil {
+		return &search.IndexVideoResp{}, nil
+	}
+
+	doc := &es.VideoDoc{
+		VideoId:     in.VideoId,
+		Title:       in.Title,
+		Description: in.Description,
+		Category:    in.Category,
+		UserId:      in.UserId,
+		Username:    in.Username,
+		CoverUrl:    in.CoverUrl,
+		PlayCount:   in.PlayCount,
+		LikeCount:   in.LikeCount,
+		Duration:    in.Duration,
+	}
+	if err := l.svcCtx.ESClient.IndexVideo(l.ctx, doc); err != nil {
+		l.Logger.Errorf("es index error: %v", err)
+		return &search.IndexVideoResp{}, nil // 索引失败不影响主流程
+	}
 	return &search.IndexVideoResp{}, nil
 }
 
@@ -56,6 +104,11 @@ func NewRemoveVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Remov
 }
 
 func (l *RemoveVideoLogic) RemoveVideo(in *search.RemoveVideoReq) (*search.RemoveVideoResp, error) {
-	l.Logger.Infof("remove video from index: videoId=%d", in.VideoId)
+	if l.svcCtx.ESClient == nil {
+		return &search.RemoveVideoResp{}, nil
+	}
+	if err := l.svcCtx.ESClient.RemoveVideo(l.ctx, in.VideoId); err != nil {
+		l.Logger.Errorf("es remove error: %v", err)
+	}
 	return &search.RemoveVideoResp{}, nil
 }

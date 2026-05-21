@@ -1,12 +1,25 @@
-# 本地开发配置 — 将 Docker 内部服务名替换为 localhost
+# 本地开发配置
 Name: transcode.rpc
 ListenOn: 0.0.0.0:8083
 Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: transcode.rpc
-DB:
-  DataSource: root:gopan123@tcp(127.0.0.1:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
-JWT:
-  AccessSecret: "gopan-secret-key-change-in-production"
-  AccessExpire: 86400
+VideoRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: video.rpc
+FFmpeg:
+  Path: /usr/bin/ffmpeg
+MinIO:
+  Endpoint: 127.0.0.1:9000
+  AccessKey: minioadmin
+  SecretKey: minioadmin
+  Bucket: gopan-videos
+  UseSSL: false
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  TranscodeTopic: gopan.transcode.tasks
+  ConsumerGroup: transcode-svc-group

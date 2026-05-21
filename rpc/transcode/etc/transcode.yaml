@@ -1,9 +1,15 @@
 Name: transcode.rpc
 ListenOn: 0.0.0.0:8083
+Mode: dev
 Etcd:
   Hosts:
   - etcd:2379
   Key: transcode.rpc
+VideoRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: video.rpc
 FFmpeg:
   Path: /usr/bin/ffmpeg
 MinIO:
@@ -12,3 +18,8 @@ MinIO:
   SecretKey: minioadmin
   Bucket: gopan-videos
   UseSSL: false
+Kafka:
+  Brokers:
+    - kafka:9092
+  TranscodeTopic: gopan.transcode.tasks
+  ConsumerGroup: transcode-svc-group

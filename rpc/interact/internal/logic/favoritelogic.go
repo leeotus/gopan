@@ -1,5 +1,4 @@
 // FavoriteLogic / UnfavoriteLogic / GetFavoriteStatusLogic — 收藏相关逻辑。
-// TODO: 集成 favorites 表。
 package logic
 
 import (
@@ -24,8 +23,11 @@ func NewFavoriteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favorite
 }
 
 func (l *FavoriteLogic) Favorite(in *interact.FavoriteReq) (*interact.FavoriteResp, error) {
-	l.Logger.Infof("favorite: userId=%d, videoId=%d", in.UserId, in.VideoId)
-	return &interact.FavoriteResp{}, status.Error(codes.Unimplemented, "需要数据库 favorites 表")
+	if err := l.svcCtx.InteractStore.InsertFavorite(l.ctx, in.UserId, in.VideoId); err != nil {
+		l.Logger.Errorf("insert favorite error: %v", err)
+		return nil, status.Error(codes.Internal, "收藏失败")
+	}
+	return &interact.FavoriteResp{}, nil
 }
 
 type UnfavoriteLogic struct {
@@ -39,8 +41,11 @@ func NewUnfavoriteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Unfavo
 }
 
 func (l *UnfavoriteLogic) Unfavorite(in *interact.UnfavoriteReq) (*interact.UnfavoriteResp, error) {
-	l.Logger.Infof("unfavorite: userId=%d, videoId=%d", in.UserId, in.VideoId)
-	return &interact.UnfavoriteResp{}, status.Error(codes.Unimplemented, "需要数据库 favorites 表")
+	if err := l.svcCtx.InteractStore.DeleteFavorite(l.ctx, in.UserId, in.VideoId); err != nil {
+		l.Logger.Errorf("delete favorite error: %v", err)
+		return nil, status.Error(codes.Internal, "取消收藏失败")
+	}
+	return &interact.UnfavoriteResp{}, nil
 }
 
 type GetFavoriteStatusLogic struct {
@@ -54,5 +59,9 @@ func NewGetFavoriteStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *GetFavoriteStatusLogic) GetFavoriteStatus(in *interact.GetFavoriteStatusReq) (*interact.GetFavoriteStatusResp, error) {
-	return &interact.GetFavoriteStatusResp{}, nil
+	favorited, err := l.svcCtx.InteractStore.IsFavorited(l.ctx, in.UserId, in.VideoId)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "查询失败")
+	}
+	return &interact.GetFavoriteStatusResp{Favorited: favorited}, nil
 }

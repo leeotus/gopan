@@ -1,5 +1,6 @@
 Name: gateway
 Host: 0.0.0.0
+Mode: dev
 Port: 8888
 
 Auth:

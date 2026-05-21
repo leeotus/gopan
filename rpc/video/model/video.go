@@ -10,7 +10,7 @@ import (
 // Status 生命周期: 0(上传中) → 1(转码中) → 2(正常) 或 3(审核中) → 4(下架)
 type Video struct {
 	Id          int64        `db:"id"`          // 主键，自增
-	Title       string       `db:"title"`       // 视频标题
+	Title       string       `db:"title"`       // 视频标题，最大 512 字符（约 170 个中文字）
 	Description string       `db:"description"`  // 视频简介
 	UserId      int64        `db:"user_id"`      // 上传者用户 ID
 	ObjectKey   string       `db:"object_key"`   // 在 MinIO 中的存储 key

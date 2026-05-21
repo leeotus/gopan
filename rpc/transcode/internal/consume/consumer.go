@@ -1,0 +1,190 @@
+// package consume 实现 Kafka Consumer，消费转码任务并执行 FFmpeg 1080p HLS 转码。
+package consume
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"gopan/common/storage"
+	"gopan/rpc/transcode/internal/svc"
+	"gopan/rpc/video/videoclient"
+
+	"github.com/segmentio/kafka-go"
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+// TranscodeTask 从 Kafka 消费到的转码任务消息体。
+type TranscodeTask struct {
+	VideoId   int64  `json:"video_id"`
+	ObjectKey string `json:"object_key"`
+}
+
+// StartConsumer 启动 Kafka 消费者（阻塞运行）。
+func StartConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
+	reader := kafka.NewReader(kafka.ReaderConfig{
+		Brokers: svcCtx.Config.Kafka.Brokers,
+		Topic:   svcCtx.Config.Kafka.TranscodeTopic,
+		GroupID: svcCtx.Config.Kafka.ConsumerGroup,
+		Logger:  nil,
+	})
+	defer reader.Close()
+
+	for {
+		msg, err := reader.FetchMessage(ctx)
+		if err != nil {
+			if err == context.Canceled {
+				return
+			}
+			logx.Errorf("kafka fetch error: %v", err)
+			continue
+		}
+
+		var task TranscodeTask
+		if err := json.Unmarshal(msg.Value, &task); err != nil {
+			logx.Errorf("kafka unmarshal task error: %v", err)
+			reader.CommitMessages(ctx, msg)
+			continue
+		}
+
+		logx.Infof("kafka consumed transcode task: video_id=%d, key=%s", task.VideoId, string(msg.Key))
+
+		if err := processTranscode(ctx, svcCtx, &task); err != nil {
+			logx.Errorf("transcode failed: video_id=%d, err=%v", task.VideoId, err)
+			// 回调失败状态给 video-svc
+			svcCtx.VideoClient.TranscodeCallback(ctx, &videoclient.TranscodeCallbackReq{
+				VideoId: task.VideoId,
+				Status:  3, // 失败
+			})
+		}
+
+		reader.CommitMessages(ctx, msg)
+	}
+}
+
+// processTranscode 执行单条转码任务：
+//   1. 从 MinIO 下载源文件到工作目录
+//   2. FFmpeg 1080p HLS 转码（libx264 + AAC + hls_time=10）
+//   3. 上传 HLS 切片 + m3u8 到 MinIO
+//   4. 回调 video-svc.TranscodeCallback（通知转码完成）
+func processTranscode(ctx context.Context, svcCtx *svc.ServiceContext, task *TranscodeTask) error {
+	workDir := svcCtx.Config.WorkDir
+	if workDir == "" {
+		workDir = "/tmp/gopan-transcode"
+	}
+	taskDir := filepath.Join(workDir, fmt.Sprintf("video-%d", task.VideoId))
+	os.MkdirAll(taskDir, 0755)
+	defer os.RemoveAll(taskDir) // 清理临时文件
+
+	// ── 1. 下载源文件 ──
+	inputPath := filepath.Join(taskDir, "input.mp4")
+	if err := downloadFromMinio(ctx, svcCtx.MinioClient, task.ObjectKey, inputPath); err != nil {
+		return fmt.Errorf("download source: %w", err)
+	}
+
+	// ── 2. FFmpeg 1080p HLS 转码 ──
+	hlsDir := filepath.Join(taskDir, "1080p")
+	os.MkdirAll(hlsDir, 0755)
+
+	ffmpegPath := svcCtx.Config.FFmpeg.Path
+	if ffmpegPath == "" {
+		ffmpegPath = "ffmpeg"
+	}
+
+	// ffmpeg -i input.mp4 \
+	//   -c:v libx264 -preset fast -b:v 5000k -s 1920x1080 \
+	//   -c:a aac -b:a 128k \
+	//   -hls_time 10 -hls_list_size 0 \
+	//   -hls_segment_filename 1080p/segment_%03d.ts \
+	//   -f hls 1080p/index.m3u8
+	cmd := exec.CommandContext(ctx, ffmpegPath,
+		"-i", inputPath,
+		"-c:v", "libx264", "-preset", "fast",
+		"-b:v", "5000k", "-maxrate", "5000k", "-bufsize", "10000k",
+		"-s", "1920x1080",
+		"-c:a", "aac", "-b:a", "128k",
+		"-hls_time", "10",
+		"-hls_list_size", "0",
+		"-hls_segment_filename", filepath.Join(hlsDir, "segment_%03d.ts"),
+		"-f", "hls", filepath.Join(hlsDir, "index.m3u8"),
+	)
+	cmd.Dir = taskDir
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		logx.Errorf("ffmpeg failed: %v, output: %s", err, string(output))
+		return fmt.Errorf("ffmpeg transcode: %w", err)
+	}
+	logx.Infof("ffmpeg done: video_id=%d", task.VideoId)
+
+	// ── 3. 上传 HLS 文件到 MinIO ──
+	prefix := fmt.Sprintf("videos/%d/1080p", task.VideoId)
+	entries, _ := os.ReadDir(hlsDir)
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		localPath := filepath.Join(hlsDir, e.Name())
+		minioKey := prefix + "/" + e.Name()
+		if err := uploadToMinio(ctx, svcCtx.MinioClient, localPath, minioKey); err != nil {
+			return fmt.Errorf("upload %s: %w", e.Name(), err)
+		}
+	}
+
+	// ── 4. 回调 video-svc ──
+	m3u8URL := svcCtx.MinioClient.ObjectURL(prefix + "/index.m3u8")
+	_, err = svcCtx.VideoClient.TranscodeCallback(ctx, &videoclient.TranscodeCallbackReq{
+		VideoId: task.VideoId,
+		Status:  2, // 成功
+		Transcodes: []*videoclient.TranscodeInfo{
+			{Resolution: "1080p", M3U8Url: m3u8URL, Bitrate: 5000},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("callback video-svc: %w", err)
+	}
+
+	logx.Infof("transcode completed: video_id=%d", task.VideoId)
+	return nil
+}
+
+// ── helpers ──
+
+func downloadFromMinio(ctx context.Context, client *storage.MinioClient, key, destPath string) error {
+	reader, err := client.GetObject(ctx, key)
+	if err != nil {
+		return err
+	}
+	defer reader.Close()
+
+	f, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = io.Copy(f, reader)
+	return err
+}
+
+func uploadToMinio(ctx context.Context, client *storage.MinioClient, localPath, minioKey string) error {
+	f, err := os.Open(localPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	contentType := "application/octet-stream"
+	if strings.HasSuffix(minioKey, ".m3u8") {
+		contentType = "application/vnd.apple.mpegurl"
+	} else if strings.HasSuffix(minioKey, ".ts") {
+		contentType = "video/mp2t"
+	}
+
+	return client.PutObject(ctx, minioKey, f, 0, contentType)
+}

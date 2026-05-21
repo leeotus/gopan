@@ -5,6 +5,7 @@ package logic
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"gopan/rpc/transcode/internal/svc"
 	"gopan/rpc/transcode/transcode"
@@ -30,7 +31,7 @@ func NewSubmitTaskLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Submit
 // 生成唯一任务 ID，后续由 FFmpeg 进程异步处理。
 // TODO: 集成 FFmpeg 和 MinIO 客户端完成实际转码流程。
 func (l *SubmitTaskLogic) SubmitTask(in *transcode.SubmitTaskReq) (*transcode.SubmitTaskResp, error) {
-	taskId := fmt.Sprintf("transcode_%d_%d", in.VideoId, l.svcCtx.GenTaskId())
+	taskId := fmt.Sprintf("transcode_%d_%d", in.VideoId, time.Now().UnixNano())
 
 	l.Logger.Infof("submit transcode task: taskId=%s, videoId=%d, resolutions=%v",
 		taskId, in.VideoId, in.Resolutions)

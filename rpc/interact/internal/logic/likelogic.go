@@ -1,9 +1,9 @@
 // LikeLogic / UnlikeLogic / GetLikeStatusLogic — 点赞相关逻辑。
-// TODO: 集成点赞表和 Redis 计数器。
 package logic
 
 import (
 	"context"
+	"database/sql"
 
 	"gopan/rpc/interact/internal/svc"
 	"gopan/rpc/interact/interact"
@@ -24,8 +24,11 @@ func NewLikeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LikeLogic {
 }
 
 func (l *LikeLogic) Like(in *interact.LikeReq) (*interact.LikeResp, error) {
-	l.Logger.Infof("like: userId=%d, videoId=%d", in.UserId, in.VideoId)
-	return &interact.LikeResp{}, status.Error(codes.Unimplemented, "需要数据库 likes 表")
+	if err := l.svcCtx.InteractStore.InsertLike(l.ctx, in.UserId, in.VideoId); err != nil {
+		l.Logger.Errorf("insert like error: %v", err)
+		return nil, status.Error(codes.Internal, "点赞失败")
+	}
+	return &interact.LikeResp{LikeCount: 0}, nil // like_count 已存在 video-svc 侧
 }
 
 type UnlikeLogic struct {
@@ -39,8 +42,14 @@ func NewUnlikeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UnlikeLogi
 }
 
 func (l *UnlikeLogic) Unlike(in *interact.UnlikeReq) (*interact.UnlikeResp, error) {
-	l.Logger.Infof("unlike: userId=%d, videoId=%d", in.UserId, in.VideoId)
-	return &interact.UnlikeResp{}, status.Error(codes.Unimplemented, "需要数据库 likes 表")
+	if err := l.svcCtx.InteractStore.DeleteLike(l.ctx, in.UserId, in.VideoId); err != nil {
+		if err == sql.ErrNoRows {
+			return &interact.UnlikeResp{}, nil
+		}
+		l.Logger.Errorf("delete like error: %v", err)
+		return nil, status.Error(codes.Internal, "取消点赞失败")
+	}
+	return &interact.UnlikeResp{}, nil
 }
 
 type GetLikeStatusLogic struct {
@@ -54,5 +63,9 @@ func NewGetLikeStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetLikeStatusLogic) GetLikeStatus(in *interact.GetLikeStatusReq) (*interact.GetLikeStatusResp, error) {
-	return &interact.GetLikeStatusResp{}, nil
+	liked, err := l.svcCtx.InteractStore.IsLiked(l.ctx, in.UserId, in.VideoId)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "查询失败")
+	}
+	return &interact.GetLikeStatusResp{Liked: liked}, nil
 }

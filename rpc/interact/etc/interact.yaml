@@ -1,5 +1,6 @@
 Name: interact.rpc
 ListenOn: 0.0.0.0:8085
+Mode: dev
 Etcd:
   Hosts:
   - etcd:2379
