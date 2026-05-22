@@ -18,6 +18,8 @@ type (
 	DeleteVideoResp       = video.DeleteVideoResp
 	GetVideoReq           = video.GetVideoReq
 	GetVideoResp          = video.GetVideoResp
+	InitUploadReq         = video.InitUploadReq
+	InitUploadResp        = video.InitUploadResp
 	ListUserVideosReq     = video.ListUserVideosReq
 	ListVideosReq         = video.ListVideosReq
 	ListVideosResp        = video.ListVideosResp
@@ -30,12 +32,18 @@ type (
 	UpdateVideoResp       = video.UpdateVideoResp
 	UploadChunkReq        = video.UploadChunkReq
 	UploadChunkResp       = video.UploadChunkResp
+	UploadStatusReq       = video.UploadStatusReq
+	UploadStatusResp      = video.UploadStatusResp
 	VideoInfo             = video.VideoInfo
 
 	Video interface {
-		// 上传视频(分片)
-		UploadChunk(ctx context.Context, opts ...grpc.CallOption) (video.Video_UploadChunkClient, error)
-		// 合并分片
+		// 初始化上传（返回 upload_id，创建视频记录）
+		InitUpload(ctx context.Context, in *InitUploadReq, opts ...grpc.CallOption) (*InitUploadResp, error)
+		// 上传单个分片（非 stream，每个 chunk 独立 RPC）
+		UploadChunk(ctx context.Context, in *UploadChunkReq, opts ...grpc.CallOption) (*UploadChunkResp, error)
+		// 查询上传进度（已收到的 chunk 列表）
+		UploadStatus(ctx context.Context, in *UploadStatusReq, opts ...grpc.CallOption) (*UploadStatusResp, error)
+		// 合并分片（合并前校验完整性）
 		MergeChunks(ctx context.Context, in *MergeChunksReq, opts ...grpc.CallOption) (*MergeChunksResp, error)
 		// 获取视频列表
 		ListVideos(ctx context.Context, in *ListVideosReq, opts ...grpc.CallOption) (*ListVideosResp, error)
@@ -62,13 +70,25 @@ func NewVideo(cli zrpc.Client) Video {
 	}
 }
 
-// 上传视频(分片)
-func (m *defaultVideo) UploadChunk(ctx context.Context, opts ...grpc.CallOption) (video.Video_UploadChunkClient, error) {
+// 初始化上传（返回 upload_id，创建视频记录）
+func (m *defaultVideo) InitUpload(ctx context.Context, in *InitUploadReq, opts ...grpc.CallOption) (*InitUploadResp, error) {
 	client := video.NewVideoClient(m.cli.Conn())
-	return client.UploadChunk(ctx, opts...)
+	return client.InitUpload(ctx, in, opts...)
 }
 
-// 合并分片
+// 上传单个分片（非 stream，每个 chunk 独立 RPC）
+func (m *defaultVideo) UploadChunk(ctx context.Context, in *UploadChunkReq, opts ...grpc.CallOption) (*UploadChunkResp, error) {
+	client := video.NewVideoClient(m.cli.Conn())
+	return client.UploadChunk(ctx, in, opts...)
+}
+
+// 查询上传进度（已收到的 chunk 列表）
+func (m *defaultVideo) UploadStatus(ctx context.Context, in *UploadStatusReq, opts ...grpc.CallOption) (*UploadStatusResp, error) {
+	client := video.NewVideoClient(m.cli.Conn())
+	return client.UploadStatus(ctx, in, opts...)
+}
+
+// 合并分片（合并前校验完整性）
 func (m *defaultVideo) MergeChunks(ctx context.Context, in *MergeChunksReq, opts ...grpc.CallOption) (*MergeChunksResp, error) {
 	client := video.NewVideoClient(m.cli.Conn())
 	return client.MergeChunks(ctx, in, opts...)

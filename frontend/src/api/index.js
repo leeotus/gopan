@@ -14,6 +14,7 @@ export const videoApi = {
   initUpload: (data) => request.post("/video/init-upload", data),
   uploadChunk: (formData) =>
     request.post("/video/upload-chunk", formData, { headers: { "Content-Type": "multipart/form-data" } }),
+  uploadStatus: (params) => request.get("/video/upload-status", { params }),
   mergeChunks: (data) => request.post("/video/merge-chunks", data),
   update: (data) => request.put("/video/update", data),
   delete: (params) => request.delete("/video/delete", { params }),

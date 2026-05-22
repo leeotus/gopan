@@ -6,9 +6,13 @@ option go_package = "./video";
 
 // 视频服务
 service Video {
-  // 上传视频(分片)
-  rpc UploadChunk(stream UploadChunkReq) returns (UploadChunkResp);
-  // 合并分片
+  // 初始化上传（返回 upload_id，创建视频记录）
+  rpc InitUpload(InitUploadReq) returns (InitUploadResp);
+  // 上传单个分片（非 stream，每个 chunk 独立 RPC）
+  rpc UploadChunk(UploadChunkReq) returns (UploadChunkResp);
+  // 查询上传进度（已收到的 chunk 列表）
+  rpc UploadStatus(UploadStatusReq) returns (UploadStatusResp);
+  // 合并分片（合并前校验完整性）
   rpc MergeChunks(MergeChunksReq) returns (MergeChunksResp);
   // 获取视频列表
   rpc ListVideos(ListVideosReq) returns (ListVideosResp);
@@ -24,38 +28,63 @@ service Video {
   rpc ListUserVideos(ListUserVideosReq) returns (ListVideosResp);
 }
 
+// ─── InitUpload ───
+message InitUploadReq {
+  string filename = 1;       // 原始文件名
+  string title = 2;          // 视频标题
+  int64 file_size = 3;       // 文件总大小（字节）
+  int32 total_chunks = 4;    // 总分片数
+  int64 user_id = 5;         // 上传者用户 ID
+}
+
+message InitUploadResp {
+  int64 video_id = 1;        // 分配的视频 ID
+  string upload_id = 2;      // 上传会话 ID
+}
+
+// ─── UploadChunk ───
 message UploadChunkReq {
-  string upload_id = 1;   // 上传会话ID
-  int32 chunk_index = 2;   // 分片序号
-  bytes data = 3;          // 分片数据
-  int64 video_id = 4;      // 视频ID(首次为0)
-  string filename = 5;     // 文件名(首次上传时带)
-  int64 file_size = 6;     // 文件总大小
-  int64 user_id = 7;       // 上传用户ID
-  string title = 8;        // 视频标题
+  string upload_id = 1;      // 上传会话 ID
+  int64 video_id = 2;        // 视频 ID
+  int32 chunk_index = 3;     // 分片序号（从 0 开始）
+  int32 file_size = 4;       // 分片字节数
+  bytes data = 5;            // 分片二进制数据
 }
 
 message UploadChunkResp {
-  int64 video_id = 1;      // 视频ID
-  string upload_id = 2;    // 上传会话ID
-  int64 received_bytes = 3; // 已接收字节
+  int32 received_index = 1;  // 已接收的分片序号
 }
 
+// ─── UploadStatus ───
+message UploadStatusReq {
+  string upload_id = 1;
+}
+
+message UploadStatusResp {
+  int64 video_id = 1;
+  int32 total_chunks = 2;
+  repeated int32 received_chunks = 3;
+}
+
+// ─── MergeChunks ───
 message MergeChunksReq {
   int64 video_id = 1;
   string upload_id = 2;
 }
 
 message MergeChunksResp {
-  string object_key = 1;   // 合并后的文件key
-  string file_hash = 2;    // 文件哈希(用于秒传)
+  string status = 1;         // "complete" / "incomplete"
+  string object_key = 2;     // 合并后的源文件 MinIO key
+  string file_hash = 3;      // 文件哈希（用于秒传）
+  repeated int32 missing_chunks = 4; // 缺失的分片序号列表
 }
 
+// ─── List / Get ───
 message ListVideosReq {
-  int64 cursor = 1;        // 游标(分页)
-  int32 limit = 2;         // 每页数量
-  string category = 3;     // 分类
-  string sort = 4;          // 排序: newest/hot
+  int64 cursor = 1;
+  int32 limit = 2;
+  string category = 3;
+  string sort = 4;           // newest / hot
 }
 
 message ListVideosResp {
@@ -72,16 +101,16 @@ message VideoInfo {
   string username = 5;
   int64 play_count = 6;
   int64 like_count = 7;
-  int32 duration = 8;      // 秒
-  int32 status = 9;        // 0:转码中 1:正常 2:审核中 3:下架
+  int32 duration = 8;
+  int32 status = 9;          // 0:上传中 1:转码中 2:正常 3:失败 4:已下架
   int64 created_at = 10;
-  repeated TranscodeInfo transcodes = 11; // 多码率信息
+  repeated TranscodeInfo transcodes = 11;
 }
 
 message TranscodeInfo {
-  string resolution = 1;   // 360p/480p/720p/1080p
+  string resolution = 1;
   string m3u8_url = 2;
-  int32 bitrate = 3;       // kbps
+  int32 bitrate = 3;
 }
 
 message GetVideoReq {
@@ -100,27 +129,24 @@ message UpdateVideoReq {
   string category = 5;
 }
 
-message UpdateVideoResp {
-}
+message UpdateVideoResp {}
 
 message DeleteVideoReq {
   int64 video_id = 1;
   int64 user_id = 2;
 }
 
-message DeleteVideoResp {
-}
+message DeleteVideoResp {}
 
 message TranscodeCallbackReq {
   int64 video_id = 1;
-  int32 status = 2;        // 2:成功 3:失败
+  int32 status = 2;          // 2:成功 3:失败
   repeated TranscodeInfo transcodes = 3;
   string cover_url = 4;
   int32 duration = 5;
 }
 
-message TranscodeCallbackResp {
-}
+message TranscodeCallbackResp {}
 
 message ListUserVideosReq {
   int64 user_id = 1;

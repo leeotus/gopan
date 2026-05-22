@@ -218,6 +218,9 @@ service gateway {
 	@handler MergeChunks
 	post /merge-chunks returns (BaseResp)
 
+	@handler UploadStatus
+	get /upload-status returns (BaseResp)
+
 	@handler ListVideos
 	get /list (ListVideosReq) returns (ListVideosResp)
 

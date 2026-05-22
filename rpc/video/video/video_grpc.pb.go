@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	Video_InitUpload_FullMethodName        = "/video.Video/InitUpload"
 	Video_UploadChunk_FullMethodName       = "/video.Video/UploadChunk"
+	Video_UploadStatus_FullMethodName      = "/video.Video/UploadStatus"
 	Video_MergeChunks_FullMethodName       = "/video.Video/MergeChunks"
 	Video_ListVideos_FullMethodName        = "/video.Video/ListVideos"
 	Video_GetVideo_FullMethodName          = "/video.Video/GetVideo"
@@ -35,9 +37,13 @@ const (
 //
 // 视频服务
 type VideoClient interface {
-	// 上传视频(分片)
-	UploadChunk(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadChunkReq, UploadChunkResp], error)
-	// 合并分片
+	// 初始化上传（返回 upload_id，创建视频记录）
+	InitUpload(ctx context.Context, in *InitUploadReq, opts ...grpc.CallOption) (*InitUploadResp, error)
+	// 上传单个分片（非 stream，每个 chunk 独立 RPC）
+	UploadChunk(ctx context.Context, in *UploadChunkReq, opts ...grpc.CallOption) (*UploadChunkResp, error)
+	// 查询上传进度（已收到的 chunk 列表）
+	UploadStatus(ctx context.Context, in *UploadStatusReq, opts ...grpc.CallOption) (*UploadStatusResp, error)
+	// 合并分片（合并前校验完整性）
 	MergeChunks(ctx context.Context, in *MergeChunksReq, opts ...grpc.CallOption) (*MergeChunksResp, error)
 	// 获取视频列表
 	ListVideos(ctx context.Context, in *ListVideosReq, opts ...grpc.CallOption) (*ListVideosResp, error)
@@ -61,18 +67,35 @@ func NewVideoClient(cc grpc.ClientConnInterface) VideoClient {
 	return &videoClient{cc}
 }
 
-func (c *videoClient) UploadChunk(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadChunkReq, UploadChunkResp], error) {
+func (c *videoClient) InitUpload(ctx context.Context, in *InitUploadReq, opts ...grpc.CallOption) (*InitUploadResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &Video_ServiceDesc.Streams[0], Video_UploadChunk_FullMethodName, cOpts...)
+	out := new(InitUploadResp)
+	err := c.cc.Invoke(ctx, Video_InitUpload_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[UploadChunkReq, UploadChunkResp]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Video_UploadChunkClient = grpc.ClientStreamingClient[UploadChunkReq, UploadChunkResp]
+func (c *videoClient) UploadChunk(ctx context.Context, in *UploadChunkReq, opts ...grpc.CallOption) (*UploadChunkResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadChunkResp)
+	err := c.cc.Invoke(ctx, Video_UploadChunk_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoClient) UploadStatus(ctx context.Context, in *UploadStatusReq, opts ...grpc.CallOption) (*UploadStatusResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadStatusResp)
+	err := c.cc.Invoke(ctx, Video_UploadStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
 func (c *videoClient) MergeChunks(ctx context.Context, in *MergeChunksReq, opts ...grpc.CallOption) (*MergeChunksResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -150,9 +173,13 @@ func (c *videoClient) ListUserVideos(ctx context.Context, in *ListUserVideosReq,
 //
 // 视频服务
 type VideoServer interface {
-	// 上传视频(分片)
-	UploadChunk(grpc.ClientStreamingServer[UploadChunkReq, UploadChunkResp]) error
-	// 合并分片
+	// 初始化上传（返回 upload_id，创建视频记录）
+	InitUpload(context.Context, *InitUploadReq) (*InitUploadResp, error)
+	// 上传单个分片（非 stream，每个 chunk 独立 RPC）
+	UploadChunk(context.Context, *UploadChunkReq) (*UploadChunkResp, error)
+	// 查询上传进度（已收到的 chunk 列表）
+	UploadStatus(context.Context, *UploadStatusReq) (*UploadStatusResp, error)
+	// 合并分片（合并前校验完整性）
 	MergeChunks(context.Context, *MergeChunksReq) (*MergeChunksResp, error)
 	// 获取视频列表
 	ListVideos(context.Context, *ListVideosReq) (*ListVideosResp, error)
@@ -176,8 +203,14 @@ type VideoServer interface {
 // pointer dereference when methods are called.
 type UnimplementedVideoServer struct{}
 
-func (UnimplementedVideoServer) UploadChunk(grpc.ClientStreamingServer[UploadChunkReq, UploadChunkResp]) error {
-	return status.Error(codes.Unimplemented, "method UploadChunk not implemented")
+func (UnimplementedVideoServer) InitUpload(context.Context, *InitUploadReq) (*InitUploadResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method InitUpload not implemented")
+}
+func (UnimplementedVideoServer) UploadChunk(context.Context, *UploadChunkReq) (*UploadChunkResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadChunk not implemented")
+}
+func (UnimplementedVideoServer) UploadStatus(context.Context, *UploadStatusReq) (*UploadStatusResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadStatus not implemented")
 }
 func (UnimplementedVideoServer) MergeChunks(context.Context, *MergeChunksReq) (*MergeChunksResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method MergeChunks not implemented")
@@ -221,12 +254,59 @@ func RegisterVideoServer(s grpc.ServiceRegistrar, srv VideoServer) {
 	s.RegisterService(&Video_ServiceDesc, srv)
 }
 
-func _Video_UploadChunk_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(VideoServer).UploadChunk(&grpc.GenericServerStream[UploadChunkReq, UploadChunkResp]{ServerStream: stream})
+func _Video_InitUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitUploadReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).InitUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_InitUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).InitUpload(ctx, req.(*InitUploadReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Video_UploadChunkServer = grpc.ClientStreamingServer[UploadChunkReq, UploadChunkResp]
+func _Video_UploadChunk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadChunkReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).UploadChunk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_UploadChunk_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).UploadChunk(ctx, req.(*UploadChunkReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Video_UploadStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadStatusReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).UploadStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_UploadStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).UploadStatus(ctx, req.(*UploadStatusReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
 
 func _Video_MergeChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MergeChunksReq)
@@ -362,6 +442,18 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*VideoServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "InitUpload",
+			Handler:    _Video_InitUpload_Handler,
+		},
+		{
+			MethodName: "UploadChunk",
+			Handler:    _Video_UploadChunk_Handler,
+		},
+		{
+			MethodName: "UploadStatus",
+			Handler:    _Video_UploadStatus_Handler,
+		},
+		{
 			MethodName: "MergeChunks",
 			Handler:    _Video_MergeChunks_Handler,
 		},
@@ -390,12 +482,6 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Video_ListUserVideos_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "UploadChunk",
-			Handler:       _Video_UploadChunk_Handler,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "rpc/video/video.proto",
 }

@@ -23,14 +23,14 @@ func NewVideoStore(conn sqlx.SqlConn) *VideoStore {
 	return &VideoStore{conn: conn}
 }
 
-// Insert 插入一条视频记录，初始状态通常为 0（上传中）。
+// Insert 插入一条视频记录（包含断点上传的 total_chunks 和 upload_id）。
 func (s *VideoStore) Insert(ctx context.Context, v *model.Video) (sql.Result, error) {
 	return s.conn.ExecCtx(ctx, `
 		INSERT INTO videos (title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, status, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+			duration, file_size, file_hash, total_chunks, upload_id, status, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
 	`, v.Title, v.Description, v.UserId, v.ObjectKey, v.CoverUrl, v.Category,
-		v.Duration, v.FileSize, v.FileHash, v.Status)
+		v.Duration, v.FileSize, v.FileHash, v.TotalChunks, v.UploadId, v.Status)
 }
 
 // FindById 根据主键查找视频（排除软删除记录）。
@@ -143,7 +143,7 @@ func (s *VideoStore) UpdateTranscode(ctx context.Context, videoId int64, status 
 	return err
 }
 
-// UpdateStatus 更新视频状态（如标记为转码中、审核中等）。
+// UpdateStatus 更新视频状态（如标记为转码中、正常、失败等）。
 func (s *VideoStore) UpdateStatus(ctx context.Context, videoId int64, status int32) error {
 	_, err := s.conn.ExecCtx(ctx, `
 		UPDATE videos SET status = ?, updated_at = NOW() WHERE id = ?
@@ -187,4 +187,18 @@ func (s *VideoStore) IncrLikeCount(ctx context.Context, videoId int64, delta int
 		UPDATE videos SET like_count = like_count + ? WHERE id = ?
 	`, delta, videoId)
 	return err
+}
+
+// FindByUploadId 根据 upload_id 查找视频（断点上传状态恢复用）。
+func (s *VideoStore) FindByUploadId(ctx context.Context, uploadId string) (*model.Video, error) {
+	var v model.Video
+	err := s.conn.QueryRowCtx(ctx, &v, `
+		SELECT id, title, description, user_id, object_key, cover_url, category,
+			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at
+		FROM videos WHERE upload_id = ? AND deleted_at IS NULL
+	`, uploadId)
+	if err != nil {
+		return nil, err
+	}
+	return &v, nil
 }

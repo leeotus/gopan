@@ -23,13 +23,25 @@ func NewVideoServer(svcCtx *svc.ServiceContext) *VideoServer {
 	}
 }
 
-// 上传视频(分片)
-func (s *VideoServer) UploadChunk(stream video.Video_UploadChunkServer) error {
-	l := logic.NewUploadChunkLogic(stream.Context(), s.svcCtx)
-	return l.UploadChunk(stream)
+// 初始化上传（返回 upload_id，创建视频记录）
+func (s *VideoServer) InitUpload(ctx context.Context, in *video.InitUploadReq) (*video.InitUploadResp, error) {
+	l := logic.NewInitUploadLogic(ctx, s.svcCtx)
+	return l.InitUpload(in)
 }
 
-// 合并分片
+// 上传单个分片（非 stream，每个 chunk 独立 RPC）
+func (s *VideoServer) UploadChunk(ctx context.Context, in *video.UploadChunkReq) (*video.UploadChunkResp, error) {
+	l := logic.NewUploadChunkLogic(ctx, s.svcCtx)
+	return l.UploadChunk(in)
+}
+
+// 查询上传进度（已收到的 chunk 列表）
+func (s *VideoServer) UploadStatus(ctx context.Context, in *video.UploadStatusReq) (*video.UploadStatusResp, error) {
+	l := logic.NewUploadStatusLogic(ctx, s.svcCtx)
+	return l.UploadStatus(in)
+}
+
+// 合并分片（合并前校验完整性）
 func (s *VideoServer) MergeChunks(ctx context.Context, in *video.MergeChunksReq) (*video.MergeChunksResp, error) {
 	l := logic.NewMergeChunksLogic(ctx, s.svcCtx)
 	return l.MergeChunks(in)

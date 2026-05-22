@@ -66,6 +66,23 @@ func (s *MinioClient) RemoveObject(ctx context.Context, key string) error {
 	return s.client.RemoveObject(ctx, s.bucket, key, minio.RemoveObjectOptions{})
 }
 
+// ComposeObject 服务端合并多个对象为一个新对象。
+// sources 为源对象 key 列表，destKey 为目标 key。
+func (s *MinioClient) ComposeObject(ctx context.Context, destKey string, sourceKeys []string) error {
+	sources := make([]minio.CopySrcOptions, len(sourceKeys))
+	for i, key := range sourceKeys {
+		sources[i] = minio.CopySrcOptions{
+			Bucket: s.bucket,
+			Object: key,
+		}
+	}
+	_, err := s.client.ComposeObject(ctx, minio.CopyDestOptions{
+		Bucket: s.bucket,
+		Object: destKey,
+	}, sources...)
+	return err
+}
+
 // BucketName 返回当前使用的 bucket 名称。
 func (s *MinioClient) BucketName() string {
 	return s.bucket

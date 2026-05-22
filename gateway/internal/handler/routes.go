@@ -136,6 +136,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/upload-chunk",
 					Handler: video.UploadChunkHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/upload-status",
+					Handler: video.UploadStatusHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithPrefix("/api/video"),
