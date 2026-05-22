@@ -3,6 +3,7 @@ package video
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
@@ -35,6 +36,7 @@ func (l *UploadStatusLogic) UploadStatus() (resp *types.UploadStatusResp, err er
 
 	r, err := l.svcCtx.VideoClient.UploadStatus(l.ctx, &videoclient.UploadStatusReq{UploadId: uploadId})
 	if err != nil {
+		// gRPC 错误不 panic，返回空结构体
 		return &types.UploadStatusResp{}, nil
 	}
 
@@ -44,3 +46,6 @@ func (l *UploadStatusLogic) UploadStatus() (resp *types.UploadStatusResp, err er
 		ReceivedChunks: r.ReceivedChunks,
 	}, nil
 }
+
+// 编译检查
+var _ = strings.Trim

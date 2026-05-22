@@ -14,6 +14,7 @@ import (
 func MergeChunksHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewMergeChunksLogic(r.Context(), svcCtx)
+		l.SetRequest(r)
 		resp, err := l.MergeChunks()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)

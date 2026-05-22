@@ -2,6 +2,7 @@ package video
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 
@@ -23,17 +24,31 @@ func NewMergeChunksLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Merge
 	return &MergeChunksLogic{Logger: logx.WithContext(ctx), ctx: ctx, svcCtx: svcCtx}
 }
 
+func (l *MergeChunksLogic) SetRequest(r *http.Request) { l.r = r }
+
 func (l *MergeChunksLogic) MergeChunks() (resp *types.BaseResp, err error) {
 	if l.r == nil {
 		return &types.BaseResp{Message: "no request"}, nil
 	}
 
 	body, _ := io.ReadAll(l.r.Body)
-	// 简单解析 JSON body: {"video_id": xxx, "upload_id": "xxx"}
-	// 当前直接返回 ok，后续完善
+	var req struct {
+		VideoId  int64  `json:"video_id"`
+		UploadId string `json:"upload_id"`
+	}
+	json.Unmarshal(body, &req)
 
-	_ = body
-	_ = videoclient.NewVideo
+	if req.VideoId == 0 || req.UploadId == "" {
+		return &types.BaseResp{Message: "缺少 video_id 或 upload_id"}, nil
+	}
 
-	return &types.BaseResp{Message: "merge OK"}, nil
+	_, rpcErr := l.svcCtx.VideoClient.MergeChunks(l.ctx, &videoclient.MergeChunksReq{
+		VideoId:  req.VideoId,
+		UploadId: req.UploadId,
+	})
+	if rpcErr != nil {
+		return &types.BaseResp{Message: rpcErr.Error()}, nil
+	}
+
+	return &types.BaseResp{Message: "merge completed"}, nil
 }
