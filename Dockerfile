@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM golang:1.26-alpine AS builder
+FROM docker.m.daocloud.io/library/golang:1.26-alpine AS builder
 
 RUN apk add --no-cache git protobuf-dev gcc musl-dev
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /build/interact-svc ./rpc/interact/
 RUN CGO_ENABLED=0 GOOS=linux go build -o /build/search-svc ./rpc/search/
 
 # ---- Runtime Stage ----
-FROM alpine:3.21
+FROM docker.m.daocloud.io/library/alpine:3.21
 
 RUN apk add --no-cache ca-certificates tzdata ffmpeg
 ENV TZ=Asia/Shanghai

@@ -14,6 +14,7 @@ import (
 func UploadChunkHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewUploadChunkLogic(r.Context(), svcCtx)
+		l.SetRequest(r)
 		resp, err := l.UploadChunk()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)

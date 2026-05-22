@@ -27,9 +27,10 @@ type DanmakuMsg struct {
 }
 
 type InitUploadReq struct {
-	Filename string `json:"filename"`
-	FileSize int64  `json:"file_size"`
-	Title    string `json:"title"`
+	Filename    string `json:"filename"`
+	FileSize    int64  `json:"file_size"`
+	TotalChunks int32  `json:"total_chunks"`
+	Title       string `json:"title"`
 }
 
 type InitUploadResp struct {
@@ -145,6 +146,12 @@ type UpdateVideoReq struct {
 	Title       string `json:"title,optional"`
 	Description string `json:"description,optional"`
 	Category    string `json:"category,optional"`
+}
+
+type UploadStatusResp struct {
+	VideoId        int64   `json:"video_id"`
+	TotalChunks    int32   `json:"total_chunks"`
+	ReceivedChunks []int32 `json:"received_chunks"`
 }
 
 type UserProfileResp struct {

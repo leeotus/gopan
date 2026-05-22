@@ -22,7 +22,6 @@ Kafka:
   Brokers:
     - kafka:9092
   TranscodeTopic: gopan.transcode.tasks
-Redis:
-  Addr: redis:6379
-  Password: ""
-  DB: 0
+UploadRedis:
+  Host: redis:6379
+  Pass: ""

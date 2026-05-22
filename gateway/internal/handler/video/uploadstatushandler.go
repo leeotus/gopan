@@ -14,6 +14,7 @@ import (
 func UploadStatusHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewUploadStatusLogic(r.Context(), svcCtx)
+		l.SetRequest(r)
 		resp, err := l.UploadStatus()
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)

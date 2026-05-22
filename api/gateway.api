@@ -47,14 +47,21 @@ type BaseResp {
 
 // ============ 视频相关 ============
 type InitUploadReq {
-	Filename string `json:"filename"`
-	FileSize int64  `json:"file_size"`
-	Title    string `json:"title"`
+	Filename    string `json:"filename"`
+	FileSize    int64  `json:"file_size"`
+	TotalChunks int32  `json:"total_chunks"`
+	Title       string `json:"title"`
 }
 
 type InitUploadResp {
 	VideoId  int64  `json:"video_id"`
 	UploadId string `json:"upload_id"`
+}
+
+type UploadStatusResp {
+	VideoId        int64   `json:"video_id"`
+	TotalChunks    int32   `json:"total_chunks"`
+	ReceivedChunks []int32 `json:"received_chunks"`
 }
 
 type VideoInfo {
@@ -219,7 +226,7 @@ service gateway {
 	post /merge-chunks returns (BaseResp)
 
 	@handler UploadStatus
-	get /upload-status returns (BaseResp)
+	get /upload-status returns (UploadStatusResp)
 
 	@handler ListVideos
 	get /list (ListVideosReq) returns (ListVideosResp)

@@ -37,11 +37,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	kw := kafka.NewProducer(c.Kafka.Brokers, c.Kafka.TranscodeTopic)
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     c.Redis.Addr,
-		Password: c.Redis.Password,
-		DB:       c.Redis.DB,
-	})
+		rdb := redis.NewClient(&redis.Options{
+			Addr:     c.UploadRedis.Host,
+			Password: c.UploadRedis.Pass,
+			DB:       0,
+		})
 
 	return &ServiceContext{
 		Config:         c,

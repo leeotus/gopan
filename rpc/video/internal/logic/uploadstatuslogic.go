@@ -39,6 +39,7 @@ func (l *UploadStatusLogic) UploadStatus(in *video.UploadStatusReq) (*video.Uplo
 		l.Logger.Errorf("redis get received error: %v", err)
 		received = nil
 	}
+	l.Logger.Infof("uploadstatus: upload_id=%s, total_chunks=%d, received=%v", in.UploadId, v.TotalChunks, received)
 
 	return &video.UploadStatusResp{
 		VideoId:        v.Id,

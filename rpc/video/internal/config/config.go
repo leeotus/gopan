@@ -1,7 +1,10 @@
 // package config 定义 video-svc（视频服务）的配置。
 package config
 
-import "github.com/zeromicro/go-zero/zrpc"
+import (
+	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/zrpc"
+)
 
 type Config struct {
 	zrpc.RpcServerConf               // RPC 通用配置
@@ -20,9 +23,5 @@ type Config struct {
 		Brokers         []string
 		TranscodeTopic  string
 	}
-	Redis struct {                   // Redis 配置（上传进度追踪）
-		Addr     string
-		Password string
-		DB       int
-	}
+	UploadRedis redis.RedisConf      // Redis 配置（上传进度追踪），避免与 go-zero 内置 Redis 冲突
 }
