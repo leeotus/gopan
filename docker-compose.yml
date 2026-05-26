@@ -221,6 +221,7 @@ services:
       - gopan-net
 
 volumes:
+  grafana-data:
   mysql-data:
   redis-data:
   minio-data:
@@ -230,3 +231,25 @@ volumes:
 networks:
   gopan-net:
     driver: bridge
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: gopan-prometheus
+    volumes:
+      - ./etc/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - gopan-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gopan-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - gopan-net
