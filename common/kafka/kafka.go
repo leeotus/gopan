@@ -38,19 +38,17 @@ func NewProducer(brokers []string, topic string) *kafka.Writer {
 
 // ── Consumer ──
 
-// NewConsumer 创建 Kafka Reader（Consumer）。
-// groupID 不传则默认 "transcode-svc-group"。
-func NewConsumer(brokers []string, topic, groupID string) *kafka.Reader {
+// NewConsumer 创建 Kafka Reader（Consumer），不指定 GroupID 以避免 KRaft coordinator 问题。
+func NewConsumer(brokers []string, topic string) *kafka.Reader {
 	if topic == "" {
 		topic = TopicTranscodeTasks
 	}
-	if groupID == "" {
-		groupID = "transcode-svc-group"
-	}
 	return kafka.NewReader(kafka.ReaderConfig{
-		Brokers: brokers,
-		Topic:   topic,
-		GroupID: groupID,
-		Logger:  nil,
+		Brokers:   brokers,
+		Topic:     topic,
+		Partition: 0,
+		MinBytes:  1,
+		MaxBytes:  10e6,
+		Logger:    nil,
 	})
 }

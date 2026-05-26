@@ -21,7 +21,7 @@ import (
 
 // StartConsumer 启动 Kafka 消费者（阻塞运行）。
 func StartConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
-	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.TranscodeTopic, svcCtx.Config.Kafka.ConsumerGroup)
+	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.TranscodeTopic)
 	defer reader.Close()
 
 	for {
