@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
@@ -24,7 +25,6 @@ func NewUploadChunkLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Uploa
 	return &UploadChunkLogic{Logger: logx.WithContext(ctx), ctx: ctx, svcCtx: svcCtx}
 }
 
-// SetRequest 注入原始 HTTP 请求（用于读取 multipart 数据）
 func (l *UploadChunkLogic) SetRequest(r *http.Request) { l.r = r }
 
 func (l *UploadChunkLogic) UploadChunk() (resp *types.BaseResp, err error) {
@@ -40,7 +40,7 @@ func (l *UploadChunkLogic) UploadChunk() (resp *types.BaseResp, err error) {
 	videoIdStr := l.r.FormValue("video_id")
 	chunkIndexStr := l.r.FormValue("chunk_index")
 
-	file, header, err := l.r.FormFile("file")
+	file, _, err := l.r.FormFile("file")
 	if err != nil {
 		return &types.BaseResp{Message: "未找到上传文件"}, nil
 	}
@@ -51,26 +51,28 @@ func (l *UploadChunkLogic) UploadChunk() (resp *types.BaseResp, err error) {
 		return &types.BaseResp{Message: "读取文件失败"}, nil
 	}
 
-	_, err = l.svcCtx.VideoClient.UploadChunk(l.ctx, &videoclient.UploadChunkReq{
+	ctx, cancel := context.WithTimeout(l.ctx, 30*time.Second)
+	defer cancel()
+
+	start := time.Now()
+	gRPCResp, gRPCErr := l.svcCtx.VideoClient.UploadChunk(ctx, &videoclient.UploadChunkReq{
 		UploadId:   uploadId,
 		VideoId:    parseInt64(videoIdStr),
 		ChunkIndex: parseInt32(chunkIndexStr),
-		FileSize:   int32(header.Size),
+		FileSize:   int32(len(data)),
 		Data:       data,
 	})
-	if err != nil {
-		return &types.BaseResp{Message: err.Error()}, nil
+	elapsed := time.Since(start)
+
+	if gRPCErr != nil {
+		l.Logger.Errorf("upload-chunk rpc FAIL: video=%s chunk=%s size=%d elapsed=%v err=%v", videoIdStr, chunkIndexStr, len(data), elapsed, gRPCErr)
+		return &types.BaseResp{Message: gRPCErr.Error()}, nil
 	}
 
+	_ = gRPCResp
+	l.Logger.Infof("upload-chunk rpc OK: video=%s chunk=%s size=%d elapsed=%v", videoIdStr, chunkIndexStr, len(data), elapsed)
 	return &types.BaseResp{Message: "ok"}, nil
 }
 
-func parseInt64(s string) int64 {
-	v, _ := strconv.ParseInt(s, 10, 64)
-	return v
-}
-
-func parseInt32(s string) int32 {
-	v, _ := strconv.ParseInt(s, 10, 32)
-	return int32(v)
-}
+func parseInt64(s string) int64 { v, _ := strconv.ParseInt(s, 10, 64); return v }
+func parseInt32(s string) int32 { v, _ := strconv.ParseInt(s, 10, 32); return int32(v) }

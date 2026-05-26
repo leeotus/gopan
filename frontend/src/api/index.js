@@ -1,4 +1,8 @@
 import request from "./request";
+import axios from "axios";
+
+// direct 直连后端绕过 Vite 代理（multipart 请求必须直连，代理会截断 body）
+const direct = axios.create({ timeout: 60000 });
 
 export const userApi = {
   register: (data) => request.post("/user/register", data),
@@ -12,8 +16,8 @@ export const videoApi = {
   detail: (params) => request.get("/video/detail", { params }),
   getPlayUrl: (params) => request.get("/video/play-url", { params }),
   initUpload: (data) => request.post("/video/init-upload", data),
-  uploadChunk: (formData) =>
-    request.post("/video/upload-chunk", formData, { headers: { "Content-Type": "multipart/form-data" } }),
+  uploadChunk: (formData) => direct.post("http://localhost:8888/api/video/upload-chunk", formData),
+  uploadChunkRaw: (data) => request.post("/video/upload-chunk", data),  // base64 JSON 方式
   uploadStatus: (params) => request.get("/video/upload-status", { params }),
   mergeChunks: (data) => request.post("/video/merge-chunks", data),
   update: (data) => request.put("/video/update", data),

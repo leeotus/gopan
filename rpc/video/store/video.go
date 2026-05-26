@@ -38,7 +38,7 @@ func (s *VideoStore) FindById(ctx context.Context, id int64) (*model.Video, erro
 	var v model.Video
 	err := s.conn.QueryRowCtx(ctx, &v, `
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, status, play_count, like_count, created_at, updated_at
+			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos WHERE id = ? AND deleted_at IS NULL
 	`, id)
 	if err != nil {
@@ -82,7 +82,7 @@ func (s *VideoStore) List(ctx context.Context, cursor int64, limit int32, catego
 
 	err := s.conn.QueryRowsCtx(ctx, &videos, fmt.Sprintf(`
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, status, play_count, like_count, created_at, updated_at
+			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos %s
 	`, query), args...)
 	if err != nil {
@@ -107,7 +107,7 @@ func (s *VideoStore) ListByUser(ctx context.Context, userId, cursor int64, limit
 
 	err := s.conn.QueryRowsCtx(ctx, &videos, fmt.Sprintf(`
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, status, play_count, like_count, created_at, updated_at
+			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos %s
 	`, query), args...)
 	if err != nil {
@@ -194,7 +194,7 @@ func (s *VideoStore) FindByUploadId(ctx context.Context, uploadId string) (*mode
 	var v model.Video
 	err := s.conn.QueryRowCtx(ctx, &v, `
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at
+			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos WHERE upload_id = ? AND deleted_at IS NULL
 	`, uploadId)
 	if err != nil {

@@ -1,6 +1,8 @@
 Name: video.rpc
 ListenOn: 0.0.0.0:8082
 Mode: dev
+MaxRecvMsgSize: 10485760
+MaxRecvMsgSize: 104857600
 Etcd:
   Hosts:
   - etcd:2379
