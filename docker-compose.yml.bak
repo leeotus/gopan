@@ -1,4 +1,6 @@
 services:
+  # ============ 基础设施 ============
+
   etcd:
     image: quay.io/coreos/etcd:v3.5.21
     container_name: gopan-etcd
@@ -24,7 +26,6 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./etc/init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: --mysql-native-password=ON
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -34,7 +35,7 @@ services:
       - gopan-net
 
   redis:
-    image: docker.m.daocloud.io/redis:7-alpine
+    image: redis:latest
     container_name: gopan-redis
     ports:
       - "6379:6379"
@@ -111,6 +112,8 @@ services:
     networks:
       - gopan-net
 
+  # ============ 微服务 ============
+
   user-svc:
     build: .
     container_name: gopan-user-svc
@@ -122,7 +125,6 @@ services:
         condition: service_started
     ports:
       - "8081:8081"
-      - "9101:9101"
     networks:
       - gopan-net
 
@@ -215,12 +217,11 @@ services:
       - search-svc
     ports:
       - "8888:8888"
-      - "9102:9102"
     networks:
       - gopan-net
 
   prometheus:
-    image: docker.m.daocloud.io/prom/prometheus:latest
+    image: prom/prometheus:latest
     container_name: gopan-prometheus
     volumes:
       - ./etc/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -230,7 +231,7 @@ services:
       - gopan-net
 
   grafana:
-    image: docker.m.daocloud.io/grafana/grafana:latest
+    image: grafana/grafana:latest
     container_name: gopan-grafana
     ports:
       - "3001:3000"
@@ -242,24 +243,25 @@ services:
       - gopan-net
 
   jaeger:
-    image: docker.m.daocloud.io/jaegertracing/all-in-one:latest
+    image: jaegertracing/all-in-one:latest
     container_name: gopan-jaeger
     ports:
       - "16686:16686"
       - "14268:14268"
-      - "4317:4317"
-      - "4318:4318"
     networks:
       - gopan-net
 
 volumes:
+  grafana-data:
   mysql-data:
   redis-data:
   minio-data:
   es-data:
   kafka-data:
-  grafana-data:
 
 networks:
   gopan-net:
     driver: bridge
+
+    networks:
+      - gopan-net

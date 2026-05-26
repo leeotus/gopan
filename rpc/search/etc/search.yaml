@@ -1,6 +1,10 @@
 Name: search.rpc
 ListenOn: 0.0.0.0:8086
 Mode: dev
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
 Etcd:
   Hosts:
   - etcd:2379
@@ -10,3 +14,8 @@ Elasticsearch:
     - http://elasticsearch:9200
   Username: ""
   Password: ""
+Telemetry:
+  Name: search-svc
+  Endpoint: http://jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp

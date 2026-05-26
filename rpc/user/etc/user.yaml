@@ -1,0 +1,21 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:8081
+Mode: dev
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
+Etcd:
+  Hosts:
+  - etcd:2379
+  Key: user.rpc
+DB:
+  DataSource: root:gopan123@tcp(mysql:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
+JWT:
+  AccessSecret: "gopan-secret-key-change-in-production"
+  AccessExpire: 86400
+Telemetry:
+  Name: user-svc
+  Endpoint: http://jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp

@@ -1,5 +1,4 @@
 // package config 定义 gateway（API 网关）的配置。
-// gateway 作为 HTTP 入口，不直接访问数据库，而是通过 etcd 服务发现调用各个 RPC 服务。
 package config
 
 import (
@@ -14,8 +13,7 @@ type Config struct {
 		AccessSecret string       // 签名密钥
 		AccessExpire int64        // Token 过期时间（秒）
 	}
-	// 以下为 6 个 RPC 服务的客户端配置，均通过 etcd 服务发现
-	UserRpc      zrpc.RpcClientConf // user-svc 的 etcd Key 和 Hosts
+	UserRpc      zrpc.RpcClientConf // user-svc
 	VideoRpc     zrpc.RpcClientConf // video-svc
 	TranscodeRpc zrpc.RpcClientConf // transcode-svc
 	StreamRpc    zrpc.RpcClientConf // stream-svc

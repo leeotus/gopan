@@ -47,3 +47,9 @@ SearchRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: search.rpc
+
+Telemetry:
+  Name: gateway
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

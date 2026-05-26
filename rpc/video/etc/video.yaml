@@ -1,8 +1,10 @@
 Name: video.rpc
 ListenOn: 0.0.0.0:8082
 Mode: dev
-MaxRecvMsgSize: 10485760
-MaxRecvMsgSize: 104857600
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
 Etcd:
   Hosts:
   - etcd:2379
@@ -27,3 +29,8 @@ Kafka:
 UploadRedis:
   Host: redis:6379
   Pass: ""
+Telemetry:
+  Name: video-svc
+  Endpoint: http://jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp

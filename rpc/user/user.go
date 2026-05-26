@@ -18,6 +18,8 @@ import (
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
+	"github.com/zeromicro/go-zero/core/trace"
+	
 	"google.golang.org/grpc/reflection"
 )
 
@@ -28,6 +30,9 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	trace.StartAgent(c.Telemetry)
+	defer trace.StopAgent()
+
 
 
 	// 初始化依赖（DB 连接 + UserStore）

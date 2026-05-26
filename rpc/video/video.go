@@ -16,8 +16,10 @@ import (
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
+	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
+
 	"google.golang.org/grpc/reflection"
 )
 
@@ -28,6 +30,8 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	trace.StartAgent(c.Telemetry)
+	defer trace.StopAgent()
 
 	ctx := svc.NewServiceContext(c)
 

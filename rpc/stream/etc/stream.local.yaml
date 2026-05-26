@@ -8,3 +8,9 @@ Etcd:
 CDN:
   BaseURL: http://127.0.0.1:9000/gopan-videos
   SecretKey: gopan-cdn-secret
+
+Telemetry:
+  Name: stream
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

@@ -1,6 +1,10 @@
 Name: transcode.rpc
 ListenOn: 0.0.0.0:8083
 Mode: dev
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
 Etcd:
   Hosts:
   - etcd:2379
@@ -23,3 +27,8 @@ Kafka:
     - kafka:9092
   TranscodeTopic: gopan.transcode.tasks
   ConsumerGroup: gopan-transcode-group
+Telemetry:
+  Name: transcode-svc
+  Endpoint: http://jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp
