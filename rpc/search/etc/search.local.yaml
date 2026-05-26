@@ -1,12 +1,12 @@
-# 本地开发配置 — 将 Docker 内部服务名替换为 localhost
 Name: search.rpc
 ListenOn: 0.0.0.0:8086
+Mode: dev
 Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: search.rpc
-DB:
-  DataSource: root:gopan123@tcp(127.0.0.1:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
-JWT:
-  AccessSecret: "gopan-secret-key-change-in-production"
-  AccessExpire: 86400
+Elasticsearch:
+  Addresses:
+    - http://127.0.0.1:9200
+  Username: ""
+  Password: ""

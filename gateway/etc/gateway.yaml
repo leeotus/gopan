@@ -7,6 +7,7 @@ Log:
   Encoding: plain
   Stat: false
 
+
 Auth:
   AccessSecret: "gopan-secret-key-change-in-production"
   AccessExpire: 86400

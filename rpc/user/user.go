@@ -29,6 +29,7 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 
+
 	// 初始化依赖（DB 连接 + UserStore）
 	ctx := svc.NewServiceContext(c)
 

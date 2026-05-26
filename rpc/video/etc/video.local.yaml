@@ -1,12 +1,27 @@
-# 本地开发配置 — 将 Docker 内部服务名替换为 localhost
 Name: video.rpc
 ListenOn: 0.0.0.0:8082
+Mode: dev
 Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: video.rpc
+SearchRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: search.rpc
 DB:
   DataSource: root:gopan123@tcp(127.0.0.1:3306)/gopan?charset=utf8mb4&parseTime=true&loc=Local
-JWT:
-  AccessSecret: "gopan-secret-key-change-in-production"
-  AccessExpire: 86400
+MinIO:
+  Endpoint: 127.0.0.1:9000
+  AccessKey: minioadmin
+  SecretKey: minioadmin
+  Bucket: gopan-videos
+  UseSSL: false
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  TranscodeTopic: gopan.transcode.tasks
+UploadRedis:
+  Host: 127.0.0.1:6379
+  Pass: ""

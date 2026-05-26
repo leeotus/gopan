@@ -31,6 +31,7 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+
 	ctx := svc.NewServiceContext(c)
 
 	// 启动 Kafka Consumer（异步消费转码任务）

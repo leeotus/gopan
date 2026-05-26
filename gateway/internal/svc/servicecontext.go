@@ -11,6 +11,7 @@ import (
 	"gopan/rpc/user/userclient"
 	"gopan/rpc/video/videoclient"
 
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -26,15 +27,25 @@ type ServiceContext struct {
 	SearchClient    searchclient.Search
 }
 
+// tryNewClient 尝试建立 zrpc 客户端，失败不 panic，仅记日志并返回 nil
+func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
+	cli, err := zrpc.NewClient(cfg)
+	if err != nil {
+		logx.Errorf("failed to create zrpc client: %v", err)
+		return nil
+	}
+	return cli
+}
+
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:          c,
 		Auth:            middleware.NewAuthMiddleware().Handle,
-		UserClient:      userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
-		VideoClient:     videoclient.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
-		TranscodeClient: transcodeclient.NewTranscode(zrpc.MustNewClient(c.TranscodeRpc)),
-		StreamClient:    streamclient.NewStream(zrpc.MustNewClient(c.StreamRpc)),
-		InteractClient:  interactclient.NewInteract(zrpc.MustNewClient(c.InteractRpc)),
-		SearchClient:    searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc)),
+		UserClient:      userclient.NewUser(tryNewClient(c.UserRpc)),
+		VideoClient:     videoclient.NewVideo(tryNewClient(c.VideoRpc)),
+		TranscodeClient: transcodeclient.NewTranscode(tryNewClient(c.TranscodeRpc)),
+		StreamClient:    streamclient.NewStream(tryNewClient(c.StreamRpc)),
+		InteractClient:  interactclient.NewInteract(tryNewClient(c.InteractRpc)),
+		SearchClient:    searchclient.NewSearch(tryNewClient(c.SearchRpc)),
 	}
 }

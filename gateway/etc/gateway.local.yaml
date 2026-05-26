@@ -1,7 +1,12 @@
 Name: gateway
 Host: 0.0.0.0
 Port: 8888
+Mode: dev
 MaxBytes: 104857600
+Log:
+  Level: error
+  Encoding: plain
+  Stat: false
 
 Auth:
   AccessSecret: "gopan-secret-key-change-in-production"

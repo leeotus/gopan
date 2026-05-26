@@ -25,7 +25,8 @@ func main() {
 	flag.Parse()
 
 	var c config.Config
-	conf.MustLoad(*configFile, &c) // 将 yaml 反序列化为 Config 结构体
+	conf.MustLoad(*configFile, &c)
+
 
 	// 创建 REST server / HTTP Server
 	server := rest.MustNewServer(c.RestConf)
