@@ -56,6 +56,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { showToast } from "vant";
+import axios from "axios";
 import { useVideoStore } from "../stores/video";
 import { useAuthStore } from "../stores/auth";
 import { formatCount, formatTime } from "../composables/utils";
@@ -72,13 +73,44 @@ const fieldStyle = { '--van-field-background': '#1e1e32', '--van-field-input-tex
 onMounted(async () => {
   await videoStore.fetchDetail(Number(route.params.id));
   video.value = videoStore.currentVideo;
+
+  // 查询播放进度
+  if (auth.isLoggedIn && video.value) {
+    try {
+      const res = await axios.get("/api/video/play-progress", {
+        params: { video_id: video.value.id, user_id: auth.user?.userId },
+        headers: { Authorization: "Bearer " + auth.token },
+      });
+      const pos = parseFloat(res.data?.message || "0");
+      if (pos > 0) {
+        showToast(`从 ${pos.toFixed(0)} 秒处继续播放`);
+        // TODO: player.seekTo(pos)
+      }
+    } catch {}
+  }
   comments.value = [
     { id: 1, username: "张三", content: "讲得太好了！收获很多", created_at: Math.floor(Date.now()/1000)-3600 },
     { id: 2, username: "李四", content: "请问有配套代码吗？", created_at: Math.floor(Date.now()/1000)-7200 },
   ];
 });
 
-function handlePlay() { showToast("播放器待集成 hls.js"); }
+function handlePlay() {
+  showToast("播放器待集成 hls.js");
+  // 模拟播放：每 5s 上报进度（实际集成后从播放器取 currentTime）
+  if (auth.isLoggedIn && video.value) {
+    let pos = 0;
+    setInterval(async () => {
+      pos += 5;
+      try {
+        await axios.post("/api/video/play-progress", {
+          video_id: video.value.id,
+          user_id: auth.user?.userId,
+          position: pos,
+        }, { headers: { Authorization: "Bearer " + auth.token } });
+      } catch {}
+    }, 5000);
+  }
+}
 async function handleLike() { if (!auth.isLoggedIn) { showToast("请先登录"); return; } await videoStore.toggleLike(video.value.id, video.value.liked); }
 async function handleFavorite() { if (!auth.isLoggedIn) { showToast("请先登录"); return; } await videoStore.toggleFavorite(video.value.id); video.value.favorited = !video.value.favorited; }
 function postComment() { if (!commentText.value.trim()) return; comments.value.unshift({ id: Date.now(), username: auth.user?.username || "我", content: commentText.value, created_at: Math.floor(Date.now()/1000) }); commentText.value = ""; }

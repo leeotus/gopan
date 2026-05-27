@@ -266,6 +266,12 @@ service gateway {
 
 	@handler SendDanmaku
 	post /danmaku (DanmakuMsg) returns (BaseResp)
+
+	@handler SavePlayProgress
+	post /play-progress (BaseResp)
+
+	@handler GetPlayProgress
+	get /play-progress (BaseResp)
 }
 
 @server (

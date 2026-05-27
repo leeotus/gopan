@@ -85,7 +85,7 @@ type PlayUrlReq struct {
 }
 
 type PlayUrlResp struct {
-	M3U8Url string       `json:"m3u8_url"`
+	M3u8Url string       `json:"m3u8_url"`
 	Streams []PlayStream `json:"streams"`
 }
 
@@ -132,7 +132,7 @@ type SearchVideoInfo struct {
 
 type TranscodeInfo struct {
 	Resolution string `json:"resolution"`
-	M3U8Url    string `json:"m3u8_url"`
+	M3u8Url    string `json:"m3u8_url"`
 	Bitrate    int    `json:"bitrate"`
 }
 

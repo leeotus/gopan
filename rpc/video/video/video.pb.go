@@ -1270,6 +1270,199 @@ func (x *ListUserVideosReq) GetLimit() int32 {
 	return 0
 }
 
+// ─── 播放进度 ───
+type SavePlayProgressReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	VideoId       int64                  `protobuf:"varint,1,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
+	UserId        int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Position      float64                `protobuf:"fixed64,3,opt,name=position,proto3" json:"position,omitempty"` // 秒
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SavePlayProgressReq) Reset() {
+	*x = SavePlayProgressReq{}
+	mi := &file_rpc_video_video_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SavePlayProgressReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SavePlayProgressReq) ProtoMessage() {}
+
+func (x *SavePlayProgressReq) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_video_video_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SavePlayProgressReq.ProtoReflect.Descriptor instead.
+func (*SavePlayProgressReq) Descriptor() ([]byte, []int) {
+	return file_rpc_video_video_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *SavePlayProgressReq) GetVideoId() int64 {
+	if x != nil {
+		return x.VideoId
+	}
+	return 0
+}
+
+func (x *SavePlayProgressReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *SavePlayProgressReq) GetPosition() float64 {
+	if x != nil {
+		return x.Position
+	}
+	return 0
+}
+
+type SavePlayProgressResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SavePlayProgressResp) Reset() {
+	*x = SavePlayProgressResp{}
+	mi := &file_rpc_video_video_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SavePlayProgressResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SavePlayProgressResp) ProtoMessage() {}
+
+func (x *SavePlayProgressResp) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_video_video_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SavePlayProgressResp.ProtoReflect.Descriptor instead.
+func (*SavePlayProgressResp) Descriptor() ([]byte, []int) {
+	return file_rpc_video_video_proto_rawDescGZIP(), []int{22}
+}
+
+type GetPlayProgressReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	VideoId       int64                  `protobuf:"varint,1,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
+	UserId        int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPlayProgressReq) Reset() {
+	*x = GetPlayProgressReq{}
+	mi := &file_rpc_video_video_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPlayProgressReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPlayProgressReq) ProtoMessage() {}
+
+func (x *GetPlayProgressReq) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_video_video_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPlayProgressReq.ProtoReflect.Descriptor instead.
+func (*GetPlayProgressReq) Descriptor() ([]byte, []int) {
+	return file_rpc_video_video_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetPlayProgressReq) GetVideoId() int64 {
+	if x != nil {
+		return x.VideoId
+	}
+	return 0
+}
+
+func (x *GetPlayProgressReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+type GetPlayProgressResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Position      float64                `protobuf:"fixed64,1,opt,name=position,proto3" json:"position,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPlayProgressResp) Reset() {
+	*x = GetPlayProgressResp{}
+	mi := &file_rpc_video_video_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPlayProgressResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPlayProgressResp) ProtoMessage() {}
+
+func (x *GetPlayProgressResp) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_video_video_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPlayProgressResp.ProtoReflect.Descriptor instead.
+func (*GetPlayProgressResp) Descriptor() ([]byte, []int) {
+	return file_rpc_video_video_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GetPlayProgressResp) GetPosition() float64 {
+	if x != nil {
+		return x.Position
+	}
+	return 0
+}
+
 var File_rpc_video_video_proto protoreflect.FileDescriptor
 
 const file_rpc_video_video_proto_rawDesc = "" +
@@ -1369,7 +1562,17 @@ const file_rpc_video_video_proto_rawDesc = "" +
 	"\x11ListUserVideosReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x16\n" +
 	"\x06cursor\x18\x02 \x01(\x03R\x06cursor\x12\x14\n" +
-	"\x05limit\x18\x03 \x01(\x05R\x05limit2\xfe\x04\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\"e\n" +
+	"\x13SavePlayProgressReq\x12\x19\n" +
+	"\bvideo_id\x18\x01 \x01(\x03R\avideoId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x1a\n" +
+	"\bposition\x18\x03 \x01(\x01R\bposition\"\x16\n" +
+	"\x14SavePlayProgressResp\"H\n" +
+	"\x12GetPlayProgressReq\x12\x19\n" +
+	"\bvideo_id\x18\x01 \x01(\x03R\avideoId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\x03R\x06userId\"1\n" +
+	"\x13GetPlayProgressResp\x12\x1a\n" +
+	"\bposition\x18\x01 \x01(\x01R\bposition2\x95\x06\n" +
 	"\x05Video\x129\n" +
 	"\n" +
 	"InitUpload\x12\x14.video.InitUploadReq\x1a\x15.video.InitUploadResp\x12<\n" +
@@ -1382,7 +1585,9 @@ const file_rpc_video_video_proto_rawDesc = "" +
 	"\vUpdateVideo\x12\x15.video.UpdateVideoReq\x1a\x16.video.UpdateVideoResp\x12<\n" +
 	"\vDeleteVideo\x12\x15.video.DeleteVideoReq\x1a\x16.video.DeleteVideoResp\x12N\n" +
 	"\x11TranscodeCallback\x12\x1b.video.TranscodeCallbackReq\x1a\x1c.video.TranscodeCallbackResp\x12A\n" +
-	"\x0eListUserVideos\x12\x18.video.ListUserVideosReq\x1a\x15.video.ListVideosRespB\tZ\a./videob\x06proto3"
+	"\x0eListUserVideos\x12\x18.video.ListUserVideosReq\x1a\x15.video.ListVideosResp\x12K\n" +
+	"\x10SavePlayProgress\x12\x1a.video.SavePlayProgressReq\x1a\x1b.video.SavePlayProgressResp\x12H\n" +
+	"\x0fGetPlayProgress\x12\x19.video.GetPlayProgressReq\x1a\x1a.video.GetPlayProgressRespB\tZ\a./videob\x06proto3"
 
 var (
 	file_rpc_video_video_proto_rawDescOnce sync.Once
@@ -1396,7 +1601,7 @@ func file_rpc_video_video_proto_rawDescGZIP() []byte {
 	return file_rpc_video_video_proto_rawDescData
 }
 
-var file_rpc_video_video_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_rpc_video_video_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_rpc_video_video_proto_goTypes = []any{
 	(*InitUploadReq)(nil),         // 0: video.InitUploadReq
 	(*InitUploadResp)(nil),        // 1: video.InitUploadResp
@@ -1419,6 +1624,10 @@ var file_rpc_video_video_proto_goTypes = []any{
 	(*TranscodeCallbackReq)(nil),  // 18: video.TranscodeCallbackReq
 	(*TranscodeCallbackResp)(nil), // 19: video.TranscodeCallbackResp
 	(*ListUserVideosReq)(nil),     // 20: video.ListUserVideosReq
+	(*SavePlayProgressReq)(nil),   // 21: video.SavePlayProgressReq
+	(*SavePlayProgressResp)(nil),  // 22: video.SavePlayProgressResp
+	(*GetPlayProgressReq)(nil),    // 23: video.GetPlayProgressReq
+	(*GetPlayProgressResp)(nil),   // 24: video.GetPlayProgressResp
 }
 var file_rpc_video_video_proto_depIdxs = []int32{
 	10, // 0: video.ListVideosResp.videos:type_name -> video.VideoInfo
@@ -1435,18 +1644,22 @@ var file_rpc_video_video_proto_depIdxs = []int32{
 	16, // 11: video.Video.DeleteVideo:input_type -> video.DeleteVideoReq
 	18, // 12: video.Video.TranscodeCallback:input_type -> video.TranscodeCallbackReq
 	20, // 13: video.Video.ListUserVideos:input_type -> video.ListUserVideosReq
-	1,  // 14: video.Video.InitUpload:output_type -> video.InitUploadResp
-	3,  // 15: video.Video.UploadChunk:output_type -> video.UploadChunkResp
-	5,  // 16: video.Video.UploadStatus:output_type -> video.UploadStatusResp
-	7,  // 17: video.Video.MergeChunks:output_type -> video.MergeChunksResp
-	9,  // 18: video.Video.ListVideos:output_type -> video.ListVideosResp
-	13, // 19: video.Video.GetVideo:output_type -> video.GetVideoResp
-	15, // 20: video.Video.UpdateVideo:output_type -> video.UpdateVideoResp
-	17, // 21: video.Video.DeleteVideo:output_type -> video.DeleteVideoResp
-	19, // 22: video.Video.TranscodeCallback:output_type -> video.TranscodeCallbackResp
-	9,  // 23: video.Video.ListUserVideos:output_type -> video.ListVideosResp
-	14, // [14:24] is the sub-list for method output_type
-	4,  // [4:14] is the sub-list for method input_type
+	21, // 14: video.Video.SavePlayProgress:input_type -> video.SavePlayProgressReq
+	23, // 15: video.Video.GetPlayProgress:input_type -> video.GetPlayProgressReq
+	1,  // 16: video.Video.InitUpload:output_type -> video.InitUploadResp
+	3,  // 17: video.Video.UploadChunk:output_type -> video.UploadChunkResp
+	5,  // 18: video.Video.UploadStatus:output_type -> video.UploadStatusResp
+	7,  // 19: video.Video.MergeChunks:output_type -> video.MergeChunksResp
+	9,  // 20: video.Video.ListVideos:output_type -> video.ListVideosResp
+	13, // 21: video.Video.GetVideo:output_type -> video.GetVideoResp
+	15, // 22: video.Video.UpdateVideo:output_type -> video.UpdateVideoResp
+	17, // 23: video.Video.DeleteVideo:output_type -> video.DeleteVideoResp
+	19, // 24: video.Video.TranscodeCallback:output_type -> video.TranscodeCallbackResp
+	9,  // 25: video.Video.ListUserVideos:output_type -> video.ListVideosResp
+	22, // 26: video.Video.SavePlayProgress:output_type -> video.SavePlayProgressResp
+	24, // 27: video.Video.GetPlayProgress:output_type -> video.GetPlayProgressResp
+	16, // [16:28] is the sub-list for method output_type
+	4,  // [4:16] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -1463,7 +1676,7 @@ func file_rpc_video_video_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rpc_video_video_proto_rawDesc), len(file_rpc_video_video_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

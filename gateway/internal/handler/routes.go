@@ -122,6 +122,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.MergeChunksHandler(serverCtx),
 				},
 				{
+					Method:  http.MethodPost,
+					Path:    "/play-progress",
+					Handler: video.SavePlayProgressHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/play-progress",
+					Handler: video.GetPlayProgressHandler(serverCtx),
+				},
+				{
 					Method:  http.MethodGet,
 					Path:    "/play-url",
 					Handler: video.GetPlayUrlHandler(serverCtx),

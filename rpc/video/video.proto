@@ -26,6 +26,10 @@ service Video {
   rpc TranscodeCallback(TranscodeCallbackReq) returns (TranscodeCallbackResp);
   // 获取用户视频列表
   rpc ListUserVideos(ListUserVideosReq) returns (ListVideosResp);
+  // 保存播放进度
+  rpc SavePlayProgress(SavePlayProgressReq) returns (SavePlayProgressResp);
+  // 获取播放进度
+  rpc GetPlayProgress(GetPlayProgressReq) returns (GetPlayProgressResp);
 }
 
 // ─── InitUpload ───
@@ -152,4 +156,22 @@ message ListUserVideosReq {
   int64 user_id = 1;
   int64 cursor = 2;
   int32 limit = 3;
+}
+
+// ─── 播放进度 ───
+message SavePlayProgressReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  double position = 3;  // 秒
+}
+
+message SavePlayProgressResp {}
+
+message GetPlayProgressReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+}
+
+message GetPlayProgressResp {
+  double position = 1;
 }

@@ -37,7 +37,7 @@ func (l *GetVideoLogic) GetVideo() (resp *types.VideoDetailResp, err error) {
 	for _, t := range v.Transcodes {
 		transcodes = append(transcodes, types.TranscodeInfo{
 			Resolution: t.Resolution,
-			M3U8Url:    t.M3U8Url,
+			M3u8Url:    t.M3U8Url,
 			Bitrate:    int(t.Bitrate),
 		})
 	}

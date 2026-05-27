@@ -82,3 +82,15 @@ func (s *VideoServer) ListUserVideos(ctx context.Context, in *video.ListUserVide
 	l := logic.NewListUserVideosLogic(ctx, s.svcCtx)
 	return l.ListUserVideos(in)
 }
+
+// 保存播放进度
+func (s *VideoServer) SavePlayProgress(ctx context.Context, in *video.SavePlayProgressReq) (*video.SavePlayProgressResp, error) {
+	l := logic.NewSavePlayProgressLogic(ctx, s.svcCtx)
+	return l.SavePlayProgress(in)
+}
+
+// 获取播放进度
+func (s *VideoServer) GetPlayProgress(ctx context.Context, in *video.GetPlayProgressReq) (*video.GetPlayProgressResp, error) {
+	l := logic.NewGetPlayProgressLogic(ctx, s.svcCtx)
+	return l.GetPlayProgress(in)
+}

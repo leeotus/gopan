@@ -29,6 +29,8 @@ const (
 	Video_DeleteVideo_FullMethodName       = "/video.Video/DeleteVideo"
 	Video_TranscodeCallback_FullMethodName = "/video.Video/TranscodeCallback"
 	Video_ListUserVideos_FullMethodName    = "/video.Video/ListUserVideos"
+	Video_SavePlayProgress_FullMethodName  = "/video.Video/SavePlayProgress"
+	Video_GetPlayProgress_FullMethodName   = "/video.Video/GetPlayProgress"
 )
 
 // VideoClient is the client API for Video service.
@@ -57,6 +59,10 @@ type VideoClient interface {
 	TranscodeCallback(ctx context.Context, in *TranscodeCallbackReq, opts ...grpc.CallOption) (*TranscodeCallbackResp, error)
 	// 获取用户视频列表
 	ListUserVideos(ctx context.Context, in *ListUserVideosReq, opts ...grpc.CallOption) (*ListVideosResp, error)
+	// 保存播放进度
+	SavePlayProgress(ctx context.Context, in *SavePlayProgressReq, opts ...grpc.CallOption) (*SavePlayProgressResp, error)
+	// 获取播放进度
+	GetPlayProgress(ctx context.Context, in *GetPlayProgressReq, opts ...grpc.CallOption) (*GetPlayProgressResp, error)
 }
 
 type videoClient struct {
@@ -167,6 +173,26 @@ func (c *videoClient) ListUserVideos(ctx context.Context, in *ListUserVideosReq,
 	return out, nil
 }
 
+func (c *videoClient) SavePlayProgress(ctx context.Context, in *SavePlayProgressReq, opts ...grpc.CallOption) (*SavePlayProgressResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SavePlayProgressResp)
+	err := c.cc.Invoke(ctx, Video_SavePlayProgress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoClient) GetPlayProgress(ctx context.Context, in *GetPlayProgressReq, opts ...grpc.CallOption) (*GetPlayProgressResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPlayProgressResp)
+	err := c.cc.Invoke(ctx, Video_GetPlayProgress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VideoServer is the server API for Video service.
 // All implementations must embed UnimplementedVideoServer
 // for forward compatibility.
@@ -193,6 +219,10 @@ type VideoServer interface {
 	TranscodeCallback(context.Context, *TranscodeCallbackReq) (*TranscodeCallbackResp, error)
 	// 获取用户视频列表
 	ListUserVideos(context.Context, *ListUserVideosReq) (*ListVideosResp, error)
+	// 保存播放进度
+	SavePlayProgress(context.Context, *SavePlayProgressReq) (*SavePlayProgressResp, error)
+	// 获取播放进度
+	GetPlayProgress(context.Context, *GetPlayProgressReq) (*GetPlayProgressResp, error)
 	mustEmbedUnimplementedVideoServer()
 }
 
@@ -232,6 +262,12 @@ func (UnimplementedVideoServer) TranscodeCallback(context.Context, *TranscodeCal
 }
 func (UnimplementedVideoServer) ListUserVideos(context.Context, *ListUserVideosReq) (*ListVideosResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserVideos not implemented")
+}
+func (UnimplementedVideoServer) SavePlayProgress(context.Context, *SavePlayProgressReq) (*SavePlayProgressResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method SavePlayProgress not implemented")
+}
+func (UnimplementedVideoServer) GetPlayProgress(context.Context, *GetPlayProgressReq) (*GetPlayProgressResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetPlayProgress not implemented")
 }
 func (UnimplementedVideoServer) mustEmbedUnimplementedVideoServer() {}
 func (UnimplementedVideoServer) testEmbeddedByValue()               {}
@@ -434,6 +470,42 @@ func _Video_ListUserVideos_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_SavePlayProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SavePlayProgressReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).SavePlayProgress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_SavePlayProgress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).SavePlayProgress(ctx, req.(*SavePlayProgressReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Video_GetPlayProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPlayProgressReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetPlayProgress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetPlayProgress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetPlayProgress(ctx, req.(*GetPlayProgressReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Video_ServiceDesc is the grpc.ServiceDesc for Video service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -480,6 +552,14 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUserVideos",
 			Handler:    _Video_ListUserVideos_Handler,
+		},
+		{
+			MethodName: "SavePlayProgress",
+			Handler:    _Video_SavePlayProgress_Handler,
+		},
+		{
+			MethodName: "GetPlayProgress",
+			Handler:    _Video_GetPlayProgress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

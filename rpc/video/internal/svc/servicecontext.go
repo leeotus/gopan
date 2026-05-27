@@ -22,6 +22,7 @@ type ServiceContext struct {
 	KafkaWriter      *kafkago.Writer            // Kafka Producer（转码任务）
 	KafkaMergeWriter *kafkago.Writer            // Kafka Producer（合并任务）
 	UploadProgress *storage.UploadProgress    // Redis 上传进度追踪
+	PlaybackRedis  *redis.Client              // Redis 播放进度
 	SearchClient   searchclient.Search        // search-svc gRPC 客户端
 }
 
@@ -51,6 +52,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		KafkaWriter:      kw,
 		KafkaMergeWriter: kafka.NewProducer(c.Kafka.Brokers, c.Kafka.MergeTopic),
 		UploadProgress: storage.NewUploadProgress(rdb),
+		PlaybackRedis:  rdb,
 		SearchClient:   searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc)),
 	}
 }

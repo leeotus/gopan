@@ -16,6 +16,8 @@ import (
 type (
 	DeleteVideoReq        = video.DeleteVideoReq
 	DeleteVideoResp       = video.DeleteVideoResp
+	GetPlayProgressReq    = video.GetPlayProgressReq
+	GetPlayProgressResp   = video.GetPlayProgressResp
 	GetVideoReq           = video.GetVideoReq
 	GetVideoResp          = video.GetVideoResp
 	InitUploadReq         = video.InitUploadReq
@@ -25,6 +27,8 @@ type (
 	ListVideosResp        = video.ListVideosResp
 	MergeChunksReq        = video.MergeChunksReq
 	MergeChunksResp       = video.MergeChunksResp
+	SavePlayProgressReq   = video.SavePlayProgressReq
+	SavePlayProgressResp  = video.SavePlayProgressResp
 	TranscodeCallbackReq  = video.TranscodeCallbackReq
 	TranscodeCallbackResp = video.TranscodeCallbackResp
 	TranscodeInfo         = video.TranscodeInfo
@@ -57,6 +61,10 @@ type (
 		TranscodeCallback(ctx context.Context, in *TranscodeCallbackReq, opts ...grpc.CallOption) (*TranscodeCallbackResp, error)
 		// 获取用户视频列表
 		ListUserVideos(ctx context.Context, in *ListUserVideosReq, opts ...grpc.CallOption) (*ListVideosResp, error)
+		// 保存播放进度
+		SavePlayProgress(ctx context.Context, in *SavePlayProgressReq, opts ...grpc.CallOption) (*SavePlayProgressResp, error)
+		// 获取播放进度
+		GetPlayProgress(ctx context.Context, in *GetPlayProgressReq, opts ...grpc.CallOption) (*GetPlayProgressResp, error)
 	}
 
 	defaultVideo struct {
@@ -128,4 +136,16 @@ func (m *defaultVideo) TranscodeCallback(ctx context.Context, in *TranscodeCallb
 func (m *defaultVideo) ListUserVideos(ctx context.Context, in *ListUserVideosReq, opts ...grpc.CallOption) (*ListVideosResp, error) {
 	client := video.NewVideoClient(m.cli.Conn())
 	return client.ListUserVideos(ctx, in, opts...)
+}
+
+// 保存播放进度
+func (m *defaultVideo) SavePlayProgress(ctx context.Context, in *SavePlayProgressReq, opts ...grpc.CallOption) (*SavePlayProgressResp, error) {
+	client := video.NewVideoClient(m.cli.Conn())
+	return client.SavePlayProgress(ctx, in, opts...)
+}
+
+// 获取播放进度
+func (m *defaultVideo) GetPlayProgress(ctx context.Context, in *GetPlayProgressReq, opts ...grpc.CallOption) (*GetPlayProgressResp, error) {
+	client := video.NewVideoClient(m.cli.Conn())
+	return client.GetPlayProgress(ctx, in, opts...)
 }
