@@ -90,8 +90,20 @@ onMounted(async () => {
   }
   comments.value = [
     { id: 1, username: "张三", content: "讲得太好了！收获很多", created_at: Math.floor(Date.now()/1000)-3600 },
-    { id: 2, username: "李四", content: "请问有配套代码吗？", created_at: Math.floor(Date.now()/1000)-7200 },
   ];
+  fetchComments();
+
+  // WebSocket 弹幕
+  if (video.value) {
+    const wsUrl = `ws://localhost:8888/ws/danmaku?video_id=${video.value.id}`;
+    const ws = new WebSocket(wsUrl);
+    ws.onmessage = (event) => {
+      try {
+        const d = JSON.parse(event.data);
+        // 渲染弹幕到屏幕（简化：加到评论区上方）
+      } catch {}
+    };
+  }
 });
 
 function handlePlay() {
@@ -111,9 +123,47 @@ function handlePlay() {
     }, 5000);
   }
 }
-async function handleLike() { if (!auth.isLoggedIn) { showToast("请先登录"); return; } await videoStore.toggleLike(video.value.id, video.value.liked); }
-async function handleFavorite() { if (!auth.isLoggedIn) { showToast("请先登录"); return; } await videoStore.toggleFavorite(video.value.id); video.value.favorited = !video.value.favorited; }
-function postComment() { if (!commentText.value.trim()) return; comments.value.unshift({ id: Date.now(), username: auth.user?.username || "我", content: commentText.value, created_at: Math.floor(Date.now()/1000) }); commentText.value = ""; }
+async function handleLike() {
+  if (!auth.isLoggedIn) { showToast("请先登录"); return; }
+  try {
+    if (video.value.liked) {
+      await axios.delete("/api/video/like", { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + auth.token } });
+    } else {
+      await axios.post("/api/video/like", null, { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + auth.token } });
+    }
+    video.value.liked = !video.value.liked;
+    video.value.like_count += video.value.liked ? 1 : -1;
+  } catch {}
+}
+
+async function handleFavorite() {
+  if (!auth.isLoggedIn) { showToast("请先登录"); return; }
+  try {
+    if (video.value.favorited) {
+      await axios.delete("/api/video/favorite", { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + auth.token } });
+    } else {
+      await axios.post("/api/video/favorite", null, { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + auth.token } });
+    }
+    video.value.favorited = !video.value.favorited;
+  } catch {}
+}
+
+function postComment() {
+  if (!commentText.value.trim()) return;
+  axios.post("/api/video/comment", { video_id: video.value.id, content: commentText.value }, { headers: { Authorization: "Bearer " + auth.token } }).then(() => {
+    comments.value.unshift({ id: Date.now(), username: auth.user?.username || "我", content: commentText.value, created_at: Math.floor(Date.now()/1000) });
+    commentText.value = "";
+  }).catch(() => {});
+}
+
+async function fetchComments() {
+  try {
+    const res = await axios.get("/api/video/comments", { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + auth.token } });
+    comments.value = (res.data?.comments || res.data?.data?.comments || []).map(c => ({
+      ...c, username: c.username || "匿名",
+    }));
+  } catch {}
+}
 function scrollToComments() { commentsEl.value?.scrollIntoView({ behavior: "smooth" }); }
 </script>
 
