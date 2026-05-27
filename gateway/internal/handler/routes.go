@@ -140,14 +140,9 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/like",
 					Handler: video.UnlikeVideoHandler(serverCtx),
 				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/list",
-					Handler: video.ListVideosHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/merge-chunks",
+					{
+						Method:  http.MethodPost,
+						Path:    "/merge-chunks",
 					Handler: video.MergeChunksHandler(serverCtx),
 				},
 				{
