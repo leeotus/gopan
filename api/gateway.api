@@ -283,3 +283,15 @@ service gateway {
 	get /videos (SearchReq) returns (SearchResp)
 }
 
+@server (
+	group:  admin
+	prefix: /api/admin
+)
+service gateway {
+	@handler AdminLogin
+	post /login (LoginReq) returns (LoginResp)
+
+	@handler AdminListVideos
+	get /videos returns (BaseResp)
+}
+

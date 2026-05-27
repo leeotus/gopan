@@ -18,5 +18,6 @@ type Config struct {
 	TranscodeRpc zrpc.RpcClientConf // transcode-svc
 	StreamRpc    zrpc.RpcClientConf // stream-svc
 	InteractRpc  zrpc.RpcClientConf // interact-svc
-	SearchRpc    zrpc.RpcClientConf // search-svc
-}
+		SearchRpc    zrpc.RpcClientConf // search-svc
+		AdminRpc     zrpc.RpcClientConf // admin-svc
+	}

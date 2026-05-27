@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	admin "gopan/gateway/internal/handler/admin"
 	search "gopan/gateway/internal/handler/search"
 	user "gopan/gateway/internal/handler/user"
 	video "gopan/gateway/internal/handler/video"
@@ -15,6 +16,22 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/login",
+				Handler: admin.AdminLoginHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/videos",
+				Handler: admin.AdminListVideosHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/admin"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{

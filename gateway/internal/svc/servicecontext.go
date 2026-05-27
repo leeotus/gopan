@@ -2,6 +2,7 @@
 package svc
 
 import (
+	"gopan/rpc/admin/adminclient"
 	"gopan/gateway/internal/config"
 	"gopan/gateway/internal/middleware"
 	"gopan/rpc/interact/interactclient"
@@ -25,6 +26,7 @@ type ServiceContext struct {
 	StreamClient    streamclient.Stream
 	InteractClient  interactclient.Interact
 	SearchClient    searchclient.Search
+	AdminClient     adminclient.Admin
 }
 
 // tryNewClient 尝试建立 zrpc 客户端，失败不 panic，仅记日志并返回 nil
@@ -47,5 +49,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		StreamClient:    streamclient.NewStream(tryNewClient(c.StreamRpc)),
 		InteractClient:  interactclient.NewInteract(tryNewClient(c.InteractRpc)),
 		SearchClient:    searchclient.NewSearch(tryNewClient(c.SearchRpc)),
+		AdminClient:     adminclient.NewAdmin(tryNewClient(c.AdminRpc)),
 	}
 }

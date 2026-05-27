@@ -72,6 +72,15 @@
       "program": "${workspaceFolder}/gateway",
       "args": ["-f", "etc/gateway.local.yaml"],
       "cwd": "${workspaceFolder}/gateway"
+    },
+    {
+      "name": "Debug admin-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/rpc/admin",
+      "args": ["-f", "etc/admin.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/admin"
     }
   ]
 }

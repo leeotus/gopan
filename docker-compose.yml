@@ -213,9 +213,24 @@ services:
       - stream-svc
       - interact-svc
       - search-svc
+      - admin-svc
     ports:
       - "8888:8888"
       - "9102:9102"
+    networks:
+      - gopan-net
+
+  admin-svc:
+    build: .
+    container_name: gopan-admin-svc
+    command: /app/rpc/admin/admin-svc -f /app/rpc/admin/etc/admin.yaml
+    depends_on:
+      mysql:
+        condition: service_healthy
+      etcd:
+        condition: service_started
+    ports:
+      - "8087:8087"
     networks:
       - gopan-net
 
