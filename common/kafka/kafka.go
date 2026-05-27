@@ -15,10 +15,19 @@ type TranscodeTask struct {
 	ObjectKey string `json:"object_key"`
 }
 
+// MergeTask 发送/消费的合并任务消息体（用于异步合并）。
+type MergeTask struct {
+	VideoId     int64    `json:"video_id"`
+	UploadId    string   `json:"upload_id"`
+	ChunkKeys   []string `json:"chunk_keys"`
+	TotalChunks int32    `json:"total_chunks"`
+}
+
 // ── 共享 Topic 常量 ──
 
 const (
 	TopicTranscodeTasks = "gopan.transcode.tasks"
+	TopicMergeTasks     = "gopan.video.merge.tasks"
 )
 
 // ── Producer ──

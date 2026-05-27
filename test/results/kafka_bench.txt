@@ -1,0 +1,9 @@
+╔══════════════════════════════════════════╗
+║   Kafka 削峰延迟对比测试                ║
+╚══════════════════════════════════════════╝
+
+▶ 测试 Producer 写入延迟
+  ✗ write error at 1: Kafka write errors (1/1), errors: [kafka.(*Client).Produce: dial tcp: lookup kafka: i/o timeout]
+  ✗ write error at 2: Kafka write errors (1/1), errors: [kafka.(*Client).Produce: dial tcp: lookup kafka: i/o timeout]
+  ✗ write error at 3: Kafka write errors (1/1), errors: [kafka.(*Client).Produce: dial tcp: lookup kafka: i/o timeout]
+  ✗ write error at 4: Kafka write errors (1/1), errors: [kafka.(*Client).Produce: dial tcp: lookup kafka: i/o timeout]

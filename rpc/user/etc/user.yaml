@@ -1,6 +1,8 @@
 Name: user.rpc
 ListenOn: 0.0.0.0:8081
 Mode: dev
+
+MaxConns: 100
 Prometheus:
   Host: 0.0.0.0
   Port: 9101

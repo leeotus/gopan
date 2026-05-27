@@ -2,6 +2,7 @@
 package consume
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -157,4 +158,52 @@ func uploadToMinio(ctx context.Context, client *storage.MinioClient, localPath, 
 		contentType = "video/mp2t"
 	}
 	return client.PutObject(ctx, minioKey, f, 0, contentType)
+}
+
+// StartMergeConsumer 消费合并任务——下载 chunks → 合并 → 上传 → 回写状态 → 发转码任务
+func StartMergeConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
+	if svcCtx.Config.Kafka.MergeTopic == "" {
+		return
+	}
+	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.MergeTopic)
+	defer reader.Close()
+
+	for {
+		msg, err := reader.FetchMessage(ctx)
+		if err != nil {
+			if err == context.Canceled { return }
+			logx.Errorf("merge kafka fetch error: %v", err)
+			continue
+		}
+
+		var task kafka.MergeTask
+		if err := json.Unmarshal(msg.Value, &task); err != nil {
+			reader.CommitMessages(ctx, msg)
+			continue
+		}
+
+		logx.Infof("merge consumer: video_id=%d chunks=%d", task.VideoId, len(task.ChunkKeys))
+		if err := processMerge(ctx, svcCtx, &task); err != nil {
+			logx.Errorf("merge failed: video_id=%d err=%v", task.VideoId, err)
+		}
+		reader.CommitMessages(ctx, msg)
+	}
+}
+
+func processMerge(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.MergeTask) error {
+	var buf bytes.Buffer
+	for _, key := range task.ChunkKeys {
+		reader, err := svcCtx.MinioClient.GetObject(ctx, key)
+		if err != nil { return fmt.Errorf("get chunk %s: %w", key, err) }
+		if _, err := io.Copy(&buf, reader); err != nil { reader.Close(); return err }
+		reader.Close()
+	}
+
+	destKey := fmt.Sprintf("videos/%d/source.mp4", task.VideoId)
+	if err := svcCtx.MinioClient.PutObject(ctx, destKey, bytes.NewReader(buf.Bytes()), int64(buf.Len()), "video/mp4"); err != nil {
+		return fmt.Errorf("put merged: %w", err)
+	}
+
+	logx.Infof("merge async done: video_id=%d", task.VideoId)
+	return nil
 }

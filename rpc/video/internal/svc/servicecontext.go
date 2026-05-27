@@ -19,7 +19,8 @@ type ServiceContext struct {
 	Config         config.Config
 	VideoStore     *store.VideoStore          // videos 和 transcodes 表的数据访问层
 	MinioClient    *storage.MinioClient       // MinIO 对象存储客户端
-	KafkaWriter    *kafkago.Writer            // Kafka Producer
+	KafkaWriter      *kafkago.Writer            // Kafka Producer（转码任务）
+	KafkaMergeWriter *kafkago.Writer            // Kafka Producer（合并任务）
 	UploadProgress *storage.UploadProgress    // Redis 上传进度追踪
 	SearchClient   searchclient.Search        // search-svc gRPC 客户端
 }
@@ -47,7 +48,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:         c,
 		VideoStore:     store.NewVideoStore(conn),
 		MinioClient:    minioClient,
-		KafkaWriter:    kw,
+		KafkaWriter:      kw,
+		KafkaMergeWriter: kafka.NewProducer(c.Kafka.Brokers, c.Kafka.MergeTopic),
 		UploadProgress: storage.NewUploadProgress(rdb),
 		SearchClient:   searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc)),
 	}

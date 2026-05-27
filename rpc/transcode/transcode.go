@@ -41,6 +41,7 @@ func main() {
 
 	// 启动 Kafka Consumer（异步消费转码任务）
 	go consume.StartConsumer(context.Background(), ctx)
+	go consume.StartMergeConsumer(context.Background(), ctx)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		transcode.RegisterTranscodeServer(grpcServer, server.NewTranscodeServer(ctx))

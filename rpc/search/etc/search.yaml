@@ -1,6 +1,8 @@
 Name: search.rpc
 ListenOn: 0.0.0.0:8086
 Mode: dev
+
+MaxConns: 100
 Prometheus:
   Host: 0.0.0.0
   Port: 9101

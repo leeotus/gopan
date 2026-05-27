@@ -1,6 +1,8 @@
 Name: transcode.rpc
 ListenOn: 0.0.0.0:8083
 Mode: dev
+
+MaxConns: 100
 Prometheus:
   Host: 0.0.0.0
   Port: 9101
@@ -26,6 +28,7 @@ Kafka:
   Brokers:
     - kafka:9092
   TranscodeTopic: gopan.transcode.tasks
+  MergeTopic: gopan.video.merge.tasks
   ConsumerGroup: gopan-transcode-group
 Telemetry:
   Name: transcode-svc

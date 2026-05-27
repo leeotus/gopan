@@ -10,5 +10,5 @@ type Config struct {
 	FFmpeg   struct { Path string }
 	MinIO    struct { Endpoint, AccessKey, SecretKey, Bucket string; UseSSL bool }
 	WorkDir     string `json:",default=/tmp/gopan-transcode"`
-	Kafka    struct { Brokers []string; TranscodeTopic string }
+	Kafka    struct { Brokers []string; TranscodeTopic string; MergeTopic string }
 }

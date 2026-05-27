@@ -9,6 +9,6 @@ type Config struct {
 	SearchRpc   zrpc.RpcClientConf
 	DB          struct { DataSource string }
 	MinIO       struct { Endpoint, AccessKey, SecretKey, Bucket string; UseSSL bool }
-	Kafka       struct { Brokers []string; TranscodeTopic string }
+	Kafka       struct { Brokers []string; TranscodeTopic string; MergeTopic string }
 	UploadRedis struct { Host, Pass string }
 }

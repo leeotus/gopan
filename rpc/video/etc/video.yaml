@@ -1,6 +1,8 @@
 Name: video.rpc
 ListenOn: 0.0.0.0:8082
 Mode: dev
+
+MaxConns: 100
 Prometheus:
   Host: 0.0.0.0
   Port: 9101
@@ -26,6 +28,7 @@ Kafka:
   Brokers:
     - kafka:9092
   TranscodeTopic: gopan.transcode.tasks
+  MergeTopic: gopan.video.merge.tasks
 UploadRedis:
   Host: redis:6379
   Pass: ""
