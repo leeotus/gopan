@@ -32,6 +32,7 @@ func NewMinioClient(endpoint, accessKey, secretKey, bucket string, useSSL bool) 
 		return nil, fmt.Errorf("minio bucket check failed: %w", err)
 	}
 	if !exists {
+		// 如果桶不存在的话, 创建对应的bucket桶
 		err = client.MakeBucket(context.Background(), bucket, minio.MakeBucketOptions{})
 		if err != nil {
 			return nil, fmt.Errorf("minio create bucket failed: %w", err)
@@ -43,7 +44,7 @@ func NewMinioClient(endpoint, accessKey, secretKey, bucket string, useSSL bool) 
 }
 
 // PutObject 上传文件到 MinIO。
-// 返回 key 的完整路径（供后续转码任务等使用）。
+// 返回 key 的完整路径
 func (s *MinioClient) PutObject(ctx context.Context, key string, reader io.Reader, size int64, contentType string) error {
 	_, err := s.client.PutObject(ctx, s.bucket, key, reader, size, minio.PutObjectOptions{
 		ContentType: contentType,
@@ -68,6 +69,7 @@ func (s *MinioClient) RemoveObject(ctx context.Context, key string) error {
 
 // ComposeObject 服务端合并多个对象为一个新对象。
 // sources 为源对象 key 列表，destKey 为目标 key。
+// @NOTE: ComposeObject合并的每个分块至少要5MB
 func (s *MinioClient) ComposeObject(ctx context.Context, destKey string, sourceKeys []string) error {
 	sources := make([]minio.CopySrcOptions, len(sourceKeys))
 	for i, key := range sourceKeys {

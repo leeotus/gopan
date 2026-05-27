@@ -61,6 +61,7 @@ func (c *Client) IndexVideo(ctx context.Context, doc *VideoDoc) error {
 		c.index,
 		bytes.NewReader(body),
 		c.cli.Index.WithContext(ctx),
+		// 使用video_id作为ES的id，相同ID写入=覆盖更新，保证幂等性
 		c.cli.Index.WithDocumentID(fmt.Sprintf("%d", doc.VideoId)),
 	)
 	if err != nil {
@@ -81,10 +82,7 @@ type SearchResult struct {
 
 // SearchVideos 全文搜索视频（multi_match title + description）。
 func (c *Client) SearchVideos(ctx context.Context, keyword string, category string, page, size int) (*SearchResult, error) {
-	from := (page - 1) * size
-	if from < 0 {
-		from = 0
-	}
+	from := max((page-1)*size, 0)
 
 	query := map[string]any{
 		"query": map[string]any{

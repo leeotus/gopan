@@ -8,10 +8,10 @@ import (
 
 // Config gateway 完整配置，映射 gateway/etc/gateway.yaml。
 type Config struct {
-	rest.RestConf                // go-zero REST 通用配置（Host/Port 等）
-	Auth struct {                // JWT 鉴权配置
-		AccessSecret string       // 签名密钥
-		AccessExpire int64        // Token 过期时间（秒）
+	rest.RestConf          // go-zero REST 通用配置（Host/Port 等）
+	Auth          struct { // JWT 鉴权配置
+		AccessSecret string // 签名密钥
+		AccessExpire int64  // Token 过期时间（秒）
 	}
 	UserRpc      zrpc.RpcClientConf // user-svc
 	VideoRpc     zrpc.RpcClientConf // video-svc
