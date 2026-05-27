@@ -1,10 +1,7 @@
 <template>
   <div class="page-container">
     <div class="player-area">
-      <img v-if="video?.cover_url" :src="video.cover_url" class="player-cover" />
-      <div class="play-btn" @click="handlePlay">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)"><polygon points="6,3 20,12 6,21"/></svg>
-      </div>
+      <video ref="videoEl" controls autoplay style="width:100%;height:100%;object-fit:contain;background:#000" />
     </div>
 
     <div class="info-section card" style="margin:12px 14px;border-radius:var(--radius)" v-if="video">
@@ -57,6 +54,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { showToast } from "vant";
 import axios from "axios";
+import Hls from "hls.js";
 import { useVideoStore } from "../stores/video";
 import { useAuthStore } from "../stores/auth";
 import { formatCount, formatTime } from "../composables/utils";
@@ -64,6 +62,7 @@ import { formatCount, formatTime } from "../composables/utils";
 const route = useRoute();
 const videoStore = useVideoStore();
 const auth = useAuthStore();
+const videoEl = ref(null);
 const video = ref(null);
 const comments = ref([]);
 const commentText = ref("");
@@ -73,6 +72,23 @@ const fieldStyle = { '--van-field-background': '#1e1e32', '--van-field-input-tex
 onMounted(async () => {
   await videoStore.fetchDetail(Number(route.params.id));
   video.value = videoStore.currentVideo;
+
+  // hls.js 播放器初始化
+  if (video.value && videoEl.value) {
+    const transcodes = video.value.transcodes || [];
+    if (transcodes.length > 0) {
+      const url = transcodes[0].m3u8_url || transcodes[0].M3U8Url;
+      if (url) {
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(url);
+          hls.attachMedia(videoEl.value);
+        } else if (videoEl.value.canPlayType("application/vnd.apple.mpegurl")) {
+          videoEl.value.src = url;
+        }
+      }
+    }
+  }
 
   // 查询播放进度
   if (auth.isLoggedIn && video.value) {

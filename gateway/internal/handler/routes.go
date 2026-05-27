@@ -43,6 +43,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		rest.WithPrefix("/api/search"),
 	)
 
+	// 视频列表和详情公开访问
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/list",
+				Handler: video.ListVideosHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/detail",
+				Handler: video.GetVideoHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/video"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
