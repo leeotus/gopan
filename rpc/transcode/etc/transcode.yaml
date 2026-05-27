@@ -29,6 +29,6 @@ Kafka:
   ConsumerGroup: gopan-transcode-group
 Telemetry:
   Name: transcode-svc
-  Endpoint: http://jaeger:4318
+  Endpoint: jaeger:4318
   Sampler: 1.0
   Batcher: otlphttp

@@ -16,6 +16,6 @@ JWT:
   AccessExpire: 86400
 Telemetry:
   Name: user-svc
-  Endpoint: http://jaeger:4318
+  Endpoint: jaeger:4318
   Sampler: 1.0
   Batcher: otlphttp

@@ -18,6 +18,6 @@ CacheRedis:
   DB: 0
 Telemetry:
   Name: interact-svc
-  Endpoint: http://jaeger:4318
+  Endpoint: jaeger:4318
   Sampler: 1.0
   Batcher: otlphttp
