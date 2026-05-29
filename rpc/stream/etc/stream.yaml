@@ -14,6 +14,11 @@ Etcd:
 CDN:
   BaseURL: http://minio:9000/gopan-videos
   SecretKey: gopan-cdn-secret
+CacheRedis:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0
 Telemetry:
   Name: stream-svc
   Endpoint: jaeger:4318

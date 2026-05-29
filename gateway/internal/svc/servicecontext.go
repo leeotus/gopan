@@ -40,15 +40,33 @@ func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	return &ServiceContext{
-		Config:          c,
-					Auth:            middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
-		UserClient:      userclient.NewUser(tryNewClient(c.UserRpc)),
-		VideoClient:     videoclient.NewVideo(tryNewClient(c.VideoRpc)),
-		TranscodeClient: transcodeclient.NewTranscode(tryNewClient(c.TranscodeRpc)),
-		StreamClient:    streamclient.NewStream(tryNewClient(c.StreamRpc)),
-		InteractClient:  interactclient.NewInteract(tryNewClient(c.InteractRpc)),
-		SearchClient:    searchclient.NewSearch(tryNewClient(c.SearchRpc)),
-		AdminClient:     adminclient.NewAdmin(tryNewClient(c.AdminRpc)),
+	ctx := &ServiceContext{
+		Config:  c,
+		Auth:    middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
 	}
+
+	// 异步初始化 RPC 客户端，避免阻塞启动
+	go func() {
+		ctx.UserClient = userclient.NewUser(tryNewClient(c.UserRpc))
+	}()
+	go func() {
+		ctx.VideoClient = videoclient.NewVideo(tryNewClient(c.VideoRpc))
+	}()
+	go func() {
+		ctx.TranscodeClient = transcodeclient.NewTranscode(tryNewClient(c.TranscodeRpc))
+	}()
+	go func() {
+		ctx.StreamClient = streamclient.NewStream(tryNewClient(c.StreamRpc))
+	}()
+	go func() {
+		ctx.InteractClient = interactclient.NewInteract(tryNewClient(c.InteractRpc))
+	}()
+	go func() {
+		ctx.SearchClient = searchclient.NewSearch(tryNewClient(c.SearchRpc))
+	}()
+	go func() {
+		ctx.AdminClient = adminclient.NewAdmin(tryNewClient(c.AdminRpc))
+	}()
+
+	return ctx
 }

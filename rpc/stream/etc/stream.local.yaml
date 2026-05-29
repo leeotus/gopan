@@ -9,6 +9,11 @@ Etcd:
 CDN:
   BaseURL: http://127.0.0.1:9000/gopan-videos
   SecretKey: gopan-cdn-secret
+CacheRedis:
+  Host: 127.0.0.1
+  Port: 6379
+  Password: ""
+  DB: 0
 
 Telemetry:
   Name: stream
