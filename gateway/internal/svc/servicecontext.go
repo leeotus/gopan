@@ -42,7 +42,7 @@ func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:          c,
-		Auth:            middleware.NewAuthMiddleware().Handle,
+					Auth:            middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
 		UserClient:      userclient.NewUser(tryNewClient(c.UserRpc)),
 		VideoClient:     videoclient.NewVideo(tryNewClient(c.VideoRpc)),
 		TranscodeClient: transcodeclient.NewTranscode(tryNewClient(c.TranscodeRpc)),

@@ -5,9 +5,13 @@ package video
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
+	"gopan/rpc/interact/interactclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,8 +30,16 @@ func NewDeleteCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Del
 	}
 }
 
-func (l *DeleteCommentLogic) DeleteComment() (resp *types.BaseResp, err error) {
-	// todo: add your logic here and delete this line
+func (l *DeleteCommentLogic) DeleteComment(r *http.Request) (resp *types.BaseResp, err error) {
+	commentId, _ := strconv.ParseInt(r.URL.Query().Get("comment_id"), 10, 64)
+	userId := middleware.GetUserIdFromContext(l.ctx)
 
-	return
+	_, rpcErr := l.svcCtx.InteractClient.DeleteComment(l.ctx, &interactclient.DeleteCommentReq{
+		CommentId: commentId,
+		UserId:    userId,
+	})
+	if rpcErr != nil {
+		return &types.BaseResp{Message: rpcErr.Error()}, nil
+	}
+	return &types.BaseResp{Message: "ok"}, nil
 }

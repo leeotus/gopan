@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
 	"gopan/rpc/video/videoclient"
@@ -21,7 +22,8 @@ func NewSavePlayProgressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	return &SavePlayProgressLogic{Logger: logx.WithContext(ctx), ctx: ctx, svcCtx: svcCtx}
 }
 
-func (l *SavePlayProgressLogic) SavePlayProgress(videoId, userId int64, position float64) (resp *types.BaseResp, err error) {
+func (l *SavePlayProgressLogic) SavePlayProgress(videoId int64, position float64) (resp *types.BaseResp, err error) {
+	userId := middleware.GetUserIdFromContext(l.ctx)
 	_, rpcErr := l.svcCtx.VideoClient.SavePlayProgress(l.ctx, &videoclient.SavePlayProgressReq{
 		VideoId:  videoId,
 		UserId:   userId,
@@ -43,9 +45,9 @@ func NewGetPlayProgressLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 	return &GetPlayProgressLogic{Logger: logx.WithContext(ctx), ctx: ctx, svcCtx: svcCtx}
 }
 
-func (l *GetPlayProgressLogic) GetPlayProgress(videoIdStr, userIdStr string) (resp *types.BaseResp, err error) {
+func (l *GetPlayProgressLogic) GetPlayProgress(videoIdStr string) (resp *types.BaseResp, err error) {
 	videoId, _ := strconv.ParseInt(videoIdStr, 10, 64)
-	userId, _ := strconv.ParseInt(userIdStr, 10, 64)
+	userId := middleware.GetUserIdFromContext(l.ctx)
 
 	r, rpcErr := l.svcCtx.VideoClient.GetPlayProgress(l.ctx, &videoclient.GetPlayProgressReq{
 		VideoId: videoId,

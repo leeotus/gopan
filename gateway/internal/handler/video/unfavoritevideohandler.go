@@ -14,7 +14,7 @@ import (
 func UnfavoriteVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewUnfavoriteVideoLogic(r.Context(), svcCtx)
-		resp, err := l.UnfavoriteVideo()
+			resp, err := l.UnfavoriteVideo(r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

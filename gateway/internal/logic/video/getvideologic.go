@@ -3,6 +3,7 @@ package video
 
 import (
 	"context"
+	"strconv"
 
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
@@ -25,8 +26,8 @@ func NewGetVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetVideo
 	}
 }
 
-func (l *GetVideoLogic) GetVideo() (resp *types.VideoDetailResp, err error) {
-	videoId := int64(1) // TODO: from query param
+func (l *GetVideoLogic) GetVideo(videoIdStr string) (resp *types.VideoDetailResp, err error) {
+	videoId, _ := strconv.ParseInt(videoIdStr, 10, 64)
 	r, err := l.svcCtx.VideoClient.GetVideo(l.ctx, &videoclient.GetVideoReq{VideoId: videoId})
 	if err != nil {
 		return nil, err
