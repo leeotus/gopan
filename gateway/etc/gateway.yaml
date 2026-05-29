@@ -34,39 +34,46 @@ UserRpc:
     Hosts:
       - etcd:2379
     Key: user.rpc
+  Timeout: 3000
 
 VideoRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: video.rpc
+  Timeout: 5000
 
 TranscodeRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: transcode.rpc
+  Timeout: 5000
 
 StreamRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: stream.rpc
+  Timeout: 3000
 
 InteractRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: interact.rpc
+  Timeout: 3000
 
 SearchRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: search.rpc
+  Timeout: 5000
 
 AdminRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: admin.rpc
+  Timeout: 3000

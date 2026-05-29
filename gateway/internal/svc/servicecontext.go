@@ -2,9 +2,9 @@
 package svc
 
 import (
-	"gopan/rpc/admin/adminclient"
 	"gopan/gateway/internal/config"
 	"gopan/gateway/internal/middleware"
+	"gopan/rpc/admin/adminclient"
 	"gopan/rpc/interact/interactclient"
 	"gopan/rpc/search/searchclient"
 	"gopan/rpc/stream/streamclient"
@@ -13,6 +13,7 @@ import (
 	"gopan/rpc/video/videoclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -20,6 +21,7 @@ import (
 type ServiceContext struct {
 	Config          config.Config
 	Auth            rest.Middleware
+	RateLimiter     rest.Middleware
 	UserClient      userclient.User
 	VideoClient     videoclient.Video
 	TranscodeClient transcodeclient.Transcode
@@ -40,9 +42,16 @@ func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	rds := redis.MustNewRedis(redis.RedisConf{
+		Host: c.Redis.Host,
+		Type: redis.NodeType,
+		Pass: c.Redis.Password,
+	})
+
 	ctx := &ServiceContext{
-		Config:  c,
-		Auth:    middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
+		Config:      c,
+		Auth:        middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
+		RateLimiter: middleware.NewRateLimitMiddleware(rds, 100, 200).Handle,
 	}
 
 	// 异步初始化 RPC 客户端，避免阻塞启动
