@@ -17,6 +17,7 @@ import (
 	"gopan/rpc/transcode/internal/svc"
 	"gopan/rpc/video/videoclient"
 
+	kafkago "github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -205,5 +206,20 @@ func processMerge(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.M
 	}
 
 	logx.Infof("merge async done: video_id=%d", task.VideoId)
+
+	// 发转码任务
+	transcodeTask := kafka.TranscodeTask{VideoId: task.VideoId, ObjectKey: destKey}
+	taskBody, _ := json.Marshal(transcodeTask)
+	if svcCtx.KafkaWriter != nil {
+		if err := svcCtx.KafkaWriter.WriteMessages(ctx, kafkago.Message{
+			Key:   []byte(fmt.Sprintf("transcode-video-%d", task.VideoId)),
+			Value: taskBody,
+		}); err != nil {
+			logx.Errorf("kafka write transcode task after merge error: %v", err)
+		} else {
+			logx.Infof("transcode task sent after merge: video_id=%d", task.VideoId)
+		}
+	}
+
 	return nil
 }
