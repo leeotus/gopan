@@ -30,6 +30,7 @@ export const videoApi = {
   listComments: (params) => request.get("/video/comments", { params }),
   deleteComment: (params) => request.delete("/video/comment", { params }),
   sendDanmaku: (data) => request.post("/video/danmaku", data),
+  getDanmakus: (params) => request.get("/video/danmakus", { params }),
 };
 
 export const searchApi = {

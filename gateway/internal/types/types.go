@@ -26,6 +26,10 @@ type DanmakuMsg struct {
 	Mode    int     `json:"mode,default=1"`
 }
 
+type GetDanmakusResp struct {
+	Danmakus []DanmakuMsg `json:"danmakus"`
+}
+
 type InitUploadReq struct {
 	Filename    string `json:"filename"`
 	FileSize    int64  `json:"file_size"`

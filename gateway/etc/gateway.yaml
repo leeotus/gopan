@@ -23,6 +23,12 @@ Auth:
   AccessSecret: "gopan-secret-key-change-in-production"
   AccessExpire: 86400
 
+Redis:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0
+
 UserRpc:
   Etcd:
     Hosts:

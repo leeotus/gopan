@@ -111,6 +111,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.SendDanmakuHandler(serverCtx),
 				},
 				{
+					Method:  http.MethodGet,
+					Path:    "/danmakus",
+					Handler: video.GetDanmakusHandler(serverCtx),
+				},
+				{
 					Method:  http.MethodDelete,
 					Path:    "/delete",
 					Handler: video.DeleteVideoHandler(serverCtx),
