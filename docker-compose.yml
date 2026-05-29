@@ -202,6 +202,19 @@ services:
     networks:
       - gopan-net
 
+  nginx:
+    image: nginx:alpine
+    container_name: gopan-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    networks:
+      - gopan-net
+    restart: unless-stopped
+
   gateway:
     build: .
     container_name: gopan-gateway

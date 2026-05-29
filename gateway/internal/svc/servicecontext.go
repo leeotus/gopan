@@ -2,6 +2,8 @@
 package svc
 
 import (
+	"fmt"
+
 	"gopan/gateway/internal/config"
 	"gopan/gateway/internal/middleware"
 	"gopan/rpc/admin/adminclient"
@@ -43,7 +45,7 @@ func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	rds := redis.MustNewRedis(redis.RedisConf{
-		Host: c.Redis.Host,
+		Host: fmt.Sprintf("%s:%d", c.Redis.Host, c.Redis.Port),
 		Type: redis.NodeType,
 		Pass: c.Redis.Password,
 	})

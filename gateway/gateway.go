@@ -11,6 +11,7 @@ import (
 	"gopan/gateway/internal/ws"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/go-zero/rest"
 )
 
@@ -21,6 +22,10 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+
+	// 启动 OpenTelemetry 分布式追踪
+	trace.StartAgent(c.Telemetry)
+	defer trace.StopAgent()
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
