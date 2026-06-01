@@ -8,6 +8,7 @@ import (
 
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
+	"gopan/rpc/admin/adminclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,7 +28,16 @@ func NewAdminLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AdminL
 }
 
 func (l *AdminLoginLogic) AdminLogin(req *types.LoginReq) (resp *types.LoginResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	r, rpcErr := l.svcCtx.AdminClient.AdminLogin(l.ctx, &adminclient.AdminLoginReq{
+		Username: req.Username,
+		Password: req.Password,
+	})
+	if rpcErr != nil {
+		return nil, rpcErr
+	}
+	return &types.LoginResp{
+		Token:    r.Token,
+		UserId:   r.UserId,
+		Username: r.Username,
+	}, nil
 }

@@ -34,7 +34,7 @@ func (l *InitUploadLogic) InitUpload(in *video.InitUploadReq) (*video.InitUpload
 		FileSize:    in.FileSize,
 		TotalChunks: in.TotalChunks,
 		UploadId:    uploadId,
-		Status:      0, // 上传中
+		Status:      0,                                      // 上传中
 		ObjectKey:   fmt.Sprintf("videos/%d/source.mp4", 0), // temp，真正 key 在 merge 时确定
 	}
 

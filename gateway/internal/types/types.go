@@ -182,6 +182,25 @@ type VideoInfo struct {
 	Duration   int             `json:"duration"`
 	Status     int             `json:"status"`
 	Category   string          `json:"category,optional"`
-	CreatedAt  int64           `json:"created_at"`
-	Transcodes []TranscodeInfo `json:"transcodes,optional"`
-}
+		CreatedAt  int64           `json:"created_at"`
+		Transcodes []TranscodeInfo `json:"transcodes,optional"`
+	}
+
+	// --- 管理员相关类型 ---
+	type AdminVideoInfo struct {
+		Id        int64  `json:"id"`
+		Title     string `json:"title"`
+		CoverUrl  string `json:"cover_url"`
+		UserId    int64  `json:"user_id"`
+		Username  string `json:"username"`
+		Status    int    `json:"status"`
+		PlayCount int64  `json:"play_count"`
+		CreatedAt int64  `json:"created_at"`
+	}
+
+	type AdminListVideosResp struct {
+		Videos     []AdminVideoInfo `json:"videos"`
+		NextCursor int64            `json:"next_cursor"`
+		HasMore    bool             `json:"has_more"`
+	}
+	

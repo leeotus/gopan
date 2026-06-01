@@ -28,6 +28,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/videos",
 				Handler: admin.AdminListVideosHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/approve",
+				Handler: admin.ApproveVideoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/reject",
+				Handler: admin.RejectVideoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/video",
+				Handler: admin.DeleteVideoHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/api/admin"),
 	)

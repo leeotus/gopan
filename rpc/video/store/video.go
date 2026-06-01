@@ -120,8 +120,8 @@ func (s *VideoStore) ListByUser(ctx context.Context, userId, cursor int64, limit
 func (s *VideoStore) Update(ctx context.Context, v *model.Video) error {
 	_, err := s.conn.ExecCtx(ctx, `
 		UPDATE videos SET title = ?, description = ?, category = ?, updated_at = NOW()
-		WHERE id = ? AND deleted_at IS NULL
-	`, v.Title, v.Description, v.Category, v.Id)
+		WHERE id = ? AND user_id = ? AND deleted_at IS NULL
+	`, v.Title, v.Description, v.Category, v.Id, v.UserId)
 	return err
 }
 
