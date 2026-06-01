@@ -13,6 +13,12 @@ type Config struct {
 		AccessSecret string // 签名密钥
 		AccessExpire int64  // Token 过期时间（秒）
 	}
+	Redis         struct { // Redis 配置（WebSocket 弹幕 Pub/Sub）
+		Host     string
+		Port     int
+		Password string
+		DB       int
+	}
 	UserRpc      zrpc.RpcClientConf // user-svc
 	VideoRpc     zrpc.RpcClientConf // video-svc
 	TranscodeRpc zrpc.RpcClientConf // transcode-svc

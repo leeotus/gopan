@@ -3,6 +3,7 @@ package video
 import (
 	"context"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
 	"gopan/rpc/video/videoclient"
@@ -21,11 +22,14 @@ func NewInitUploadLogic(ctx context.Context, svcCtx *svc.ServiceContext) *InitUp
 }
 
 func (l *InitUploadLogic) InitUpload(req *types.InitUploadReq) (resp *types.InitUploadResp, err error) {
+	userId := middleware.GetUserIdFromContext(l.ctx)
+
 	r, err := l.svcCtx.VideoClient.InitUpload(l.ctx, &videoclient.InitUploadReq{
 		Filename:    req.Filename,
 		Title:       req.Title,
 		FileSize:    req.FileSize,
 		TotalChunks: req.TotalChunks,
+		UserId:      userId,
 	})
 	if err != nil {
 		return nil, err

@@ -5,9 +5,13 @@ package video
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
+	"gopan/rpc/video/videoclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,8 +30,16 @@ func NewDeleteVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delet
 	}
 }
 
-func (l *DeleteVideoLogic) DeleteVideo() (resp *types.BaseResp, err error) {
-	// todo: add your logic here and delete this line
+func (l *DeleteVideoLogic) DeleteVideo(r *http.Request) (resp *types.BaseResp, err error) {
+	videoId, _ := strconv.ParseInt(r.URL.Query().Get("video_id"), 10, 64)
+	userId := middleware.GetUserIdFromContext(l.ctx)
 
-	return
+	_, rpcErr := l.svcCtx.VideoClient.DeleteVideo(l.ctx, &videoclient.DeleteVideoReq{
+		VideoId: videoId,
+		UserId:  userId,
+	})
+	if rpcErr != nil {
+		return &types.BaseResp{Message: rpcErr.Error()}, nil
+	}
+	return &types.BaseResp{Message: "ok"}, nil
 }

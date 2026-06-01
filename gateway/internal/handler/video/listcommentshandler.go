@@ -14,7 +14,7 @@ import (
 func ListCommentsHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewListCommentsLogic(r.Context(), svcCtx)
-		resp, err := l.ListComments()
+			resp, err := l.ListComments(r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

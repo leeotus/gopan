@@ -2,7 +2,7 @@
 GoPan HTTP 压测脚本
 
 使用方式：
-  go run test/bench/http_bench.go -c 10 -n 100
+  go run test/bench/http/http_bench.go -c 10 -n 100
 
 参数：
   -c  并发数（默认 10）
@@ -12,7 +12,7 @@ GoPan HTTP 压测脚本
 输出：
   - QPS
   - P50 / P95 / P99 延迟
-  - 错误率
+  - 成功 / 限流(429) / 失败 分类统计
   - 同时打印 Prometheus 指标查询链接
 */
 package main
@@ -32,7 +32,7 @@ import (
 var (
 	concurrency = flag.Int("c", 10, "并发数")
 	totalReqs   = flag.Int("n", 100, "总请求数")
-	url = flag.String("u", "http://localhost:8888/api/video/list?cursor=0&limit=10", "API 地址")
+	url         = flag.String("u", "http://localhost:8888/api/video/list?cursor=0&limit=10", "API 地址")
 	token       = flag.String("t", "", "JWT token（需要登录的接口必填）")
 )
 
@@ -45,7 +45,7 @@ func main() {
 	fmt.Printf("\n目标: %s\n并发: %d | 总请求: %d\n\n", *url, *concurrency, *totalReqs)
 
 	var wg sync.WaitGroup
-	var success, fail int64
+	var success, fail, throttled int64
 	var latencies []time.Duration
 	var mu sync.Mutex
 	sem := make(chan struct{}, *concurrency)
@@ -79,6 +79,10 @@ func main() {
 			io.Copy(io.Discard, resp.Body)
 			resp.Body.Close()
 
+			if resp.StatusCode == 429 {
+				atomic.AddInt64(&throttled, 1)
+				return
+			}
 			if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 				atomic.AddInt64(&success, 1)
 			} else {
@@ -97,10 +101,11 @@ func main() {
 	p99 := latencies[len(latencies)*99/100]
 	avgMs := float64(elapsed.Milliseconds()) / float64(*totalReqs)
 
-	// ── 打印报告 ──
+	// —— 打印报告 ——
 	fmt.Println(strings.Repeat("─", 50))
 	fmt.Printf("总耗时:     %v\n", elapsed.Round(time.Millisecond))
 	fmt.Printf("成功:       %d\n", success)
+	fmt.Printf("限流(429):  %d\n", throttled)
 	fmt.Printf("失败:       %d\n", fail)
 	fmt.Printf("QPS:        %.1f req/s\n", float64(*totalReqs)/elapsed.Seconds())
 	fmt.Println(strings.Repeat("─", 50))

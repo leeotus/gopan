@@ -1,6 +1,6 @@
 services:
   etcd:
-    image: quay.io/coreos/etcd:v3.5.21
+    image: docker.m.daocloud.io/bitnamilegacy/etcd:3.5.21
     container_name: gopan-etcd
     environment:
       - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
@@ -12,7 +12,7 @@ services:
       - gopan-net
 
   mysql:
-    image: mysql:8.4
+    image: docker.m.daocloud.io/mysql:8.4
     container_name: gopan-mysql
     environment:
       MYSQL_ROOT_PASSWORD: gopan123
@@ -49,7 +49,7 @@ services:
       - gopan-net
 
   minio:
-    image: minio/minio:latest
+    image: docker.m.daocloud.io/minio/minio:latest
     container_name: gopan-minio
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -69,7 +69,7 @@ services:
       - gopan-net
 
   elasticsearch:
-    image: elasticsearch:8.10.4
+    image: docker.m.daocloud.io/elasticsearch:8.10.4
     container_name: gopan-elasticsearch
     environment:
       - discovery.type=single-node
@@ -201,6 +201,19 @@ services:
       - "8086:8086"
     networks:
       - gopan-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: gopan-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    networks:
+      - gopan-net
+    restart: unless-stopped
 
   gateway:
     build: .

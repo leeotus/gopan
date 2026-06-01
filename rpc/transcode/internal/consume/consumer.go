@@ -17,6 +17,7 @@ import (
 	"gopan/rpc/transcode/internal/svc"
 	"gopan/rpc/video/videoclient"
 
+	kafkago "github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -151,13 +152,17 @@ func uploadToMinio(ctx context.Context, client *storage.MinioClient, localPath, 
 		return err
 	}
 	defer f.Close()
+	fi, err := f.Stat()
+	if err != nil {
+		return err
+	}
 	contentType := "application/octet-stream"
 	if strings.HasSuffix(minioKey, ".m3u8") {
 		contentType = "application/vnd.apple.mpegurl"
 	} else if strings.HasSuffix(minioKey, ".ts") {
 		contentType = "video/mp2t"
 	}
-	return client.PutObject(ctx, minioKey, f, 0, contentType)
+	return client.PutObject(ctx, minioKey, f, fi.Size(), contentType)
 }
 
 // StartMergeConsumer 消费合并任务——下载 chunks → 合并 → 上传 → 回写状态 → 发转码任务
@@ -205,5 +210,20 @@ func processMerge(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.M
 	}
 
 	logx.Infof("merge async done: video_id=%d", task.VideoId)
+
+	// 发转码任务
+	transcodeTask := kafka.TranscodeTask{VideoId: task.VideoId, ObjectKey: destKey}
+	taskBody, _ := json.Marshal(transcodeTask)
+	if svcCtx.KafkaWriter != nil {
+		if err := svcCtx.KafkaWriter.WriteMessages(ctx, kafkago.Message{
+			Key:   []byte(fmt.Sprintf("transcode-video-%d", task.VideoId)),
+			Value: taskBody,
+		}); err != nil {
+			logx.Errorf("kafka write transcode task after merge error: %v", err)
+		} else {
+			logx.Infof("transcode task sent after merge: video_id=%d", task.VideoId)
+		}
+	}
+
 	return nil
 }

@@ -32,6 +32,7 @@
               <span class="tag" :class="statusClass(v.status)">{{ statusText(v.status) }}</span>
               <button v-if="v.status === 3" class="btn-small" @click="approve(v.id)">✓ 通过</button>
               <button v-if="v.status === 2 || v.status === 3" class="btn-small btn-danger" @click="reject(v.id)">✕ 下架</button>
+              <button class="btn-small btn-danger" @click="deleteVideo(v.id)">🗑 删除</button>
             </div>
           </div>
         </div>
@@ -51,7 +52,7 @@ const isAdmin = ref(false);
 const adminToken = ref("");
 const form = ref({ username: "", password: "" });
 const videos = ref([]);
-const filterStatus = ref(-1);
+const filterStatus = ref(0);
 
 async function handleAdminLogin() {
   try {
@@ -59,9 +60,9 @@ async function handleAdminLogin() {
       username: form.value.username,
       password: form.value.password,
     });
-    adminToken.value = res.data.token;
-    isAdmin.value = true;
-    await fetchVideos();
+    adminToken.value = res.data?.token || "";
+    isAdmin.value = !!adminToken.value;
+    if (isAdmin.value) await fetchVideos();
   } catch {
     showToast("登录失败，请确认是管理员账号");
   }
@@ -69,30 +70,60 @@ async function handleAdminLogin() {
 
 async function fetchVideos() {
   try {
-    const status = filterStatus.value === 0 ? -1 : filterStatus.value;
+    const statusMap = [-1, 3, 2, 4];
+    const status = statusMap[filterStatus.value];
     const res = await axios.get("/api/admin/videos", {
       params: { status, limit: 50 },
       headers: { Authorization: "Bearer " + adminToken.value },
     });
     videos.value = res.data?.videos || [];
-  } catch {}
+  } catch {
+    videos.value = [];
+  }
 }
 
 async function approve(videoId) {
-  await axios.put(`/api/admin/video/${videoId}/approve`, {}, { headers: { Authorization: "Bearer " + adminToken.value } });
-  showToast("已通过");
-  fetchVideos();
+  try {
+    await axios.post("/api/admin/approve", null, {
+      params: { video_id: videoId, admin_id: 1 },
+      headers: { Authorization: "Bearer " + adminToken.value },
+    });
+    showToast("已通过");
+    fetchVideos();
+  } catch { showToast("操作失败"); }
 }
 
 async function reject(videoId) {
-  await axios.put(`/api/admin/video/${videoId}/reject`, {}, { headers: { Authorization: "Bearer " + adminToken.value } });
-  showToast("已下架");
-  fetchVideos();
+  try {
+    await axios.post("/api/admin/reject", null, {
+      params: { video_id: videoId, admin_id: 1 },
+      headers: { Authorization: "Bearer " + adminToken.value },
+    });
+    showToast("已下架");
+    fetchVideos();
+  } catch { showToast("操作失败"); }
 }
 
-function statusText(s) { return { 0: "上传中", 1: "转码中", 2: "正常", 3: "待审核", 4: "已下架" }[s] || "未知"; }
-function statusClass(s) { return { 0: "tag-yellow", 1: "tag-yellow", 2: "tag-green", 3: "tag-orange", 4: "tag-red" }[s] || ""; }
-function formatCount(n) { return n >= 10000 ? (n/10000).toFixed(1)+"w" : String(n); }
+async function deleteVideo(videoId) {
+  try {
+    await axios.delete("/api/admin/video", {
+      params: { video_id: videoId, admin_id: 1 },
+      headers: { Authorization: "Bearer " + adminToken.value },
+    });
+    showToast("已删除");
+    fetchVideos();
+  } catch { showToast("操作失败"); }
+}
+
+function statusText(s) {
+  return { 0: "上传中", 1: "转码中", 2: "正常", 3: "待审核", 4: "已下架" }[s] || "未知";
+}
+function statusClass(s) {
+  return { 0: "tag-yellow", 1: "tag-yellow", 2: "tag-green", 3: "tag-orange", 4: "tag-red" }[s] || "";
+}
+function formatCount(n) {
+  return n >= 10000 ? (n / 10000).toFixed(1) + "w" : String(n);
+}
 </script>
 
 <style scoped>

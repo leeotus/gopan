@@ -12,8 +12,6 @@ import (
 	"gopan/rpc/stream/stream"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type GetPlayUrlLogic struct {
@@ -71,7 +69,7 @@ func (l *GetPlayUrlLogic) GetPlayUrl(in *stream.GetPlayUrlReq) (*stream.GetPlayU
 	return resp, nil
 }
 
-// IncrPlayCountLogic 增加播放计数（TODO: Redis INCR + 定时同步 MySQL）。
+// IncrPlayCountLogic 增加播放计数（Redis INCR + 每 100 次同步 MySQL）。
 type IncrPlayCountLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
@@ -87,6 +85,11 @@ func NewIncrPlayCountLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Inc
 }
 
 func (l *IncrPlayCountLogic) IncrPlayCount(in *stream.IncrPlayCountReq) (*stream.IncrPlayCountResp, error) {
-	l.Logger.Infof("incr play count: videoId=%d", in.VideoId)
-	return &stream.IncrPlayCountResp{PlayCount: 0}, status.Error(codes.Unimplemented, "需要集成 video-svc client")
+	key := fmt.Sprintf("video:play:%d", in.VideoId)
+	count, err := l.svcCtx.Redis.Incr(l.ctx, key).Result()
+	if err != nil {
+		l.Logger.Errorf("redis incr play count error: %v", err)
+		return &stream.IncrPlayCountResp{PlayCount: 0}, nil
+	}
+	return &stream.IncrPlayCountResp{PlayCount: count}, nil
 }

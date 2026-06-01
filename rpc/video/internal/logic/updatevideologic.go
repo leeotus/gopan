@@ -31,6 +31,7 @@ func NewUpdateVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Updat
 func (l *UpdateVideoLogic) UpdateVideo(in *video.UpdateVideoReq) (*video.UpdateVideoResp, error) {
 	v := &model.Video{
 		Id:          in.VideoId,
+		UserId:      in.UserId,
 		Title:       in.Title,
 		Description: in.Description,
 		Category:    in.Category,

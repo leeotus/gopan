@@ -21,7 +21,7 @@ func UpdateVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := video.NewUpdateVideoLogic(r.Context(), svcCtx)
-		resp, err := l.UpdateVideo(&req)
+			resp, err := l.UpdateVideo(r, &req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

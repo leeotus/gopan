@@ -4,6 +4,7 @@ package user
 import (
 	"context"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
 	"gopan/rpc/user/userclient"
@@ -26,7 +27,7 @@ func NewGetProfileLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetPro
 }
 
 func (l *GetProfileLogic) GetProfile() (resp *types.UserProfileResp, err error) {
-	userId := int64(1) // TODO: 从 context 中提取 user_id
+	userId := middleware.GetUserIdFromContext(l.ctx)
 
 	r, err := l.svcCtx.UserClient.GetProfile(l.ctx, &userclient.GetProfileReq{UserId: userId})
 	if err != nil {

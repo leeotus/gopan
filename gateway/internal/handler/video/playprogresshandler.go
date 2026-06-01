@@ -15,13 +15,12 @@ func SavePlayProgressHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		body, _ := io.ReadAll(r.Body)
 		var req struct {
 			VideoId  int64   `json:"video_id"`
-			UserId   int64   `json:"user_id"`
 			Position float64 `json:"position"`
 		}
 		json.Unmarshal(body, &req)
 
 		l := video.NewSavePlayProgressLogic(r.Context(), svcCtx)
-		resp, err := l.SavePlayProgress(req.VideoId, req.UserId, req.Position)
+		resp, err := l.SavePlayProgress(req.VideoId, req.Position)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
@@ -33,10 +32,9 @@ func SavePlayProgressHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 func GetPlayProgressHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		videoIdStr := r.URL.Query().Get("video_id")
-		userIdStr := r.URL.Query().Get("user_id")
 
 		l := video.NewGetPlayProgressLogic(r.Context(), svcCtx)
-		resp, err := l.GetPlayProgress(videoIdStr, userIdStr)
+		resp, err := l.GetPlayProgress(videoIdStr)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
