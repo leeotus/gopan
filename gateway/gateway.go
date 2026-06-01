@@ -32,6 +32,9 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 
+	// 全局兜底限流 —— 所有 /api/* 请求的统一保护（500/s, burst 1000）
+	server.Use(ctx.RateLimiter)
+
 	// 注册 REST 路由
 	handler.RegisterHandlers(server, ctx)
 

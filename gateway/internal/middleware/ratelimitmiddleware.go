@@ -18,9 +18,10 @@ type RateLimitMiddleware struct {
 
 // NewRateLimitMiddleware 创建限流中间件。
 // rate: 每秒生成的令牌数，burst: 桶容量（允许的最大突发）。
-func NewRateLimitMiddleware(rds *redis.Redis, rate, burst int) *RateLimitMiddleware {
+// keyPrefix: Redis key 前缀，用于区分不同接口的限流桶。
+func NewRateLimitMiddleware(rds *redis.Redis, rate, burst int, keyPrefix string) *RateLimitMiddleware {
 	return &RateLimitMiddleware{
-		limiter: limit.NewTokenLimiter(rate, burst, rds, "gateway:ratelimit:"),
+		limiter: limit.NewTokenLimiter(rate, burst, rds, keyPrefix),
 	}
 }
 

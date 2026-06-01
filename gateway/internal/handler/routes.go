@@ -46,20 +46,31 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	// 视频列表和详情公开访问（带限流保护）
 	server.AddRoutes(
 		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.RateLimiter},
+			[]rest.Middleware{serverCtx.RateLimiterList},
 			rest.Route{Method: http.MethodGet, Path: "/list", Handler: video.ListVideosHandler(serverCtx)},
+		),
+		rest.WithPrefix("/api/video"),
+	)
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.RateLimiterDetail},
 			rest.Route{Method: http.MethodGet, Path: "/detail", Handler: video.GetVideoHandler(serverCtx)},
 		),
 		rest.WithPrefix("/api/video"),
 	)
 
+	// 登录: 公开访问但需要防撞库限流
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.RateLimiterLogin},
+			rest.Route{Method: http.MethodPost, Path: "/login", Handler: user.LoginHandler(serverCtx)},
+			rest.Route{Method: http.MethodPost, Path: "/register", Handler: user.RegisterHandler(serverCtx)},
+		),
+		rest.WithPrefix("/api/user"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/login",
-				Handler: user.LoginHandler(serverCtx),
-			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/profile",
@@ -69,11 +80,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPut,
 				Path:    "/profile",
 				Handler: user.UpdateProfileHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/register",
-				Handler: user.RegisterHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api/user"),
