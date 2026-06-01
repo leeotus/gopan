@@ -281,7 +281,13 @@ onMounted(async () => {
   if (video.value && videoEl.value) {
     const transcodes = video.value.transcodes || [];
     if (transcodes.length > 0) {
-      const url = transcodes[0].m3u8_url || transcodes[0].M3U8Url;
+      const rawUrl = transcodes[0].m3u8_url || transcodes[0].M3U8Url;
+      // 将 MinIO 内网地址替换为 Nginx 代理地址，浏览器可直接访问
+      // http://minio:9000/gopan-videos/videos/5/1080p/index.m3u8 → /videos/5/1080p/index.m3u8
+      const url = rawUrl
+        ? rawUrl.replace(/^https?:\/\/minio:\d+\/gopan-videos/, "")
+               .replace(/^https?:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?\/gopan-videos/, "")
+        : "";
       if (url) {
         if (Hls.isSupported()) {
           const hls = new Hls();

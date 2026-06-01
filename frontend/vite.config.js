@@ -22,6 +22,10 @@ export default defineConfig({
         target: "ws://localhost:8888",
         ws: true,
       },
+      "/videos": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
     },
   },
 });

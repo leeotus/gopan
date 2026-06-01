@@ -152,13 +152,17 @@ func uploadToMinio(ctx context.Context, client *storage.MinioClient, localPath, 
 		return err
 	}
 	defer f.Close()
+	fi, err := f.Stat()
+	if err != nil {
+		return err
+	}
 	contentType := "application/octet-stream"
 	if strings.HasSuffix(minioKey, ".m3u8") {
 		contentType = "application/vnd.apple.mpegurl"
 	} else if strings.HasSuffix(minioKey, ".ts") {
 		contentType = "video/mp2t"
 	}
-	return client.PutObject(ctx, minioKey, f, 0, contentType)
+	return client.PutObject(ctx, minioKey, f, fi.Size(), contentType)
 }
 
 // StartMergeConsumer 消费合并任务——下载 chunks → 合并 → 上传 → 回写状态 → 发转码任务

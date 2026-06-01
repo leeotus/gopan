@@ -14,11 +14,11 @@ export const useVideoStore = defineStore("video", () => {
     if (loading.value) return;
     loading.value = true;
     try {
-      const res = await videoApi.list(params);
+      const body = await videoApi.list(params);
       if (params.cursor === 0) videos.value = [];
-      videos.value.push(...(res.data.videos || []));
-      hasMore.value = res.data.has_more;
-      nextCursor.value = res.data.next_cursor;
+      videos.value.push(...(body.videos || []));
+      hasMore.value = body.has_more;
+      nextCursor.value = body.next_cursor;
     } catch (e) {
       if (videos.value.length === 0) videos.value = mockVideos;
     } finally {
@@ -28,8 +28,8 @@ export const useVideoStore = defineStore("video", () => {
 
   async function fetchMyVideos(params = {}) {
     try {
-      const res = await videoApi.list(params);
-      myVideos.value = res.data?.videos || [];
+      const body = await videoApi.list(params);
+      myVideos.value = body.videos || [];
     } catch {
       myVideos.value = mockVideos.slice(0, 3);
     }
@@ -37,8 +37,8 @@ export const useVideoStore = defineStore("video", () => {
 
   async function fetchDetail(videoId) {
     try {
-      const res = await videoApi.detail({ video_id: videoId });
-      currentVideo.value = res.data.video;
+      const body = await videoApi.detail({ video_id: videoId });
+      currentVideo.value = body.video;
     } catch {
       currentVideo.value = mockVideos.find((v) => v.id === videoId);
     }
