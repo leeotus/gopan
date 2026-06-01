@@ -5,8 +5,8 @@ import (
 	"context"
 	"database/sql"
 
-	"gopan/rpc/interact/internal/svc"
 	"gopan/rpc/interact/interact"
+	"gopan/rpc/interact/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/codes"

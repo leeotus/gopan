@@ -58,6 +58,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		rest.WithPrefix("/api/search"),
 	)
 
+	// 测试路由：与 /api/video/list 完全一致，但不挂限流中间件，用于压测对比
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/list",
+				Handler: video.ListVideosHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/test"),
+	)
+
 	// 视频列表和详情公开访问（带限流保护）
 	server.AddRoutes(
 		rest.WithMiddlewares(
