@@ -1,7 +1,7 @@
 Name: admin.rpc
 ListenOn: 0.0.0.0:8087
 Mode: dev
-MaxConns: 100
+MaxConns: 10000
 Etcd:
   Hosts:
   - 127.0.0.1:2379

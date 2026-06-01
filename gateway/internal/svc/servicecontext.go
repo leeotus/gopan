@@ -21,9 +21,14 @@ import (
 )
 
 type ServiceContext struct {
-	Config          config.Config
-	Auth            rest.Middleware
-	RateLimiter     rest.Middleware
+	Config      config.Config
+	Auth        rest.Middleware // rest.Middleware => func(next http.HandlerFunc) http.HandlerFunc
+	RateLimiter rest.Middleware // 全局兜底限流 (500/s)
+	RateLimiterList   rest.Middleware // 视频列表限流 (300/s)
+	RateLimiterDetail rest.Middleware // 视频详情限流 (200/s)
+	RateLimiterLogin  rest.Middleware // 登录限流 (10/s, 防撞库)
+
+	// 可以将以下的服务客户端看成是java springboot里的@Autowired，go-zero会自动注入
 	UserClient      userclient.User
 	VideoClient     videoclient.Video
 	TranscodeClient transcodeclient.Transcode
@@ -34,6 +39,7 @@ type ServiceContext struct {
 }
 
 // tryNewClient 尝试建立 zrpc 客户端，失败不 panic，仅记日志并返回 nil
+// TODO: 如果有服务在一开始无法建立连接，希望后续可以自动重试
 func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
 	cli, err := zrpc.NewClient(cfg)
 	if err != nil {
@@ -44,6 +50,7 @@ func tryNewClient(cfg zrpc.RpcClientConf) zrpc.Client {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	// redis客户端对象
 	rds := redis.MustNewRedis(redis.RedisConf{
 		Host: fmt.Sprintf("%s:%d", c.Redis.Host, c.Redis.Port),
 		Type: redis.NodeType,
@@ -51,9 +58,18 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	})
 
 	ctx := &ServiceContext{
-		Config:      c,
-		Auth:        middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
-		RateLimiter: middleware.NewRateLimitMiddleware(rds, 100, 200).Handle,
+		Config: c,
+		// 鉴权中间件
+		Auth: middleware.NewAuthMiddleware(c.Auth.AccessSecret).Handle,
+		// 分级限流中间件
+		//  全局兜底: 所有 /api/* 统一保护
+		RateLimiter:       middleware.NewRateLimitMiddleware(rds, 3000, 5000, "gateway:ratelimit:global:").Handle,
+		//  视频列表: 首页流量大，宽松
+		RateLimiterList:   middleware.NewRateLimitMiddleware(rds, 2000, 3000, "gateway:ratelimit:list:").Handle,
+		//  视频详情: 中等流量
+		RateLimiterDetail: middleware.NewRateLimitMiddleware(rds, 1000, 2000, "gateway:ratelimit:detail:").Handle,
+		//  登录: 低频但敏感，严格防撞库
+		RateLimiterLogin:  middleware.NewRateLimitMiddleware(rds, 50, 100, "gateway:ratelimit:login:").Handle,
 	}
 
 	// 异步初始化 RPC 客户端，避免阻塞启动
