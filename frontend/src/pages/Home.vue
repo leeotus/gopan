@@ -9,7 +9,7 @@
     <div class="page-content" style="padding:14px">
       <div class="video-grid">
         <div v-for="(v, i) in videoStore.videos" :key="v.id"
-          class="card anim-fade-up" :style="{ animationDelay: i * 0.04 + 's' }"
+          class="card card-clickable anim-fade-up" :style="{ animationDelay: i * 0.04 + 's' }"
           @click="$router.push(`/video/${v.id}`)">
           <div class="card-cover">
             <img :src="v.cover_url" :alt="v.title" loading="lazy" />

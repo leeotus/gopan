@@ -3,9 +3,14 @@
     <!-- 顶部搜索栏 -->
     <div class="top-bar" v-if="showSearchBar">
       <div class="top-logo" @click="$router.push('/')">✦ GoPan</div>
-      <div class="search-box" @click="$router.push('/search')">
+      <div class="search-box-inline">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b8baa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <span class="search-hint">搜索视频...</span>
+        <input
+          v-model="searchKeyword"
+          class="search-input"
+          placeholder="搜索视频..."
+          @keyup.enter="doSearch"
+        />
       </div>
       <div class="top-avatar" @click="$router.push('/profile')">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e8e6f0" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -46,10 +51,20 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
+const searchKeyword = ref("");
+
+function doSearch() {
+  const kw = searchKeyword.value.trim();
+  if (kw) {
+    router.push({ path: "/search", query: { q: kw } });
+  }
+}
+
 const showSearchBar = computed(() => ["/", "/search"].includes(route.path));
 const showSimpleBar = computed(() => !showSearchBar.value && !["/login", "/register"].includes(route.path));
 const showTabbar = computed(() => ["/", "/upload", "/profile"].includes(route.path));
@@ -66,9 +81,10 @@ const pageTitle = computed(() => route.meta?.title || "");
   border-bottom: 1px solid var(--border);
 }
 .top-logo { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, var(--accent), #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
-.search-box { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 24px; padding: 8px 16px; cursor: pointer; transition: border-color var(--transition); }
-.search-box:active { border-color: var(--accent); }
-.search-hint { font-size: 13px; color: var(--text-muted); }
+.search-box-inline { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 24px; padding: 6px 16px; transition: border-color var(--transition); }
+.search-box-inline:focus-within { border-color: var(--accent); }
+.search-input { flex: 1; border: none; background: transparent; color: var(--text-primary); font-size: 13px; outline: none; }
+.search-input::placeholder { color: var(--text-muted); }
 .top-avatar { cursor: pointer; padding: 4px; border-radius: 50%; transition: background var(--transition); }
 .top-avatar:active { background: var(--bg-card-hover); }
 

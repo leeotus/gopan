@@ -58,10 +58,10 @@ func StartConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
 }
 
 // processTranscode 执行单条转码任务：
-//   1. 从 MinIO 下载源文件到工作目录
-//   2. FFmpeg 1080p HLS 转码（libx264 + AAC，hls_time=10s）
-//   3. 上传 HLS 切片 + index.m3u8 到 MinIO
-//   4. 回调 video-svc.TranscodeCallback（status=2 成功，3 失败）
+//  1. 从 MinIO 下载源文件到工作目录
+//  2. FFmpeg 1080p HLS 转码（libx264 + AAC，hls_time=10s）
+//  3. 上传 HLS 切片 + index.m3u8 到 MinIO
+//  4. 回调 video-svc.TranscodeCallback（status=2 成功，3 失败）
 func processTranscode(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.TranscodeTask) error {
 	workDir := svcCtx.Config.WorkDir
 	if workDir == "" {
@@ -176,7 +176,9 @@ func StartMergeConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
 	for {
 		msg, err := reader.FetchMessage(ctx)
 		if err != nil {
-			if err == context.Canceled { return }
+			if err == context.Canceled {
+				return
+			}
 			logx.Errorf("merge kafka fetch error: %v", err)
 			continue
 		}
@@ -199,8 +201,13 @@ func processMerge(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.M
 	var buf bytes.Buffer
 	for _, key := range task.ChunkKeys {
 		reader, err := svcCtx.MinioClient.GetObject(ctx, key)
-		if err != nil { return fmt.Errorf("get chunk %s: %w", key, err) }
-		if _, err := io.Copy(&buf, reader); err != nil { reader.Close(); return err }
+		if err != nil {
+			return fmt.Errorf("get chunk %s: %w", key, err)
+		}
+		if _, err := io.Copy(&buf, reader); err != nil {
+			reader.Close()
+			return err
+		}
 		reader.Close()
 	}
 

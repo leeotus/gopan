@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"gopan/gateway/internal/middleware"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"gopan/gateway/internal/logic/video"
 	"gopan/gateway/internal/svc"
@@ -16,8 +18,14 @@ func SavePlayProgressHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		var req struct {
 			VideoId  int64   `json:"video_id"`
 			Position float64 `json:"position"`
+			Token    string  `json:"token"`
 		}
 		json.Unmarshal(body, &req)
+
+		// sendBeacon 不支持自定义 header，从 body 中提取 token 注入 context
+		if req.Token != "" {
+			r = r.WithContext(middleware.InjectUserIdFromToken(r.Context(), req.Token, svcCtx.Config.Auth.AccessSecret))
+		}
 
 		l := video.NewSavePlayProgressLogic(r.Context(), svcCtx)
 		resp, err := l.SavePlayProgress(req.VideoId, req.Position)

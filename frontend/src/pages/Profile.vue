@@ -19,7 +19,7 @@
 
         <div class="section-title">我的视频 ({{ myVideos.length }})</div>
         <div v-if="myVideos.length" class="video-list">
-          <div v-for="v in myVideos" :key="v.id" class="card" style="display:flex;gap:12px;overflow:hidden;margin-bottom:12px" @click="$router.push(`/video/${v.id}`)">
+          <div v-for="v in myVideos" :key="v.id" class="card card-clickable" style="display:flex;gap:12px;overflow:hidden;margin-bottom:12px" @click="$router.push(`/video/${v.id}`)">
             <div style="position:relative;width:130px;height:76px;flex-shrink:0">
               <img :src="v.cover_url" style="width:100%;height:100%;object-fit:cover" />
               <span style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:1px 6px;border-radius:3px">{{ formatDuration(v.duration) }}</span>
