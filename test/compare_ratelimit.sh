@@ -13,7 +13,7 @@ echo "║     令牌桶限流效果对比测试（自动版）      ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 
-CONCURRENCY=200
+CONCURRENCY=40
 REQUESTS=200000
 URL_NO="/api/test/list?cursor=0&limit=10"
 URL_WITH="/api/video/list?cursor=0&limit=10"
