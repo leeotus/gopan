@@ -1,0 +1,23 @@
+╔══════════════════════════════════════════╗
+║        GoPan HTTP 压测工具              ║
+╚══════════════════════════════════════════╝
+
+目标: http://localhost:8888/api/test/list?cursor=0&limit=10
+并发: 200 | 总请求: 200000
+
+──────────────────────────────────────────────────
+总耗时:     1m35.711s
+成功:       200000
+限流(429):  0
+失败:       0
+QPS:        2089.6 req/s
+──────────────────────────────────────────────────
+Avg 延迟:   0.48 ms
+P50 延迟:   87ms
+P95 延迟:   174ms
+P99 延迟:   252ms
+──────────────────────────────────────────────────
+
+Prometheus 指标:
+  平均延迟: http://localhost:9090/graph?g0.expr=rate(http_server_requests_duration_ms_sum[1m])/rate(http_server_requests_duration_ms_count[1m])
+  错误率:   http://localhost:9090/graph?g0.expr=rate(http_server_requests_duration_ms_count{status="500"}[1m])

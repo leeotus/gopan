@@ -1,0 +1,23 @@
+╔══════════════════════════════════════════╗
+║        GoPan HTTP 压测工具              ║
+╚══════════════════════════════════════════╝
+
+目标: http://localhost:8888/api/video/list?cursor=0&limit=10
+并发: 200 | 总请求: 200000
+
+──────────────────────────────────────────────────
+总耗时:     1m19.833s
+成功:       162892
+限流(429):  37108
+失败:       0
+QPS:        2505.2 req/s
+──────────────────────────────────────────────────
+Avg 延迟:   0.40 ms
+P50 延迟:   79ms
+P95 延迟:   160ms
+P99 延迟:   225ms
+──────────────────────────────────────────────────
+
+Prometheus 指标:
+  平均延迟: http://localhost:9090/graph?g0.expr=rate(http_server_requests_duration_ms_sum[1m])/rate(http_server_requests_duration_ms_count[1m])
+  错误率:   http://localhost:9090/graph?g0.expr=rate(http_server_requests_duration_ms_count{status="500"}[1m])
