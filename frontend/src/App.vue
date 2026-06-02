@@ -21,6 +21,10 @@
       </div>
 
       <div class="top-actions">
+        <button class="live-tag" @click="$router.push('/live')">
+          <span class="live-dot"></span>
+          LIVE
+        </button>
         <button class="top-action-btn" @click="$router.push('/upload')" title="Upload">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </button>
@@ -179,6 +183,38 @@ function doSearch() {
   transition: all var(--duration) var(--ease-out);
 }
 .top-action-btn:hover { border-color: var(--cyan-dim); color: var(--cyan); }
+.live-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid rgba(255,45,149,0.4);
+  border-radius: 20px;
+  background: rgba(255,45,149,0.08);
+  color: var(--pink);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease-out);
+  animation: pulse-glow-live 2s infinite;
+}
+.live-tag:hover {
+  background: rgba(255,45,149,0.18);
+  box-shadow: 0 0 16px var(--pink-glow);
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 0 6px var(--pink-glow);
+}
+@keyframes pulse-glow-live {
+  0%, 100% { box-shadow: 0 0 6px var(--pink-glow); }
+  50%      { box-shadow: 0 0 16px var(--pink-glow); }
+}
 .avatar-circle {
   width: 36px;
   height: 36px;

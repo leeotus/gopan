@@ -119,9 +119,9 @@ func (s *VideoStore) ListByUser(ctx context.Context, userId, cursor int64, limit
 // Update 更新视频的标题、简介和分类。
 func (s *VideoStore) Update(ctx context.Context, v *model.Video) error {
 	_, err := s.conn.ExecCtx(ctx, `
-		UPDATE videos SET title = ?, description = ?, category = ?, updated_at = NOW()
+		UPDATE videos SET title = ?, description = ?, category = ?, cover_url = ?, updated_at = NOW()
 		WHERE id = ? AND user_id = ? AND deleted_at IS NULL
-	`, v.Title, v.Description, v.Category, v.Id, v.UserId)
+	`, v.Title, v.Description, v.Category, v.CoverUrl, v.Id, v.UserId)
 	return err
 }
 

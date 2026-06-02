@@ -74,7 +74,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { showToast } from "vant";
 import { videoApi } from "../api";
-import axios from "axios";
+import request from "../api/request";
 import { useAuthStore } from "../stores/auth";
 
 const auth = useAuthStore();
@@ -92,7 +92,7 @@ const fileInput = ref(null);
 const coverInput = ref(null);
 
 const categories = ["Tech", "Music", "Gaming", "Sports", "Education", "Entertainment", "Other"];
-const canUpload = computed(() => title.value.trim() && coverFile.value && file.value);
+const canUpload = computed(() => title.value.trim() && file.value);
 const coverPath = computed(() => coverFile.value ? `covers/${Date.now()}_${coverFile.value.name}` : "");
 
 function triggerFile() { fileInput.value?.click(); }
@@ -115,16 +115,26 @@ async function startUpload() {
   uploading.value = true;
 
   try {
+    const token = auth.token || localStorage.getItem("token");
+    if (!token) { showToast("Please login first"); uploading.value = false; return; }
+
     // 1. Init upload
     const totalChunks = Math.ceil(file.value.size / (3 * 1024 * 1024));
-    const init = await videoApi.initUpload({
-      filename: file.value.name,
-      file_size: file.value.size,
-      total_chunks: totalChunks,
-      title: title.value,
-    });
+    var init;
+    try {
+      init = await videoApi.initUpload({
+        filename: file.value.name,
+        file_size: file.value.size,
+        total_chunks: totalChunks,
+        title: title.value,
+      });
+    } catch (e) {
+      showToast("Init failed: " + (e?.response?.data?.message || e.message));
+      uploading.value = false; return;
+    }
     const videoId = init.video_id || init.data?.video_id;
     const uploadId = init.upload_id || init.data?.upload_id;
+    if (!videoId || !uploadId) { showToast("Invalid init response"); uploading.value = false; return; }
 
     // 2. Upload chunks
     for (let i = 0; i < totalChunks; i++) {
@@ -132,41 +142,38 @@ async function startUpload() {
       const end = Math.min(start + 3 * 1024 * 1024, file.value.size);
       const chunk = file.value.slice(start, end);
       const fd = new FormData();
-      fd.append("file", chunk);
+      fd.append("file", chunk, "chunk_" + i);
       fd.append("upload_id", uploadId);
       fd.append("video_id", String(videoId));
       fd.append("chunk_index", String(i));
-      await videoApi.uploadChunk(fd);
-      progress.value = Math.round((i + 1) / totalChunks * 60);
+      try {
+        await videoApi.uploadChunk(fd);
+      } catch (e) {
+        showToast("Chunk " + i + " failed: " + (e?.response?.data?.message || e.message));
+        uploading.value = false; return;
+      }
+      progress.value = Math.round((i + 1) / totalChunks * 50);
     }
 
-    // 3. Merge chunks
-    await videoApi.mergeChunks({ video_id: videoId, upload_id: uploadId });
+    // 3. Merge
+    try {
+      await videoApi.mergeChunks({ video_id: videoId, upload_id: uploadId });
+    } catch (e) {
+      showToast("Merge failed: " + (e?.response?.data?.message || e.message));
+      uploading.value = false; return;
+    }
+    progress.value = 70;
 
-    // 4. Update video info (description + category)
-    await axios.put("/api/video/update", {
-      video_id: videoId,
-      title: title.value,
-      description: description.value,
-      category: selectedCategory.value,
-    }, {
-      params: { video_id: videoId },
-      headers: { Authorization: "Bearer " + auth.token },
-    });
-    progress.value = 90;
-
-    // 5. Upload cover image (via the upload-chunk style — use video update to set cover URL)
-    // For now, we'll upload cover separately via a simple approach
-    if (coverFile.value) {
-      const coverForm = new FormData();
-      coverForm.append("file", coverFile.value);
-      // Upload cover as part of the video's data — use the same upload mechanism
-      try {
-        await axios.post("/api/video/upload-chunk", coverForm, {
-          params: { cover_upload: "true", video_id: videoId },
-          headers: { Authorization: "Bearer " + auth.token },
-        });
-      } catch {}
+    // 4. Update video
+    try {
+      await request.put("/video/update", {
+        video_id: videoId,
+        title: title.value,
+        description: description.value,
+        category: selectedCategory.value,
+      }, { params: { video_id: videoId } });
+    } catch (e) {
+      showToast("Update failed: " + (e?.response?.data?.message || e.message));
     }
 
     progress.value = 100;
@@ -175,7 +182,7 @@ async function startUpload() {
     router.push("/");
   } catch (e) {
     uploading.value = false;
-    showToast("Upload failed: " + (e?.response?.data?.message || e.message));
+    showToast("Error: " + (e?.response?.data?.message || e.message));
   }
 }
 </script>

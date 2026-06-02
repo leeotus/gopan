@@ -127,6 +127,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.DeleteCommentHandler(serverCtx),
 				},
 				{
+					Method:  http.MethodPost,
+					Path:    "/upload-cover",
+					Handler: video.UploadCoverHandler(serverCtx),
+				},
+				{
 					Method:  http.MethodGet,
 					Path:    "/comments",
 					Handler: video.ListCommentsHandler(serverCtx),

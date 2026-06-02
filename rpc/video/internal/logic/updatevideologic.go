@@ -36,6 +36,8 @@ func (l *UpdateVideoLogic) UpdateVideo(in *video.UpdateVideoReq) (*video.UpdateV
 		Description: in.Description,
 		Category:    in.Category,
 	}
+	// 封面 URL 通过 UpdateVideo 的其他途径无法传递，这里不处理 cover_url
+	// 前端需通过封面上传接口 POST /api/video/upload-cover 上传封面
 	if err := l.svcCtx.VideoStore.Update(l.ctx, v); err != nil {
 		l.Logger.Errorf("update video error: %v", err)
 		return nil, status.Error(codes.Internal, "更新失败")
