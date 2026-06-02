@@ -1,38 +1,43 @@
 <template>
   <div class="page-container">
-    <div class="page-content" style="padding:14px">
+    <div class="page-content" style="padding: 16px">
+      <!-- Not logged in -->
       <div v-if="!auth.isLoggedIn" class="card" style="text-align:center;padding:60px 20px">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#5a5a7a" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <p style="margin:16px 0;color:var(--text-muted)">登录后查看个人中心</p>
-        <button class="btn-primary" @click="$router.push('/login')">登录 / 注册</button>
+        <div class="empty-icon">🔐</div>
+        <p class="empty-text">Sign in to view your profile</p>
+        <router-link to="/login"><button class="btn-primary btn-primary--solid" style="margin-top:20px">Sign In</button></router-link>
       </div>
 
+      <!-- Profile -->
       <template v-else>
-        <div class="card" style="display:flex;align-items:center;gap:14px;padding:20px;margin-bottom:20px">
-          <div class="user-avatar">{{ auth.user?.username?.[0]?.toUpperCase() || "U" }}</div>
-          <div style="flex:1">
-            <div style="font-size:17px;font-weight:700">{{ auth.user?.username }}</div>
-            <div style="font-size:13px;color:var(--text-muted);margin-top:4px">{{ auth.user?.signature || "这个人很懒，什么都没写" }}</div>
+        <div class="profile-header card">
+          <div class="avatar-large">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5a5a7a" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-
-        <div class="section-title">我的视频 ({{ myVideos.length }})</div>
-        <div v-if="myVideos.length" class="video-list">
-          <div v-for="v in myVideos" :key="v.id" class="card card-clickable" style="display:flex;gap:12px;overflow:hidden;margin-bottom:12px" @click="$router.push(`/video/${v.id}`)">
-            <div style="position:relative;width:130px;height:76px;flex-shrink:0">
-              <img :src="v.cover_url" style="width:100%;height:100%;object-fit:cover" />
-              <span style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:1px 6px;border-radius:3px">{{ formatDuration(v.duration) }}</span>
-            </div>
-            <div style="padding:10px 10px 10px 0;flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px">
-              <div style="font-size:14px;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ v.title }}</div>
-              <div style="font-size:11px;color:var(--text-muted)">{{ formatCount(v.play_count) }} 播放 · {{ formatTime(v.created_at) }}</div>
-            </div>
+          <div class="profile-info">
+            <h2 class="profile-name">{{ auth.user?.username || 'User' }}</h2>
+            <p class="profile-email">{{ auth.user?.email || '' }}</p>
           </div>
         </div>
-        <van-empty v-else description="还没有上传视频" />
 
-        <button class="btn-outline" style="display:block;margin:24px auto" @click="handleLogout">退出登录</button>
+        <div class="section-title text-muted" style="margin:24px 0 12px">MY VIDEOS</div>
+        <div class="my-videos">
+          <div v-for="v in myVideos" :key="v.id" class="video-row card card-clickable" @click="$router.push(`/video/${v.id}`)">
+            <div class="row-cover">
+              <img :src="v.cover_url" v-if="v.cover_url" />
+              <div class="row-placeholder" v-else>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(0,240,255,0.2)"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+            <div class="row-body">
+              <div class="row-title">{{ v.title }}</div>
+              <div class="row-meta">{{ formatCount(v.play_count) }} plays · {{ formatTime(v.created_at) }}</div>
+            </div>
+          </div>
+        </div>
+        <div v-if="myVideos.length === 0" class="text-muted" style="text-align:center;padding:40px">
+          No videos uploaded yet
+        </div>
       </template>
     </div>
   </div>
@@ -40,29 +45,64 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { showToast } from "vant";
 import { useAuthStore } from "../stores/auth";
 import { useVideoStore } from "../stores/video";
-import { formatDuration, formatCount, formatTime } from "../composables/utils";
+import { formatCount, formatTime } from "../composables/utils";
 
-const router = useRouter();
 const auth = useAuthStore();
 const videoStore = useVideoStore();
 const myVideos = ref([]);
 
 onMounted(async () => {
-  if (auth.isLoggedIn) { await videoStore.fetchMyVideos(); myVideos.value = videoStore.myVideos; }
+  if (auth.isLoggedIn) {
+    await videoStore.fetchMyVideos({ user_id: auth.user?.id || 1 });
+    myVideos.value = videoStore.myVideos;
+  }
 });
-function handleLogout() { auth.logout(); showToast("已退出"); router.push("/"); }
 </script>
 
 <style scoped>
-.user-avatar {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #7c3aed);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 800; color: #fff;
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
 }
-.section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--cyan-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile-name { font-size: 20px; font-weight: 700; }
+.profile-email { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.section-title { font-family: var(--font-display); font-size: 11px; letter-spacing: 2px; }
+
+.my-videos { display: flex; flex-direction: column; gap: 8px; }
+.video-row { display: flex; gap: 12px; padding: 10px; align-items: center; }
+.row-cover {
+  width: 100px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+}
+.row-cover img { width: 100%; height: 100%; object-fit: cover; }
+.row-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(179,71,234,0.05));
+}
+.row-body { flex: 1; min-width: 0; }
+.row-title { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 </style>

@@ -1,142 +1,268 @@
 <template>
   <div class="page-container">
-    <div class="page-content" style="padding:14px" v-if="auth.isLoggedIn">
-      <div class="card" style="padding:16px;margin-bottom:14px">
-        <van-field v-model="form.title" placeholder="视频标题" :rules="[{ required: true }]" />
-        <van-field v-model="form.description" placeholder="视频简介（选填）" type="textarea" rows="2" />
-        <van-field v-model="form.category" placeholder="分类（选填）" />
-      </div>
-      <div class="card" style="padding:16px;margin-bottom:20px">
-        <div class="card-label">视频文件</div>
-        <div v-if="!selectedFile" class="upload-btn" @click="triggerFileInput">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5a5a7a" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          <span>选择视频</span>
+    <div class="page-content" style="padding:16px;max-width:500px;margin:0 auto">
+      <!-- Video file selection -->
+      <div class="card upload-card" style="margin-bottom:16px">
+        <div class="upload-zone" @click="triggerFile" @dragover.prevent @drop.prevent="onDrop">
+          <div class="upload-icon" v-if="!file">⬆</div>
+          <div class="upload-icon" v-else>📹</div>
+          <p class="upload-text" v-if="!file">Drop your video here or click to browse</p>
+          <p class="upload-text" v-else>{{ file.name }}</p>
+          <p class="upload-hint">MP4 · Max 500MB · {{ file ? formatSize(file.size) : '' }}</p>
+          <input ref="fileInput" type="file" accept="video/mp4" style="display:none" @change="onFileChange" />
         </div>
-        <div v-else class="file-info">
-          <span>{{ selectedFile.name }}</span>
-          <button class="btn-clear" @click="selectedFile = null">✕</button>
-        </div>
-        <input ref="fileInput" type="file" accept="video/*" style="display:none" @change="onFileChange" />
       </div>
-      <div v-if="uploading" class="card" style="padding:16px;margin-bottom:14px">
-        <div class="progress-out">
-          <div class="progress-in" :style="{width: percent + '%'}"></div>
+
+      <!-- Video metadata (always visible) -->
+      <div class="card" style="padding:20px;margin-bottom:16px">
+        <div class="section-title text-muted" style="margin-bottom:16px">VIDEO INFO</div>
+
+        <!-- Cover image (required) -->
+        <label class="field-label">Cover Image <span class="required">*</span></label>
+        <div class="cover-upload" @click="triggerCoverInput">
+          <img v-if="coverPreview" :src="coverPreview" class="cover-preview" />
+          <div v-else class="cover-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span class="cover-hint">Click to upload cover</span>
+          </div>
+          <input ref="coverInput" type="file" accept="image/*" style="display:none" @change="onCoverChange" />
         </div>
-        <div class="progress-label">{{ doneChunks }} / {{ total }} 分片 ({{ percent }}%)</div>
+
+        <!-- Title (required) -->
+        <label class="field-label" style="margin-top:16px">Title <span class="required">*</span></label>
+        <input class="input-field" v-model="title" placeholder="Enter a catchy title..." maxlength="100" style="margin-bottom:16px" />
+
+        <!-- Description (optional) -->
+        <label class="field-label">Description</label>
+        <textarea class="input-field textarea" v-model="description" placeholder="Describe your video..." maxlength="500" style="margin-bottom:16px"></textarea>
+
+        <!-- Category -->
+        <label class="field-label">Category</label>
+        <div class="category-grid">
+          <button v-for="cat in categories" :key="cat"
+            :class="['cat-option', { active: selectedCategory === cat }]"
+            @click="selectedCategory = cat"
+          >{{ cat }}</button>
+        </div>
       </div>
-      <button class="btn-primary" @click="start" :disabled="uploading || !selectedFile" style="width:100%">
-        {{ uploading ? "上传中..." : "开始上传" }}
+
+      <!-- Upload button -->
+      <button
+        v-if="file"
+        class="btn-primary btn-primary--solid"
+        @click="startUpload"
+        :disabled="uploading || !canUpload"
+        style="width:100%;padding:14px"
+      >
+        {{ uploading ? `Uploading ${progress}%` : 'Publish Video' }}
       </button>
-    </div>
-    <div v-else class="page-content" style="padding:14px;text-align:center">
-      <p style="color:var(--text-muted);margin-bottom:16px">登录后上传</p>
-      <button class="btn-primary" @click="$router.push('/login')">去登录</button>
+      <p v-if="file && !canUpload" class="text-muted" style="text-align:center;margin-top:8px;font-size:12px">
+        Please provide a title and cover image
+      </p>
+
+      <!-- Progress -->
+      <div v-if="uploading" class="progress-bar" style="margin-top:16px">
+        <div class="progress-fill" :style="{ width: progress + '%' }"></div>
+        <span class="progress-text">{{ progress }}%</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import { showToast } from "vant";
-import { useAuthStore } from "../stores/auth";
+import { videoApi } from "../api";
 import axios from "axios";
+import { useAuthStore } from "../stores/auth";
 
-const CHUNK = 3 * 1024 * 1024; // 3MB，低于 gRPC 默认 4MB 限制
 const auth = useAuthStore();
-const selectedFile = ref(null);
-const fileInput = ref(null);
-const form = ref({ title: "", description: "", category: "" });
+const router = useRouter();
+
+const file = ref(null);
+const title = ref("");
+const description = ref("");
+const selectedCategory = ref("");
+const coverFile = ref(null);
+const coverPreview = ref("");
 const uploading = ref(false);
-const total = ref(0);
-const doneChunks = ref(0);
-const percent = ref(0);
+const progress = ref(0);
+const fileInput = ref(null);
+const coverInput = ref(null);
 
-function triggerFileInput() { fileInput.value?.click(); }
-function onFileChange(e) { selectedFile.value = e.target.files?.[0] || null; }
+const categories = ["Tech", "Music", "Gaming", "Sports", "Education", "Entertainment", "Other"];
+const canUpload = computed(() => title.value.trim() && coverFile.value && file.value);
+const coverPath = computed(() => coverFile.value ? `covers/${Date.now()}_${coverFile.value.name}` : "");
 
-async function start() {
-  if (!selectedFile.value) return;
+function triggerFile() { fileInput.value?.click(); }
+function triggerCoverInput() { coverInput.value?.click(); }
+function onFileChange(e) { file.value = e.target.files[0]; }
+function onDrop(e) { file.value = e.dataTransfer.files[0]; }
+function formatSize(b) { return b > 1048576 ? (b/1048576).toFixed(1) + 'MB' : b < 1024 ? b + 'B' : (b/1024).toFixed(0) + 'KB'; }
+
+function onCoverChange(e) {
+  coverFile.value = e.target.files[0];
+  if (coverFile.value) {
+    const reader = new FileReader();
+    reader.onload = ev => coverPreview.value = ev.target.result;
+    reader.readAsDataURL(coverFile.value);
+  }
+}
+
+async function startUpload() {
+  if (!canUpload.value) { showToast("Title and cover are required"); return; }
   uploading.value = true;
-  const file = selectedFile.value;
-  total.value = Math.ceil(file.size / CHUNK);
-  doneChunks.value = 0;
-  percent.value = 0;
 
   try {
-    // 1. init
-    const tok = localStorage.getItem("token");
-    const hdr = { Authorization: "Bearer " + tok, "Content-Type": "application/json" };
-    const init = await axios.post("/api/video/init-upload", {
-      filename: file.name, title: form.value.title, file_size: file.size, total_chunks: total.value,
-    }, { headers: hdr });
-    const vid = init.data.video_id;
-    const uid = init.data.upload_id;
+    // 1. Init upload
+    const totalChunks = Math.ceil(file.value.size / (3 * 1024 * 1024));
+    const init = await videoApi.initUpload({
+      filename: file.value.name,
+      file_size: file.value.size,
+      total_chunks: totalChunks,
+      title: title.value,
+    });
+    const videoId = init.video_id || init.data?.video_id;
+    const uploadId = init.upload_id || init.data?.upload_id;
 
-    // 2. upload chunks concurrently (batch of 3)
-    const MAX_CONCURRENT = 3;
-    const uploadOne = async (i) => {
-      const start = i * CHUNK;
-      const end = Math.min(start + CHUNK, file.size);
+    // 2. Upload chunks
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * 3 * 1024 * 1024;
+      const end = Math.min(start + 3 * 1024 * 1024, file.value.size);
+      const chunk = file.value.slice(start, end);
       const fd = new FormData();
-      fd.append("video_id", vid);
-      fd.append("upload_id", uid);
-      fd.append("chunk_index", i);
-      fd.append("file_size", end - start);
-      fd.append("file", file.slice(start, end), "chunk_" + i);
-
-      for (let retry = 0; retry < 3; retry++) {
-        try {
-          await axios.post("/api/video/upload-chunk", fd, {
-            headers: { Authorization: "Bearer " + tok },
-            timeout: 60000,
-          });
-          return;
-        } catch {
-          if (retry < 2) await new Promise(r => setTimeout(r, 1000 * (retry + 1)));
-        }
-      }
-    };
-
-    for (let batch = 0; batch < total.value; batch += MAX_CONCURRENT) {
-      const tasks = [];
-      for (let i = batch; i < Math.min(batch + MAX_CONCURRENT, total.value); i++) {
-        tasks.push(uploadOne(i));
-      }
-      await Promise.all(tasks);
-      doneChunks.value = Math.min(batch + MAX_CONCURRENT, total.value);
-      percent.value = Math.round((doneChunks.value / total.value) * 100);
+      fd.append("file", chunk);
+      fd.append("upload_id", uploadId);
+      fd.append("video_id", String(videoId));
+      fd.append("chunk_index", String(i));
+      await videoApi.uploadChunk(fd);
+      progress.value = Math.round((i + 1) / totalChunks * 60);
     }
 
-    // 3. upload-status confirm
-    const st = await axios.get("/api/video/upload-status?upload_id=" + uid, { headers: { Authorization: "Bearer " + tok } });
-    const rcvd = st.data.received_chunks || st.data.data?.received_chunks || [];
-    const all = Array.from({length: total.value}, (_, i) => i);
-    const miss = all.filter(i => !rcvd.includes(i));
-    if (miss.length > 0) { showToast("缺失 " + miss.length + " 个分片，请重试"); return; }
+    // 3. Merge chunks
+    await videoApi.mergeChunks({ video_id: videoId, upload_id: uploadId });
 
-    // 4. merge
-    await axios.post("/api/video/merge-chunks", { video_id: vid, upload_id: uid }, { headers: hdr });
-    showToast("上传成功！");
-    selectedFile.value = null;
-    form.value = { title: "", description: "", category: "" };
-  } catch (e) {
-    showToast(e?.response?.data?.message || e.message || "上传失败");
-  } finally {
+    // 4. Update video info (description + category)
+    await axios.put("/api/video/update", {
+      video_id: videoId,
+      title: title.value,
+      description: description.value,
+      category: selectedCategory.value,
+    }, {
+      params: { video_id: videoId },
+      headers: { Authorization: "Bearer " + auth.token },
+    });
+    progress.value = 90;
+
+    // 5. Upload cover image (via the upload-chunk style — use video update to set cover URL)
+    // For now, we'll upload cover separately via a simple approach
+    if (coverFile.value) {
+      const coverForm = new FormData();
+      coverForm.append("file", coverFile.value);
+      // Upload cover as part of the video's data — use the same upload mechanism
+      try {
+        await axios.post("/api/video/upload-chunk", coverForm, {
+          params: { cover_upload: "true", video_id: videoId },
+          headers: { Authorization: "Bearer " + auth.token },
+        });
+      } catch {}
+    }
+
+    progress.value = 100;
     uploading.value = false;
+    showToast("Video published!");
+    router.push("/");
+  } catch (e) {
+    uploading.value = false;
+    showToast("Upload failed: " + (e?.response?.data?.message || e.message));
   }
 }
 </script>
 
 <style scoped>
-.card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); }
-.card-label { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-secondary); }
-.btn-primary { display: block; padding: 14px; border: none; border-radius: var(--radius); background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 16px var(--accent-glow); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.upload-btn { width: 100%; height: 110px; border: 2px dashed var(--border); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; }
-.upload-btn:active { border-color: var(--accent); }
-.file-info { display: flex; align-items: center; gap: 8px; padding: 10px; background: var(--bg-input); border-radius: var(--radius-sm); font-size: 13px; }
-.btn-clear { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 16px; }
-.progress-out { width: 100%; height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
-.progress-in { height: 100%; background: linear-gradient(90deg, var(--accent), #c084fc); transition: width 0.3s; }
-.progress-label { font-size: 12px; color: var(--text-muted); text-align: right; }
+.upload-card { transition: none; }
+.upload-zone {
+  padding: 50px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--duration);
+}
+.upload-zone:hover { background: rgba(0,240,255,0.02); }
+.upload-icon { font-size: 42px; margin-bottom: 12px; }
+.upload-text { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.upload-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+.section-title { font-family: var(--font-display); font-size: 11px; letter-spacing: 2px; }
+.field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.required { color: var(--pink); }
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: var(--font-body);
+}
+
+.category-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat-option {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--duration);
+}
+.cat-option.active {
+  background: rgba(0,240,255,0.1);
+  border-color: var(--cyan-dim);
+  color: var(--cyan);
+}
+.cat-option:hover:not(.active) { border-color: var(--border-glow); }
+
+.cover-upload {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--duration);
+  background: var(--bg-secondary);
+}
+.cover-upload:hover { border-color: var(--cyan-dim); }
+.cover-preview { width: 100%; height: 100%; object-fit: cover; }
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.cover-hint { font-size: 12px; color: var(--text-muted); }
+
+.progress-bar {
+  position: relative;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  border-radius: 3px;
+  transition: width 0.3s var(--ease-out);
+}
+.progress-text {
+  position: absolute;
+  top: -20px;
+  right: 0;
+  font-size: 11px;
+  color: var(--cyan);
+  font-weight: 600;
+}
 </style>

@@ -1,42 +1,56 @@
 <template>
   <div class="page-container">
-    <div class="category-bar">
-      <span v-for="cat in categories" :key="cat.value"
+    <!-- Category chips -->
+    <div class="category-strip">
+      <button
+        v-for="cat in categories" :key="cat.value"
         :class="['cat-chip', { active: activeCategory === cat.value }]"
-        @click="switchCategory(cat.value)">{{ cat.label }}</span>
+        @click="switchCategory(cat.value)"
+      >{{ cat.label }}</button>
     </div>
 
-    <div class="page-content" style="padding:14px">
+    <div class="page-content">
+      <!-- Video grid -->
       <div class="video-grid">
-        <div v-for="(v, i) in videoStore.videos" :key="v.id"
-          class="card card-clickable anim-fade-up" :style="{ animationDelay: i * 0.04 + 's' }"
-          @click="$router.push(`/video/${v.id}`)">
+        <div
+          v-for="(v, i) in videoStore.videos" :key="v.id"
+          class="video-card anim-fade-up"
+          :style="{ animationDelay: i * 0.05 + 's' }"
+          @click="$router.push(`/video/${v.id}`)"
+        >
           <div class="card-cover">
-            <img :src="v.cover_url" :alt="v.title" loading="lazy" />
-            <div class="cover-badge">
-              <span class="badge-duration">{{ formatDuration(v.duration) }}</span>
+            <div class="cover-placeholder" v-if="!v.cover_url">
+              <div class="cover-shimmer"></div>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="rgba(0,240,255,0.3)"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
-            <div class="cover-overlay">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5,3 19,12 5,21"/></svg>
-            </div>
+            <img v-else :src="v.cover_url" :alt="v.title" loading="lazy" />
+            <div class="cover-overlay"></div>
+            <div class="cover-duration" v-if="v.duration">{{ formatDuration(v.duration) }}</div>
           </div>
           <div class="card-body">
-            <div class="card-title">{{ v.title }}</div>
+            <div class="card-title">{{ v.title || 'Untitled' }}</div>
             <div class="card-footer">
-              <span class="card-username">{{ v.username }}</span>
-              <span class="card-views">{{ formatCount(v.play_count) }} 播放</span>
+              <span class="card-user">{{ v.username || 'Anonymous' }}</span>
+              <span class="card-sep">·</span>
+              <span class="card-views">{{ formatCount(v.play_count) }} plays</span>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Load more -->
       <div class="load-more" v-if="videoStore.hasMore">
-        <button class="btn-primary" @click="loadMore" :disabled="videoStore.loading" style="width:100%">
-          {{ videoStore.loading ? "加载中..." : "加载更多" }}
+        <button class="btn-primary" @click="loadMore" :disabled="videoStore.loading">
+          {{ videoStore.loading ? 'Loading...' : 'Load More' }}
         </button>
       </div>
 
-      <van-empty v-if="!videoStore.loading && videoStore.videos.length === 0" description="暂无视频" />
+      <!-- Empty -->
+      <div class="empty-state" v-if="!videoStore.loading && videoStore.videos.length === 0">
+        <div class="empty-icon">📺</div>
+        <p class="empty-text">No videos yet</p>
+        <p class="empty-sub">Be the first to upload!</p>
+      </div>
     </div>
   </div>
 </template>
@@ -48,49 +62,157 @@ import { formatDuration, formatCount } from "../composables/utils";
 
 const videoStore = useVideoStore();
 const activeCategory = ref("all");
+
 const categories = [
-  { label: "全部", value: "all" }, { label: "技术", value: "技术" },
-  { label: "前端", value: "前端" }, { label: "数据", value: "数据" }, { label: "基础", value: "基础" },
+  { label: "All", value: "all" },
+  { label: "Tech", value: "tech" },
+  { label: "Music", value: "music" },
+  { label: "Gaming", value: "gaming" },
+  { label: "Sports", value: "sports" },
 ];
 
 onMounted(() => videoStore.fetchVideos({ cursor: 0, sort: "newest" }));
-watch(activeCategory, (v) => videoStore.fetchVideos({ cursor: 0, sort: "newest", category: v === "all" ? "" : v }));
+
+watch(activeCategory, (v) =>
+  videoStore.fetchVideos({ cursor: 0, sort: "newest", category: v === "all" ? "" : v })
+);
+
 function switchCategory(v) { activeCategory.value = v; }
-function loadMore() { videoStore.fetchVideos({ cursor: videoStore.nextCursor, sort: "newest", category: activeCategory.value === "all" ? "" : activeCategory.value }); }
+function loadMore() {
+  videoStore.fetchVideos({
+    cursor: videoStore.nextCursor,
+    sort: "newest",
+    category: activeCategory.value === "all" ? "" : activeCategory.value,
+  });
+}
 </script>
 
 <style scoped>
-.category-bar { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; white-space: nowrap; }
+/* ── Category strip ── */
+.category-strip {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.category-strip::-webkit-scrollbar { display: none; }
 .cat-chip {
-  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
-  background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary);
-  cursor: pointer; transition: all var(--transition);
+  padding: 6px 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease-out);
+  flex-shrink: 0;
 }
-.cat-chip:active { transform: scale(0.95); }
-.cat-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--accent-glow); }
+.cat-chip.active {
+  background: rgba(0,240,255,0.08);
+  border-color: var(--cyan-dim);
+  color: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+.cat-chip:hover:not(.active) { border-color: var(--border-glow); color: var(--text-primary); }
 
-.video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+/* ── Video grid ── */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 0 12px;
+}
+@media (min-width: 600px) { .video-grid { grid-template-columns: repeat(3, 1fr); } }
 
-.card { animation-fill-mode: both; }
+.video-card {
+  cursor: pointer;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: all var(--duration) var(--ease-out);
+}
+.video-card:hover {
+  border-color: var(--cyan-dim);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Cover */
 .card-cover {
-  position: relative; width: 100%; aspect-ratio: 16/10; background: #0a0a10; overflow: hidden;
+  position: relative;
+  aspect-ratio: 16/10;
+  background: var(--bg-secondary);
+  overflow: hidden;
 }
-.card-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-.card:hover .card-cover img { transform: scale(1.05); }
-.cover-badge { position: absolute; bottom: 8px; right: 8px; }
-.badge-duration { background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); color: #fff; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+}
+.video-card:hover .card-cover img { transform: scale(1.05); }
+.cover-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cover-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,240,255,0.04), rgba(179,71,234,0.04));
+}
 .cover-overlay {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(5,5,10,0.8), transparent);
 }
-.card:hover .cover-overlay { opacity: 1; }
+.cover-duration {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  padding: 2px 8px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+}
 
-.card-body { padding: 10px; }
-.card-title { font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
-.card-username { font-size: 11px; color: var(--text-muted); }
-.card-views { font-size: 11px; color: var(--accent-light); }
+/* Body */
+.card-body { padding: 10px 10px 12px; }
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.card-sep { color: var(--border); }
 
-.load-more { margin-top: 20px; }
+/* Load more */
+.load-more { padding: 20px 16px 30px; text-align: center; }
+
+/* Empty */
+.empty-state { text-align: center; padding: 80px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.6; }
+.empty-text { font-size: 18px; font-weight: 600; color: var(--text-secondary); }
+.empty-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
 </style>
