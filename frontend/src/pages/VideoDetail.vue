@@ -32,7 +32,16 @@
     </div>
 
     <div class="comment-section card" style="margin:0 14px 80px;border-radius:var(--radius);padding:16px" ref="commentsEl">
-      <div class="section-title">评论 ({{ comments.length }})</div>
+      <!-- 弹幕输入 -->
+      <div class="danmaku-input" v-if="auth.isLoggedIn">
+        <div class="section-title" style="margin-bottom:8px">弹幕</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input v-model="danmakuText" class="input-dark" style="flex:1;padding:8px 12px;font-size:12px" placeholder="发个弹幕..." @keyup.enter="sendDanmakuNow" />
+          <button class="btn-primary" style="padding:8px 14px;font-size:12px;flex-shrink:0" @click="sendDanmakuNow">发送</button>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:12px">评论 ({{ comments.length }})</div>
       <div class="comment-input" v-if="auth.isLoggedIn">
         <van-field v-model="commentText" rows="1" type="textarea" placeholder="说点什么..." autosize :style="fieldStyle">
           <template #button><button class="btn-primary" style="padding:6px 16px;font-size:12px" @click="postComment">发送</button></template>
@@ -68,6 +77,7 @@ const danmakuCanvas = ref(null);
 const video = ref(null);
 const comments = ref([]);
 const commentText = ref("");
+const danmakuText = ref("");
 const commentsEl = ref(null);
 const fieldStyle = { '--van-field-background': '#1e1e32', '--van-field-input-text-color': '#e8e6f0', '--van-field-placeholder-text-color': '#5a5a7a' };
 
@@ -89,6 +99,8 @@ let renderRaf = null;
 const flyingDanmakus = [];
 // 预加载锁
 let isLoadingDanmaku = false;
+// 播放进度定时保存
+let saveProgressTimer = null;
 
 function getSegmentKey(time) {
   return Math.floor(time / SEGMENT_SIZE);
@@ -221,19 +233,25 @@ function onVideoTimeUpdate() {
     const flying = flyingDanmakus.find((f) => f.text === d.content && Math.abs(f.time - d.time) < 0.5);
     if (!flying) {
       emitDanmaku(d);
+      // 已发射的弹幕从池中移除，防止弹幕飞出屏幕后被重新发射
+      const seg = getSegmentKey(d.time);
+      const list = danmakuPool.get(seg);
+      if (list) {
+        const idx = list.findIndex((e) => e === d);
+        if (idx !== -1) list.splice(idx, 1);
+      }
     }
   }
 }
 
-// 用户 Seek 时清空当前飞行弹幕并重新加载
+// 用户 Seek 时清空当前飞行弹幕和弹幕池，重新加载
 function onVideoSeeked() {
   flyingDanmakus.length = 0;
+  danmakuPool.clear();
+  loadedSegments.clear();
   if (!videoEl.value || !video.value) return;
   const t = videoEl.value.currentTime;
   const seg = getSegmentKey(t);
-  // 清空当前段标记，强制重新加载
-  loadedSegments.delete(seg);
-  loadedSegments.delete(seg + 1);
   lastSegmentKey = -1;
   loadDanmakus(video.value.id, t);
   loadDanmakus(video.value.id, (seg + 1) * SEGMENT_SIZE);
@@ -268,7 +286,28 @@ function connectDanmakuWS(videoId) {
   ws.onerror = () => {};
   ws.onclose = () => {
     // 断开后不再重连，如需自动重连可在此处添加
-  };
+	};
+}
+
+// ─────────── 播放进度 ───────────
+
+async function savePlayProgress() {
+  if (!videoEl.value || !auth.isLoggedIn || !video.value) return;
+  const t = videoEl.value.currentTime;
+  if (t <= 0) return;
+  // sendBeacon: fire-and-forget，页面关闭/路由切换时不会丢失
+  const payload = JSON.stringify({ video_id: video.value.id, position: t, token: auth.token });
+  navigator.sendBeacon("/api/video/play-progress", new Blob([payload], { type: "application/json" }));
+}
+
+async function clearPlayProgress() {
+  if (!video.value || !auth.isLoggedIn) return;
+  try {
+    await axios.post("/api/video/play-progress",
+      { video_id: video.value.id, position: 0 },
+      { headers: { Authorization: "Bearer " + auth.token } }
+    );
+  } catch {}
 }
 
 // ─────────── 生命周期 ───────────
@@ -324,7 +363,16 @@ onMounted(async () => {
   if (videoEl.value) {
     videoEl.value.addEventListener("timeupdate", onVideoTimeUpdate);
     videoEl.value.addEventListener("seeked", onVideoSeeked);
+    // 每 10 秒自动保存播放进度
+    saveProgressTimer = setInterval(savePlayProgress, 10000);
+    // 视频播放完毕，清除进度
+    videoEl.value.addEventListener("ended", () => {
+      clearPlayProgress();
+      showToast("播放完毕");
+    });
   }
+  // 页面关闭/跳转时保存进度
+  window.addEventListener("beforeunload", savePlayProgress);
 
   // 加载首段弹幕 + 预加载下一段 + 连接 WebSocket
   if (video.value) {
@@ -334,13 +382,12 @@ onMounted(async () => {
   }
 
   // 评论
-  comments.value = [
-    { id: 1, username: "张三", content: "讲得太好了！收获很多", created_at: Math.floor(Date.now()/1000)-3600 },
-  ];
   fetchComments();
 });
 
 onUnmounted(() => {
+  if (saveProgressTimer) clearInterval(saveProgressTimer);
+  savePlayProgress(); // 退出时保存一次
   if (ws) ws.close();
   if (renderRaf) cancelAnimationFrame(renderRaf);
   if (videoEl.value) {
@@ -350,6 +397,7 @@ onUnmounted(() => {
   danmakuPool.clear();
   loadedSegments.clear();
   flyingDanmakus.length = 0;
+  window.removeEventListener("beforeunload", savePlayProgress);
 });
 
 // ─────────── 互动操作 ───────────
@@ -385,6 +433,23 @@ function postComment() {
     comments.value.unshift({ id: Date.now(), username: auth.user?.username || "我", content: commentText.value, created_at: Math.floor(Date.now()/1000) });
     commentText.value = "";
   }).catch(() => {});
+}
+
+async function sendDanmakuNow() {
+  const text = danmakuText.value.trim();
+  if (!text || !videoEl.value) return;
+  try {
+    await axios.post("/api/video/danmaku", {
+      content: text,
+      time: videoEl.value.currentTime,
+      color: "#ffffff",
+      mode: 1,
+    }, {
+      params: { video_id: video.value.id },
+      headers: { Authorization: "Bearer " + auth.token },
+    });
+    danmakuText.value = "";
+  } catch {}
 }
 
 async function fetchComments() {

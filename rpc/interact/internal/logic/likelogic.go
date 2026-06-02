@@ -5,8 +5,8 @@ import (
 	"context"
 	"database/sql"
 
-	"gopan/rpc/interact/internal/svc"
 	"gopan/rpc/interact/interact"
+	"gopan/rpc/interact/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/codes"
@@ -28,7 +28,8 @@ func (l *LikeLogic) Like(in *interact.LikeReq) (*interact.LikeResp, error) {
 		l.Logger.Errorf("insert like error: %v", err)
 		return nil, status.Error(codes.Internal, "点赞失败")
 	}
-	return &interact.LikeResp{LikeCount: 0}, nil // like_count 已存在 video-svc 侧
+	count := l.svcCtx.InteractStore.CountLikes(l.ctx, in.VideoId)
+	return &interact.LikeResp{LikeCount: count}, nil
 }
 
 type UnlikeLogic struct {

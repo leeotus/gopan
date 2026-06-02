@@ -114,3 +114,29 @@ func GetUsernameFromContext(ctx context.Context) string {
 	}
 	return uname
 }
+
+// InjectUserIdFromToken 解析 JWT token 并将 user_id/username 注入 context。
+// 用于 sendBeacon 等无法携带自定义 header 的场景。
+func InjectUserIdFromToken(ctx context.Context, tokenStr, secret string) context.Context {
+	claims := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(secret), nil
+	})
+	if err != nil || !token.Valid {
+		return ctx
+	}
+	if uid, ok := claims["user_id"]; ok {
+		if uidFloat, ok := uid.(float64); ok {
+			ctx = context.WithValue(ctx, CtxKeyUserId, int64(uidFloat))
+		}
+	}
+	if uname, ok := claims["username"]; ok {
+		if unameStr, ok := uname.(string); ok {
+			ctx = context.WithValue(ctx, CtxKeyUsername, unameStr)
+		}
+	}
+	return ctx
+}
