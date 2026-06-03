@@ -30,6 +30,8 @@ service Video {
   rpc SavePlayProgress(SavePlayProgressReq) returns (SavePlayProgressResp);
   // 获取播放进度
   rpc GetPlayProgress(GetPlayProgressReq) returns (GetPlayProgressResp);
+  // 更新视频封面
+  rpc UpdateCover(UpdateCoverReq) returns (UpdateCoverResp);
 }
 
 // ─── InitUpload ───
@@ -174,4 +176,14 @@ message GetPlayProgressReq {
 
 message GetPlayProgressResp {
   double position = 1;
+}
+
+// ─── 封面更新 ───
+message UpdateCoverReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  string cover_url = 3;
+}
+
+message UpdateCoverResp {
 }

@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 
 	"gopan/gateway/internal/config"
 	"gopan/gateway/internal/handler"
@@ -29,6 +30,20 @@ func main() {
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
+
+	// CORS 中间件（必须最先注册，允许前端直连 8888 进行 multipart 上传）
+	server.Use(func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+			next(w, r)
+		}
+	})
 
 	ctx := svc.NewServiceContext(c)
 

@@ -19,11 +19,16 @@
           @click="$router.push(`/video/${v.id}`)"
         >
           <div class="card-cover">
-            <div class="cover-placeholder" v-if="!v.cover_url">
+            <img
+              :src="v.cover_url || `/covers/${v.id}.jpg`"
+              :alt="v.title"
+              loading="lazy"
+              @error="(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }"
+            />
+            <div class="cover-placeholder" style="display:none">
               <div class="cover-shimmer"></div>
               <svg width="40" height="40" viewBox="0 0 24 24" fill="rgba(0,240,255,0.3)"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
-            <img v-else :src="v.cover_url" :alt="v.title" loading="lazy" />
             <div class="cover-overlay"></div>
             <div class="cover-duration" v-if="v.duration">{{ formatDuration(v.duration) }}</div>
           </div>

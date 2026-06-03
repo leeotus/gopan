@@ -23,12 +23,12 @@
         <div class="section-title text-muted" style="margin:24px 0 12px">MY VIDEOS</div>
         <div class="my-videos">
           <div v-for="v in myVideos" :key="v.id" class="video-row card card-clickable" @click="$router.push(`/video/${v.id}`)">
-            <div class="row-cover">
-              <img :src="v.cover_url" v-if="v.cover_url" />
-              <div class="row-placeholder" v-else>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(0,240,255,0.2)"><polygon points="5,3 19,12 5,21"/></svg>
+              <div class="row-cover">
+                <img :src="v.cover_url || `/covers/${v.id}.jpg`" @error="(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }" />
+                <div class="row-placeholder" style="display:none">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(0,240,255,0.2)"><polygon points="5,3 19,12 5,21"/></svg>
+                </div>
               </div>
-            </div>
             <div class="row-body">
               <div class="row-title">{{ v.title }}</div>
               <div class="row-meta">{{ formatCount(v.play_count) }} plays · {{ formatTime(v.created_at) }}</div>
@@ -38,6 +38,8 @@
         <div v-if="myVideos.length === 0" class="text-muted" style="text-align:center;padding:40px">
           No videos uploaded yet
         </div>
+
+        <button class="btn-danger" @click="handleLogout" style="width:100%;margin-top:30px;padding:12px">Sign Out</button>
       </template>
     </div>
   </div>
@@ -59,6 +61,13 @@ onMounted(async () => {
     myVideos.value = videoStore.myVideos;
   }
 });
+
+function handleLogout() {
+  localStorage.removeItem("token");
+  auth.token = "";
+  auth.user = null;
+  myVideos.value = [];
+}
 </script>
 
 <style scoped>

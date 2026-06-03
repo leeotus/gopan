@@ -57,7 +57,7 @@
         {{ uploading ? `Uploading ${progress}%` : 'Publish Video' }}
       </button>
       <p v-if="file && !canUpload" class="text-muted" style="text-align:center;margin-top:8px;font-size:12px">
-        Please provide a title and cover image
+        Please enter a video title
       </p>
 
       <!-- Progress -->
@@ -111,7 +111,7 @@ function onCoverChange(e) {
 }
 
 async function startUpload() {
-  if (!canUpload.value) { showToast("Title and cover are required"); return; }
+  if (!canUpload.value) { showToast("Please enter a title"); return; }
   uploading.value = true;
 
   try {
@@ -162,9 +162,23 @@ async function startUpload() {
       showToast("Merge failed: " + (e?.response?.data?.message || e.message));
       uploading.value = false; return;
     }
-    progress.value = 70;
+    progress.value = 60;
 
-    // 4. Update video
+    // 4. Upload cover
+    if (coverFile.value) {
+      try {
+        const coverFd = new FormData();
+        coverFd.append("file", coverFile.value);
+        coverFd.append("video_id", String(videoId));
+        await videoApi.uploadCover(coverFd);
+      } catch (e) {
+        showToast("Cover upload failed: " + (e?.response?.data?.message || e.message));
+        // 不阻断，继续
+      }
+    }
+    progress.value = 80;
+
+    // 5. Update video info
     try {
       await request.put("/video/update", {
         video_id: videoId,

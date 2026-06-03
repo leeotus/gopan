@@ -36,8 +36,8 @@
           @click="$router.push(`/video/${item.id}`)"
         >
           <div class="result-cover">
-            <img :src="item.cover_url" v-if="item.cover_url" />
-            <div class="cover-placeholder" v-else>
+            <img :src="item.cover_url || `/covers/${item.id}.jpg`" @error="(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }" />
+            <div class="cover-placeholder" style="display:none">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(0,240,255,0.15)"><polygon points="5,3 19,12 5,21"/></svg>
             </div>
           </div>

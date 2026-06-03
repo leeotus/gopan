@@ -26,6 +26,14 @@ export default defineConfig({
         target: "http://localhost:80",
         changeOrigin: true,
       },
+      "/covers": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
     },
+  },
+  // 确保 Vite 不截断 multipart body
+  define: {
+    __VITE_PROXY_MULTIPART__: true,
   },
 });

@@ -65,6 +65,7 @@ func (l *UploadCoverLogic) UploadCover(r *http.Request) (resp *types.BaseResp, e
 		return &types.BaseResp{Message: "封面上传失败"}, nil
 	}
 
-	coverUrl := "/videos/../covers/" + strconv.FormatInt(videoId, 10) + ".jpg"
+	// 返回 Nginx 代理的封面 URL
+	coverUrl := "/covers/" + strconv.FormatInt(videoId, 10) + ".jpg"
 	return &types.BaseResp{Message: coverUrl}, nil
 }

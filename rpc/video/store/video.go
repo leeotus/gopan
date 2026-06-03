@@ -125,6 +125,15 @@ func (s *VideoStore) Update(ctx context.Context, v *model.Video) error {
 	return err
 }
 
+// UpdateCover 只更新视频封面 URL。
+func (s *VideoStore) UpdateCover(ctx context.Context, videoId, userId int64, coverUrl string) error {
+	_, err := s.conn.ExecCtx(ctx, `
+		UPDATE videos SET cover_url = ?, updated_at = NOW()
+		WHERE id = ? AND user_id = ? AND deleted_at IS NULL
+	`, coverUrl, videoId, userId)
+	return err
+}
+
 // Delete 软删除视频，设置 deleted_at = NOW()，不会物理删除数据。
 // 仅允许视频所有者删除自己的视频。
 func (s *VideoStore) Delete(ctx context.Context, id, userId int64) error {

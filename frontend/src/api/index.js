@@ -22,10 +22,8 @@ export const videoApi = {
     });
   },
   uploadChunk: (formData) => {
-    const token = localStorage.getItem("token");
-    // 直连 8888：Vite 代理会截断 multipart body
-    return direct.post(`http://${window.location.hostname}:8888/api/video/upload-chunk`, formData, {
-      headers: token ? { Authorization: "Bearer " + token } : {},
+    return request.post("/video/upload-chunk", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
   },
   uploadChunkRaw: (data) => request.post("/video/upload-chunk", data),
@@ -33,9 +31,8 @@ export const videoApi = {
   mergeChunks: (data) => request.post("/video/merge-chunks", data),
   update: (data) => request.put("/video/update", data),
   uploadCover: (formData) => {
-    const token = localStorage.getItem("token");
-    return direct.post(`http://${window.location.hostname}:8888/api/video/upload-cover`, formData, {
-      headers: token ? { Authorization: "Bearer " + token } : {},
+    return request.post("/video/upload-cover", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
   },
   delete: (params) => request.delete("/video/delete", { params }),
