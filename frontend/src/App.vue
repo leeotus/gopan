@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
@@ -88,9 +88,19 @@ const showTabbar = computed(() => ["/", "/profile"].includes(route.path));
 const showTopBar = computed(() => !["/login", "/register"].includes(route.path));
 const showSearchBar = computed(() => ["/", "/search"].includes(route.path));
 
+// 监听路由 Q参数，自动同步输入框检索词
+watch(() => route.query.q, (newQ) => {
+  searchKeyword.value = newQ || "";
+}, { immediate: true });
+
 function doSearch() {
   const kw = searchKeyword.value.trim();
-  if (kw) router.push({ path: "/search", query: { q: kw } });
+  if (kw) {
+    router.push({ path: "/search", query: { q: kw } });
+  } else if (route.path === "/search") {
+    // 搜索词清空时，自动返回不带参的搜索首页
+    router.push({ path: "/search" });
+  }
 }
 </script>
 
