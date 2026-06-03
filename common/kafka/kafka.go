@@ -4,7 +4,7 @@
 package kafka
 
 import (
-	"github.com/segmentio/kafka-go"
+	kafkago "github.com/segmentio/kafka-go"
 )
 
 // ── 共享消息体 ──
@@ -33,14 +33,14 @@ const (
 // ── Producer ──
 
 // NewProducer 创建 Kafka Writer（Producer）。
-func NewProducer(brokers []string, topic string) *kafka.Writer {
+func NewProducer(brokers []string, topic string) *kafkago.Writer {
 	if topic == "" {
 		topic = TopicTranscodeTasks
 	}
-	return &kafka.Writer{
-		Addr:     kafka.TCP(brokers...),
+	return &kafkago.Writer{
+		Addr:     kafkago.TCP(brokers...),
 		Topic:    topic,
-		Balancer: &kafka.LeastBytes{}, // 按 partition 消息数最少的分配
+		Balancer: &kafkago.LeastBytes{},
 		Logger:   nil,
 	}
 }
@@ -48,16 +48,17 @@ func NewProducer(brokers []string, topic string) *kafka.Writer {
 // ── Consumer ──
 
 // NewConsumer 创建 Kafka Reader（Consumer），不指定 GroupID 以避免 KRaft coordinator 问题。
-func NewConsumer(brokers []string, topic string) *kafka.Reader {
+func NewConsumer(brokers []string, topic string) *kafkago.Reader {
 	if topic == "" {
 		topic = TopicTranscodeTasks
 	}
-	return kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   brokers,
-		Topic:     topic,
-		Partition: 0,
-		MinBytes:  1,
-		MaxBytes:  10e6,
-		Logger:    nil,
+	return kafkago.NewReader(kafkago.ReaderConfig{
+		Brokers:     brokers,
+		Topic:       topic,
+		Partition:   0,
+		MinBytes:    1,
+		MaxBytes:    10e6,
+		StartOffset: kafkago.LastOffset,
+		Logger:      nil,
 	})
 }
