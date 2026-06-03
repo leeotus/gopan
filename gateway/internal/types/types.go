@@ -172,19 +172,20 @@ type VideoDetailResp struct {
 }
 
 type VideoInfo struct {
-	Id         int64           `json:"id"`
-	Title      string          `json:"title"`
-	CoverUrl   string          `json:"cover_url"`
-	UserId     int64           `json:"user_id"`
-	Username   string          `json:"username"`
-	PlayCount  int64           `json:"play_count"`
-	LikeCount  int64           `json:"like_count"`
-	Duration   int             `json:"duration"`
-	Status     int             `json:"status"`
-	Category   string          `json:"category,optional"`
-		CreatedAt  int64           `json:"created_at"`
-		Transcodes []TranscodeInfo `json:"transcodes,optional"`
-	}
+	Id          int64           `json:"id"`
+	Title       string          `json:"title"`
+	CoverUrl    string          `json:"cover_url"`
+	UserId      int64           `json:"user_id"`
+	Username    string          `json:"username"`
+	PlayCount   int64           `json:"play_count"`
+	LikeCount   int64           `json:"like_count"`
+	Duration    int             `json:"duration"`
+	Status      int             `json:"status"`
+	Category    string          `json:"category,optional"`
+	Description string          `json:"description,optional"`
+	CreatedAt   int64           `json:"created_at"`
+	Transcodes  []TranscodeInfo `json:"transcodes,optional"`
+}
 
 	// --- 管理员相关类型 ---
 	type AdminVideoInfo struct {

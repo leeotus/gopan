@@ -61,6 +61,21 @@ func NewClient(addresses []string, index, username, password string) (*Client, e
 
 // IndexVideo 创建或更新一条视频索引。
 func (c *Client) IndexVideo(ctx context.Context, doc *VideoDoc) error {
+	// 【AI 智能注入】如果文档尚未包含特征向量且 AI 服务在线，自动提取“Title + Description”联合语义，注入 512 维稠密特征向量
+	if len(doc.VideoVector) == 0 {
+		textToEmbed := doc.Title
+		if doc.Description != "" {
+			textToEmbed = fmt.Sprintf("%s %s", doc.Title, doc.Description)
+		}
+		vec, err := getEmbeddingVector(ctx, textToEmbed)
+		if err == nil && len(vec) == 512 {
+			doc.VideoVector = vec
+			fmt.Printf("[AI Auto-Index] Generated 512-dim embedding from title & desc for video: %d\n", doc.VideoId)
+		} else {
+			fmt.Printf("[AI Auto-Index Warning] Skip vectorizing video: %d, err: %v\n", doc.VideoId, err)
+		}
+	}
+
 	body, _ := json.Marshal(doc)
 	res, err := c.cli.Index(
 		c.index,

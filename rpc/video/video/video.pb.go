@@ -638,9 +638,11 @@ type VideoInfo struct {
 	Duration      int32                  `protobuf:"varint,8,opt,name=duration,proto3" json:"duration,omitempty"`
 	Status        int32                  `protobuf:"varint,9,opt,name=status,proto3" json:"status,omitempty"` // 0:上传中 1:转码中 2:正常 3:失败 4:已下架
 	CreatedAt     int64                  `protobuf:"varint,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Transcodes    []*TranscodeInfo       `protobuf:"bytes,11,rep,name=transcodes,proto3" json:"transcodes,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+		Transcodes    []*TranscodeInfo       `protobuf:"bytes,11,rep,name=transcodes,proto3" json:"transcodes,omitempty"`
+		Description   string                 `protobuf:"bytes,12,opt,name=description,proto3" json:"description,omitempty"`
+		Category      string                 `protobuf:"bytes,13,opt,name=category,proto3" json:"category,omitempty"`
+		unknownFields protoimpl.UnknownFields
+		sizeCache     protoimpl.SizeCache
 }
 
 func (x *VideoInfo) Reset() {
@@ -748,6 +750,20 @@ func (x *VideoInfo) GetTranscodes() []*TranscodeInfo {
 		return x.Transcodes
 	}
 	return nil
+}
+
+func (x *VideoInfo) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *VideoInfo) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
 }
 
 type TranscodeInfo struct {

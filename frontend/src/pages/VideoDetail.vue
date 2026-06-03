@@ -15,7 +15,9 @@
         <span>{{ formatTime(video.created_at) }}</span>
         <span v-if="video.category" class="tag tag-cyan">{{ video.category }}</span>
       </div>
-      <p class="video-desc" v-if="video.description">{{ video.description }}</p>
+      <p class="video-desc" :class="{ 'desc-empty': !video.description }">
+        {{ video.description || "🚀 该视频目前暂无作者简介。你可以试用顶端的 GoPan AI 智能语义检索，输入任何关于视频画面的长句（如“一只小狗在沙滩上冲浪”），AI 即可帮你直接跨越障碍搜索定位到该视频！" }}
+      </p>
     </div>
 
     <!-- Action bar -->
@@ -278,6 +280,7 @@ function scrollToComments() { commentsEl.value?.scrollIntoView({ behavior: "smoo
 .info-row { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .dot { color: var(--border); }
 .video-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.video-desc.desc-empty { font-style: italic; color: var(--text-muted); opacity: 0.8; font-size: 11.5px; border-left: 2px solid var(--border); padding-left: 10px; margin-top: 10px; line-height: 1.5; }
 .action-bar { margin: 10px 14px; display: flex; justify-content: space-around; padding: 12px 0; }
 .action-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color var(--duration); }
 .action-btn.active { color: var(--pink); }
