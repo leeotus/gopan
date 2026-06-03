@@ -1,18 +1,7 @@
 <template>
   <div class="page-container">
     <div class="page-content" style="padding:16px">
-      <!-- Search bar -->
-      <div class="search-hero">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-dim)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input
-          v-model="keyword"
-          class="search-hero-input"
-          placeholder="Search videos, creators, categories..."
-          @keyup.enter="doSearch"
-          ref="searchInput"
-          autofocus
-        />
-      </div>
+      <!-- 移除冗余的局部二次搜索栏，体验由全局头部导航搜索框唯一接管 -->
 
       <!-- Loading -->
       <div v-if="loading" class="loading-state">
@@ -64,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { searchApi } from "../api";
 import { useVideoStore } from "../stores/video";
@@ -75,12 +64,16 @@ const videoStore = useVideoStore();
 const keyword = ref("");
 const results = ref([]);
 const loading = ref(false);
-const searchInput = ref(null);
 
-onMounted(() => {
-  const q = route.query.q;
-  if (q) { keyword.value = q; doSearch(); }
-});
+// 核心修复：监听路由 query 变动，全局搜索词修改时同步触发数据检索，彻底解决 subsequent Search 无法更新的缺陷
+watch(() => route.query.q, (newQ) => {
+  keyword.value = newQ || "";
+  if (keyword.value.trim()) {
+    doSearch();
+  } else {
+    results.value = [];
+  }
+}, { immediate: true });
 
 async function doSearch() {
   if (!keyword.value.trim()) return;
