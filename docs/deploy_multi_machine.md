@@ -516,3 +516,91 @@ flowchart TB
 | G1/G2 | transcode-svc × 2/台 |
 | H1 | stream-svc + search-svc |
 | 云服务 | MySQL、Redis、MinIO、Elasticsearch |
+
+---
+
+# QA
+
+### Q1: 客户端请求经过外层 Nginx 后，如何分发给内层 Nginx？如何决定分发给哪个内层 Nginx？
+
+**1. 请求类型分工**：
+- **API 业务请求 (`/api/*`)**：直接由外层 Nginx 负载均衡并转发给各机器上的 **go-zero Gateway**（主业务端口 `:8888`）。
+- **视频资源静态请求 (`/videos/*`)**：外层 Nginx 会转发给各台 Gateway 机器上部署的 **内层 Nginx**。内层 Nginx 负责处理本地 `proxy_cache` 视频 HLS 切片的缓存与 MinIO 回源。
+
+**2. 路由与负载均衡分派算法**：
+- 对于 API 业务请求：外层 Nginx 配置文件中的 `upstream` 默认采用 **轮询（Round Robin）** 或 **最少连接数（least_conn）** 策略。
+- 对于视频资源（`.ts` / `.m3u8`）请求：推荐采用 **一致性哈希（Consistent Hash）** 算法绑定请求路径：
+  ```nginx
+  upstream inner_nginx {
+      hash $request_uri consistent; # 同一视频的所有切片，永远精准转发给同一台内层 Nginx
+      server 192.168.1.20:80;      # Gateway-1 机器
+      server 192.168.1.21:80;      # Gateway-2 机器
+  }
+  ```
+  这样能确保同一视频切片资源在同一台内层 Nginx 上集中命中缓存，极大提升磁盘 `proxy_cache` 的缓存效率，避免缓存节点间的数据重复和分散。
+
+---
+
+### Q2: 同样的内层 Nginx 通过 etcd 发现其他服务，若转码服务部署在多台机器，内层 Nginx 如何分发转码请求任务？如何决定要分发给哪台机器上的转码服务？
+
+**纠正误区**：**内层 Nginx 并不参与转码任务的分发，也完全不使用 etcd。**
+
+视频转码服务的负载均衡和任务分派是采用 **基于消息队列（Kafka）的异步削峰 / 消费者组模式** 实现的：
+
+**1. 任务分派媒介**：
+- 当用户视频合并完毕后，`video-svc` 并不直接和转码服务同步通信，而是向 **Kafka** 投递一条转码任务消息（包含视频 ID 及 ObjectKey 等）。
+
+**2. 如何决定交给哪台机器（Kafka 消费者组机制）**：
+- 部署在各机器上的 `transcode-svc` 实例作为消费者，它们在配置文件中均配为 **相同的 Consumer Group**（例如 `gopan-transcode-group`）。
+- Kafka 会根据订阅 Topic 的 Partition 数量和该 Group 下活跃的 `transcode-svc` 客户端实例数量，运行内置的分区分配算法。
+- **自动指派与拉取**：Kafka 的不同分区消息会被自动指定推/拉（Pull）到某一个 `transcode-svc` 实例。
+- **弹性扩缩容**：若是新增一台转码机器，Kafka 会触发 **Rebalance（重平衡）**，重新平衡分配分区任务；若某台转码服务器宕机，对应的承载任务会被 Kafka 自动移交给其余活着的转码实例，保障系统可用性。
+
+```mermaid
+graph TD
+    A[视频上传/合并完毕] --> B[video-svc 业务服务]
+    B -->|投递转码消息| C[(Kafka Topic: transcode-task)]
+    C -->|分配/推拉分区 0| D[transcode-svc-1 机器 G1]
+    C -->|分配/推拉分区 1| E[transcode-svc-2 机器 G2]
+    C -->|分配/推拉分区 2| F[transcode-svc-3 机器 G3]
+
+    subgraph 相同消费者组: gopan-transcode-group
+        D
+        E
+        F
+    end
+```
+
+---
+
+### Q3: 若 video-svc 微服务部署在多台服务器，一个视频的上传请求片段会被分发到不同的主机吗？多机分散上传如何确保核心数据的正确合并和一致性？
+
+**1. 分片会分散到不同机器（YES）**：
+- **第一层分流 (Nginx)**：前端并发调用 `/api/video/upload/chunk`，经过外层代理时，请求被轮询机制指派给不同的 Gateway 网关节点（如 `chunk_0` 发给 Gateway-1，`chunk_1` 发给 Gateway-2）。
+- **第二层分流 (gRPC LB)**：网关内部的 gRPC 客户端基于 etcd 的健康节点列表和 P2C 算法进行二次负载分配，同一个 Gateway 可能会将分片分派到不同的 `video-svc` 自主后端节点（如 `video-svc-1` 或 `video-svc-2`）。
+
+**2. 核心架构保障 ── 集中式共享存储（Stateless）**：
+虽然分片请求极其分散地流向不同的服务器实例，但 `video-svc` 逻辑设计完全 **无状态**，所有状态都交付于中央存写：
+- **数据存储（集中至 MinIO）**：
+  各台接收到分片的 `video-svc` 并不写本地磁盘，而是直接调用 PutObject 上传到全局共享的 **MinIO 集群**，落盘 Key 规定为：`parts/{video_id}/chunk_{index}`。
+- **进度记账（集中至 Redis）**：
+  分片上传完毕，对应的 `video-svc` 在共享 Redis 服务中将该 `chunk_index` 记录到对应 `upload_id` 的 Set 数据集中。
+- **任务合并（通过 Kafka）**：
+  客户端触发 `/api/video/upload/merge` 请求。收到合并 RPC 的 `video-svc` 任意节点去全局 Redis 核实并确保分片数量配齐。核对无误后，组装 Merge 任务发往 **Kafka**，最终由异步合并节点从 **MinIO** 下载整批分片，顺序拼接还原成大视频文件，并回传最终完整视频。
+
+```mermaid
+graph TD
+    Client[前端并发/顺序上传分片] 
+    -->|HTTP 请求| OuterProxy[外层代理 Nginx/Kong]
+    OuterProxy -->|分流 1: 物理机器均衡| GW1[Gateway-1]
+    OuterProxy -->|分流 1: 物理机器均衡| GW2[Gateway-2]
+    
+    GW1 -->|分流 2: P2C gRPC LB| V1[video-svc-1]
+    GW1 -->|分流 2: P2C gRPC LB| V2[video-svc-2]
+    GW2 -->|分流 2: P2C gRPC LB| V2
+    GW2 -->|分流 2: P2C gRPC LB| V3[video-svc-3]
+
+    V1 & V2 & V3 -->|PutObject| MinIO[(共享中央 MinIO 存储)]
+    V1 & V2 & V3 -->|MarkReceived| Redis[(共享中央 Redis 记录)]
+```
+
