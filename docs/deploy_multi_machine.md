@@ -604,3 +604,78 @@ graph TD
     V1 & V2 & V3 -->|MarkReceived| Redis[(共享中央 Redis 记录)]
 ```
 
+---
+
+### Q4: 如果在多机部署架构中引入本地化的 AI 向量提取服务 (semantic-ai)，在硬件层面上应该如何规划部署？主后端 Go 微服务如何与物理机上的 AI 服务协调通信？
+
+关于本地 CLIP 多模态语义提取服务（`semantic-ai`）在多台机器上的集群部署规划与交互：
+
+**1. 硬件规划与部署策略 (Separation & Allocation)**：
+- **GPU（显卡）算力机器部署 (主导推荐)**：
+  - 将包含【智高防护特征引擎（L2 级归一化的 `main_gpu.py`）】部署在拥有独立显卡（如英伟达显卡，RTX 3060 / 4060 等以上）的 **算力机器节点** 上（如：机器 I ── 独立部署，提供 `9900` 端口）。因为 GPU 能开启 CUDA 多流并发，抽取单个画面帧特征的时间由 CPU 约 **1000ms 直接缩短至 5ms 级**。
+- **纯 CPU 虚拟机器或冷备份节点部署 (高兼容防线)**：
+  - 将不需要显卡依赖、完美内嵌离线的 `main_cpu.py` 部署在其余普通的 CPU 服务器节点上（如：机器 J ── 独立部署，提供 `9901` 端口）。用于低频异步后台文本检索，在没有显意显卡资源时，保障微服务最低代价地运作起全套 AI 向量映射流程。
+
+**2. 安全通信与服务发现机制 (Inter-service Link)**：
+- **第一级：Nginx 内网负载均衡转发器 (Upstream Forwarding)**：
+  可以在网关内层 Nginx 的 upstream 列表中轻松挂载这批 AI 运算服务节点，提供微服务容灾高可用（HA）：
+  ```nginx
+  upstream ai_service_cluster {
+      server 192.168.1.150:9900 weight=5;  # 机器 I  (GPU 节点主打性能型)
+      server 192.168.1.151:9901 weight=1;  # 机器 J  (CPU 节点低并发降级型)
+  }
+  ```
+- **第二级：etcd 自动发现机制扩展 (etcd Autodiscovery)**：
+  既然平台上已经完美运行了 `etcd` 作为服务注册中心，可以在 Python 的启动钩子函数中，利用 Python 的 `etcd3` 库将自己的 `(IP:9900)` 写入指定的 `/gopan.ai/` 节点路径下。Go 的微服务直接通过 Go 端的 HTTP/gRPC Client 实现智能心跳监测与热拔插扩容。
+
+**3. 多机器下的 AI 业务流闭环交互 (Workflow)**：
+
+- **第一阶段：视频持久化帧提取流 (Ingress Phase - Write)**：
+  ```text
+  [视频上传/合并完毕] -> [video-svc (RPC 某一节点)]
+                               │
+                       (1) 调用本地 FFmpeg 抽帧
+                               │
+                               ▼
+                        [抽取 cover.jpg]
+                               │
+                       (2) 内网 HTTP POST 发送图片字节
+                               │
+                               ▼
+                 [ai_service_cluster /embed/image]
+                               │
+                       (3) 返回 512 维特征
+                               │
+                               ▼
+               [写入视频属性 -> MySQL 与 Elasticsearch]
+  ```
+- **第二阶段：自然语言语义模糊查找流 (Query Phase - Read)**：
+  ```text
+  [用户在搜索栏输入: 冲浪的小狗] -> [Gateway 接口]
+                                   │
+                                   ▼
+                            [search-svc (RPC)]
+                                   │
+                       (1) HTTP POST 把汉字发送给
+                                   ▼
+                     [ai_service_cluster /embed/text]
+                                   │
+                           (2) 返回 512 维 float
+                                   │
+                                   ▼
+            [search-svc 拼装高阶 ES kNN 近邻匹配搜索条件]
+                                   │
+                                   ▼
+            [Elasticsearch 8.x 实现在数十万视频里多维跨语境秒级检索]
+  ```
+
+```mermaid
+graph TD
+    Client[用户语义搜索: 奔跑的猫咪] --> SearchSVC[search-svc RPC 节点]
+    SearchSVC -->|内网 HTTP POST 文本| AICPU[semantic-ai-cpu 节点]
+    AICPU -->|返回 512维 Float 向量| SearchSVC
+    SearchSVC -->|组装 kNN 表达体| ES[(Elasticsearch Vector DB)]
+    ES -->|快速余弦计算| Show[返回命中内容并秒级定位视频 frame 帧位置]
+```
+```
+
