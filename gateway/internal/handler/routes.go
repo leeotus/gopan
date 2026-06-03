@@ -70,6 +70,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		rest.WithPrefix("/api/test"),
 	)
 
+	// POST /play-progress 不走 Auth 中间件（sendBeacon 无法带自定义 header）
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/play-progress",
+				Handler: video.SavePlayProgressHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/video"),
+	)
+
 	// 视频列表和详情公开访问（带限流保护）
 	server.AddRoutes(
 		rest.WithMiddlewares(
@@ -181,16 +193,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 						Path:    "/merge-chunks",
 					Handler: video.MergeChunksHandler(serverCtx),
 				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/play-progress",
-					Handler: video.SavePlayProgressHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/play-progress",
-					Handler: video.GetPlayProgressHandler(serverCtx),
-				},
+					{
+						Method:  http.MethodGet,
+						Path:    "/play-progress",
+						Handler: video.GetPlayProgressHandler(serverCtx),
+					},
 				{
 					Method:  http.MethodGet,
 					Path:    "/play-url",

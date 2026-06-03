@@ -169,11 +169,13 @@ function onVideoSeeked() {
 async function savePlayProgress() {
   if (!videoEl.value || !auth.isLoggedIn || !video.value) return;
   const t = videoEl.value.currentTime; if (t <= 0) return;
-  navigator.sendBeacon("/api/video/play-progress", new Blob([JSON.stringify({ video_id: video.value.id, position: t, token: auth.token })], { type: "application/json" }));
+  const token = auth.token || localStorage.getItem("token");
+  navigator.sendBeacon("/api/video/play-progress", new Blob([JSON.stringify({ video_id: video.value.id, position: t, token: token })], { type: "application/json" }));
 }
 async function clearPlayProgress() {
   if (!video.value || !auth.isLoggedIn) return;
-  try { await axios.post("/api/video/play-progress", { video_id: video.value.id, position: 0, token: auth.token }); } catch {}
+  const token = auth.token || localStorage.getItem("token");
+  try { await axios.post("/api/video/play-progress", { video_id: video.value.id, position: 0, token: token }); } catch {}
 }
 
 // ── WebSocket ──
@@ -209,7 +211,8 @@ onMounted(async () => {
   }
   if (auth.isLoggedIn && video.value) {
     try {
-      const res = await axios.get("/api/video/play-progress", { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + auth.token } });
+      const token = auth.token || localStorage.getItem("token");
+      const res = await axios.get("/api/video/play-progress", { params: { video_id: video.value.id }, headers: { Authorization: "Bearer " + token } });
       const pos = parseFloat(res.data?.message || "0");
       if (pos > 0 && videoEl.value) { videoEl.value.currentTime = pos; showToast(`Resuming from ${pos.toFixed(0)}s`); }
     } catch {}

@@ -24,7 +24,8 @@ func SavePlayProgressHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 
 		// sendBeacon 不支持自定义 header，从 body 中提取 token 注入 context
 		if req.Token != "" {
-			r = r.WithContext(middleware.InjectUserIdFromToken(r.Context(), req.Token, svcCtx.Config.Auth.AccessSecret))
+			ctx := middleware.InjectUserIdFromToken(r.Context(), req.Token, svcCtx.Config.Auth.AccessSecret)
+			r = r.WithContext(ctx)
 		}
 
 		l := video.NewSavePlayProgressLogic(r.Context(), svcCtx)
