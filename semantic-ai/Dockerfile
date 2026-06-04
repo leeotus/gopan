@@ -16,11 +16,12 @@ COPY requirements.txt .
 RUN grep -v '^torch' requirements.txt > /tmp/req.txt && \
     pip install --no-cache-dir -r /tmp/req.txt
 
-COPY main.py .
+COPY main.py main_cpu.py ./
 
 # HuggingFace 模型会下到 /root/.cache/huggingface，建议挂卷持久化（compose 已配）
 ENV HF_HOME=/root/.cache/huggingface
 
 EXPOSE 9900
 
-CMD ["python", "main.py"]
+# 使用 main_cpu.py：它带 Shape-Aware fallback，兼容 transformers 新版返回 BaseModelOutputWithPooling 的情况。
+CMD ["python", "main_cpu.py"]

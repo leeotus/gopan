@@ -105,11 +105,11 @@ type RegisterReq struct {
 }
 
 type SearchReq struct {
-	Keyword  string `json:"keyword"`
-	Page     int    `json:"page,default=1"`
-	Size     int    `json:"size,default=20,range=[1:50]"`
-	Category string `json:"category,optional"`
-	Sort     string `json:"sort,optional"`
+	Keyword  string `form:"keyword" json:"keyword"`
+	Page     int    `form:"page,default=1" json:"page,default=1"`
+	Size     int    `form:"size,default=20,range=[1:50]" json:"size,default=20,range=[1:50]"`
+	Category string `form:"category,optional" json:"category,optional"`
+	Sort     string `form:"sort,optional" json:"sort,optional"`
 }
 
 type SearchResp struct {

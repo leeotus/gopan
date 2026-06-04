@@ -138,4 +138,4 @@ async def embed_image(file: UploadFile = File(..., description="视频帧截图�
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=9901)
+    uvicorn.run(app, host="0.0.0.0", port=9900)
