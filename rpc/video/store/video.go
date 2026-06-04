@@ -24,11 +24,12 @@ func NewVideoStore(conn sqlx.SqlConn) *VideoStore {
 }
 
 // Insert 插入一条视频记录（包含断点上传的 total_chunks 和 upload_id）。
+// ai_summary 在创建时固定为空串，由 transcode 完成后异步任务回填。
 func (s *VideoStore) Insert(ctx context.Context, v *model.Video) (sql.Result, error) {
 	return s.conn.ExecCtx(ctx, `
 		INSERT INTO videos (title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, total_chunks, upload_id, status, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+			duration, file_size, file_hash, total_chunks, upload_id, status, ai_summary, ai_summary_status, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', 0, NOW(), NOW())
 	`, v.Title, v.Description, v.UserId, v.ObjectKey, v.CoverUrl, v.Category,
 		v.Duration, v.FileSize, v.FileHash, v.TotalChunks, v.UploadId, v.Status)
 }
@@ -38,7 +39,8 @@ func (s *VideoStore) FindById(ctx context.Context, id int64) (*model.Video, erro
 	var v model.Video
 	err := s.conn.QueryRowCtx(ctx, &v, `
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
+			duration, file_size, file_hash, total_chunks, upload_id, status,
+			ai_summary, ai_summary_status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos WHERE id = ? AND deleted_at IS NULL
 	`, id)
 	if err != nil {
@@ -82,7 +84,8 @@ func (s *VideoStore) List(ctx context.Context, cursor int64, limit int32, catego
 
 	err := s.conn.QueryRowsCtx(ctx, &videos, fmt.Sprintf(`
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
+			duration, file_size, file_hash, total_chunks, upload_id, status,
+			ai_summary, ai_summary_status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos %s
 	`, query), args...)
 	if err != nil {
@@ -107,7 +110,8 @@ func (s *VideoStore) ListByUser(ctx context.Context, userId, cursor int64, limit
 
 	err := s.conn.QueryRowsCtx(ctx, &videos, fmt.Sprintf(`
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
+			duration, file_size, file_hash, total_chunks, upload_id, status,
+			ai_summary, ai_summary_status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos %s
 	`, query), args...)
 	if err != nil {
@@ -203,11 +207,28 @@ func (s *VideoStore) FindByUploadId(ctx context.Context, uploadId string) (*mode
 	var v model.Video
 	err := s.conn.QueryRowCtx(ctx, &v, `
 		SELECT id, title, description, user_id, object_key, cover_url, category,
-			duration, file_size, file_hash, total_chunks, upload_id, status, play_count, like_count, created_at, updated_at, deleted_at
+			duration, file_size, file_hash, total_chunks, upload_id, status,
+			ai_summary, ai_summary_status, play_count, like_count, created_at, updated_at, deleted_at
 		FROM videos WHERE upload_id = ? AND deleted_at IS NULL
 	`, uploadId)
 	if err != nil {
 		return nil, err
 	}
 	return &v, nil
+}
+
+// UpdateAiSummaryStatus 单独更新 AI 摘要状态机字段（在任务调度/失败标记时使用）。
+func (s *VideoStore) UpdateAiSummaryStatus(ctx context.Context, videoId int64, status int32) error {
+	_, err := s.conn.ExecCtx(ctx, `
+		UPDATE videos SET ai_summary_status = ?, updated_at = NOW() WHERE id = ?
+	`, status, videoId)
+	return err
+}
+
+// UpdateAiSummary 摘要生成完成后一次性写入文本并将状态推进到 2（已完成）。
+func (s *VideoStore) UpdateAiSummary(ctx context.Context, videoId int64, summary string) error {
+	_, err := s.conn.ExecCtx(ctx, `
+		UPDATE videos SET ai_summary = ?, ai_summary_status = 2, updated_at = NOW() WHERE id = ?
+	`, summary, videoId)
+	return err
 }

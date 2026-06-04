@@ -10,6 +10,7 @@ Telemetry:
   Sampler: 1.0
   Batcher: otlphttp
 Port: 8888
+Timeout: 60000
 MaxBytes: 104857600
 Prometheus:
   Host: 0.0.0.0

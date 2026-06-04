@@ -23,7 +23,7 @@ import (
 
 // StartConsumer 启动 Kafka 消费者（阻塞运行）。
 func StartConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
-	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.TranscodeTopic)
+	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.TranscodeTopic, "gopan-transcode-worker")
 	defer reader.Close()
 
 	for {
@@ -170,7 +170,7 @@ func StartMergeConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
 	if svcCtx.Config.Kafka.MergeTopic == "" {
 		return
 	}
-	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.MergeTopic)
+	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.MergeTopic, "gopan-merge-worker")
 	defer reader.Close()
 
 	for {

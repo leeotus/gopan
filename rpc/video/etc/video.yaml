@@ -29,9 +29,15 @@ Kafka:
     - kafka:9092
   TranscodeTopic: gopan.transcode.tasks
   MergeTopic: gopan.video.merge.tasks
+  SummaryTopic: gopan.video.summary.tasks
 UploadRedis:
   Host: redis:6379
   Pass: ""
+SummaryAI:
+  URL: http://summary-ai:9920
+  # summary-ai 在 docker 网络内，直接走 minio:9000；桶已设 anonymous download
+  MinIO: http://minio:9000/gopan-videos
+  Timeout: 300
 Telemetry:
   Name: video-svc
   Endpoint: jaeger:4318

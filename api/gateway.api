@@ -65,18 +65,21 @@ type UploadStatusResp {
 }
 
 type VideoInfo {
-	Id         int64           `json:"id"`
-	Title      string          `json:"title"`
-	CoverUrl   string          `json:"cover_url"`
-	UserId     int64           `json:"user_id"`
-	Username   string          `json:"username"`
-	PlayCount  int64           `json:"play_count"`
-	LikeCount  int64           `json:"like_count"`
-	Duration   int             `json:"duration"`
-	Status     int             `json:"status"`
-	Category   string          `json:"category,optional"`
-	CreatedAt  int64           `json:"created_at"`
-	Transcodes []TranscodeInfo `json:"transcodes,optional"`
+	Id              int64           `json:"id"`
+	Title           string          `json:"title"`
+	CoverUrl        string          `json:"cover_url"`
+	UserId          int64           `json:"user_id"`
+	Username        string          `json:"username"`
+	PlayCount       int64           `json:"play_count"`
+	LikeCount       int64           `json:"like_count"`
+	Duration        int             `json:"duration"`
+	Status          int             `json:"status"`
+	Category        string          `json:"category,optional"`
+	Description     string          `json:"description,optional"`
+	AiSummary       string          `json:"ai_summary,optional"`
+	AiSummaryStatus int             `json:"ai_summary_status,optional"`
+	CreatedAt       int64           `json:"created_at"`
+	Transcodes      []TranscodeInfo `json:"transcodes,optional"`
 }
 
 type TranscodeInfo {
@@ -106,6 +109,15 @@ type UpdateVideoReq {
 	Title       string `json:"title,optional"`
 	Description string `json:"description,optional"`
 	Category    string `json:"category,optional"`
+}
+
+type AIAnalyzeReq {
+	VideoId int64 `json:"video_id"`
+}
+
+type AIAnalyzeResp {
+	Status  int    `json:"status"`  // 0:未生成 1:生成中 2:已完成 3:失败
+	Summary string `json:"summary"` // status=2 时有内容
 }
 
 // ============ 播放相关 ============
@@ -272,6 +284,9 @@ service gateway {
 
 	@handler GetPlayProgress
 	get /play-progress (BaseResp)
+
+	@handler AIAnalyze
+	post /ai-analyze (AIAnalyzeReq) returns (AIAnalyzeResp)
 }
 
 @server (

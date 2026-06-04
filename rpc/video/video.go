@@ -6,10 +6,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 
 	"gopan/rpc/video/internal/config"
+	"gopan/rpc/video/internal/consume"
 	"gopan/rpc/video/internal/server"
 	"gopan/rpc/video/internal/svc"
 	"gopan/rpc/video/video"
@@ -34,6 +36,9 @@ func main() {
 	defer trace.StopAgent()
 
 	ctx := svc.NewServiceContext(c)
+
+	// 后台启动 AI 摘要 Kafka 消费者（topic 留空时自动 no-op）
+	go consume.StartSummaryConsumer(context.Background(), ctx)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		video.RegisterVideoServer(grpcServer, server.NewVideoServer(ctx))

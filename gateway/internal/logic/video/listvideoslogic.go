@@ -47,18 +47,20 @@ func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.List
 			})
 		}
 			videos = append(videos, types.VideoInfo{
-				Id:          v.Id,
-				Title:       v.Title,
-				CoverUrl:    v.CoverUrl,
-				UserId:      v.UserId,
-				PlayCount:   v.PlayCount,
-				LikeCount:   v.LikeCount,
-				Duration:    int(v.Duration),
-				Status:      int(v.Status),
-				Category:    v.Category,
-				Description: v.Description,
-				CreatedAt:   v.CreatedAt,
-				Transcodes:  transcodes,
+				Id:              v.Id,
+				Title:           v.Title,
+				CoverUrl:        v.CoverUrl,
+				UserId:          v.UserId,
+				PlayCount:       v.PlayCount,
+				LikeCount:       v.LikeCount,
+				Duration:        int(v.Duration),
+				Status:          int(v.Status),
+				Category:        v.Category,
+				Description:     v.Description,
+				AiSummary:       v.AiSummary,
+				AiSummaryStatus: int(v.AiSummaryStatus),
+				CreatedAt:       v.CreatedAt,
+				Transcodes:      transcodes,
 			})
 	}
 	return &types.ListVideosResp{

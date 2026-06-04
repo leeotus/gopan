@@ -16,14 +16,15 @@ import (
 )
 
 type ServiceContext struct {
-	Config         config.Config
-	VideoStore     *store.VideoStore          // videos 和 transcodes 表的数据访问层
-	MinioClient    *storage.MinioClient       // MinIO 对象存储客户端
-	KafkaWriter      *kafkago.Writer            // Kafka Producer（转码任务）
-	KafkaMergeWriter *kafkago.Writer            // Kafka Producer（合并任务）
-	UploadProgress *storage.UploadProgress    // Redis 上传进度追踪
-	PlaybackRedis  *redis.Client              // Redis 播放进度
-	SearchClient   searchclient.Search        // search-svc gRPC 客户端
+	Config             config.Config
+	VideoStore         *store.VideoStore       // videos 和 transcodes 表的数据访问层
+	MinioClient        *storage.MinioClient    // MinIO 对象存储客户端
+	KafkaWriter        *kafkago.Writer         // Kafka Producer（转码任务）
+	KafkaMergeWriter   *kafkago.Writer         // Kafka Producer（合并任务）
+	KafkaSummaryWriter *kafkago.Writer         // Kafka Producer（AI 摘要任务）
+	UploadProgress     *storage.UploadProgress // Redis 上传进度追踪
+	PlaybackRedis      *redis.Client           // Redis 播放进度
+	SearchClient       searchclient.Search     // search-svc gRPC 客户端
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -39,20 +40,27 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	kw := kafka.NewProducer(c.Kafka.Brokers, c.Kafka.TranscodeTopic)
 
-		rdb := redis.NewClient(&redis.Options{
-			Addr:     c.UploadRedis.Host,
-			Password: c.UploadRedis.Pass,
-			DB:       0,
-		})
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     c.UploadRedis.Host,
+		Password: c.UploadRedis.Pass,
+		DB:       0,
+	})
+
+	// SummaryTopic 可以留空，置空时不投递摘要任务（关闭功能开关）。
+	var summaryWriter *kafkago.Writer
+	if c.Kafka.SummaryTopic != "" {
+		summaryWriter = kafka.NewProducer(c.Kafka.Brokers, c.Kafka.SummaryTopic)
+	}
 
 	return &ServiceContext{
-		Config:         c,
-		VideoStore:     store.NewVideoStore(conn),
-		MinioClient:    minioClient,
-		KafkaWriter:      kw,
-		KafkaMergeWriter: kafka.NewProducer(c.Kafka.Brokers, c.Kafka.MergeTopic),
-		UploadProgress: storage.NewUploadProgress(rdb),
-		PlaybackRedis:  rdb,
-		SearchClient:   searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc)),
+		Config:             c,
+		VideoStore:         store.NewVideoStore(conn),
+		MinioClient:        minioClient,
+		KafkaWriter:        kw,
+		KafkaMergeWriter:   kafka.NewProducer(c.Kafka.Brokers, c.Kafka.MergeTopic),
+		KafkaSummaryWriter: summaryWriter,
+		UploadProgress:     storage.NewUploadProgress(rdb),
+		PlaybackRedis:      rdb,
+		SearchClient:       searchclient.NewSearch(zrpc.MustNewClient(c.SearchRpc)),
 	}
 }
