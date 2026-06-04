@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 120" width="540" height="120">
+  <!-- GoPan logo banner. Matches the Vue top-bar style:
+       hexagon icon (cyan glow) + "GoPan" gradient text + dark backdrop. -->
+  <defs>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#b347ea"/>
+    </linearGradient>
+
+    <linearGradient id="hexStrokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#b347ea"/>
+    </linearGradient>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background to match the deep-space top-bar -->
+  <rect x="0" y="0" width="540" height="120" rx="14" fill="#05050a"/>
+  <!-- Subtle scan-line texture -->
+  <rect x="0" y="0" width="540" height="120" rx="14" fill="url(#scanLines)" opacity="0.0"/>
+
+  <!-- Hexagon mark (point-top, matches the ⬡ glyph) -->
+  <g filter="url(#glow)" transform="translate(60 60)">
+    <polygon
+      points="0,-32 27.71,-16 27.71,16 0,32 -27.71,16 -27.71,-16"
+      fill="none"
+      stroke="url(#hexStrokeGrad)"
+      stroke-width="3"
+      stroke-linejoin="round"/>
+    <!-- Inner core dot -->
+    <circle cx="0" cy="0" r="3.5" fill="#00f0ff" opacity="0.9"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text
+    x="120" y="78"
+    font-family="'Orbitron', 'Segoe UI', sans-serif"
+    font-size="56"
+    font-weight="700"
+    letter-spacing="6"
+    fill="url(#textGrad)"
+    filter="url(#softGlow)">GoPan</text>
+
+  <!-- Tagline -->
+  <text
+    x="122" y="100"
+    font-family="'Orbitron', 'Segoe UI', sans-serif"
+    font-size="10"
+    font-weight="500"
+    letter-spacing="3"
+    fill="#7a2f9e"
+    opacity="0.85">CLOUD · VOD · AI</text>
+</svg>

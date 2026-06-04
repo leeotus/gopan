@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <!-- GoPan icon mark (hexagon only, transparent bg). For favicons / avatars. -->
+  <defs>
+    <linearGradient id="hexStrokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#b347ea"/>
+    </linearGradient>
+
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#glow)" transform="translate(40 40)">
+    <polygon
+      points="0,-30 25.98,-15 25.98,15 0,30 -25.98,15 -25.98,-15"
+      fill="none"
+      stroke="url(#hexStrokeGrad)"
+      stroke-width="3.5"
+      stroke-linejoin="round"/>
+    <circle cx="0" cy="0" r="4" fill="#00f0ff"/>
+  </g>
+</svg>
