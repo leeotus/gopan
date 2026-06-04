@@ -199,6 +199,8 @@ services:
         condition: service_started
     ports:
       - "8086:8086"
+    environment:
+      - AI_SERVICE_URL=http://semantic-ai:9900
     networks:
       - gopan-net
 
@@ -230,6 +232,11 @@ services:
     ports:
       - "8888:8888"
       - "9102:9102"
+    environment:
+      - SUMMARY_AI_URL=http://host.docker.internal:9920
+      - AI_MINIO_URL=http://127.0.0.1:9000/gopan-videos
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - gopan-net
 
@@ -280,12 +287,40 @@ services:
     networks:
       - gopan-net
 
+  semantic-ai:
+    build: ./semantic-ai
+    container_name: gopan-semantic-ai
+    ports:
+      - "9900:9900"
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    networks:
+      - gopan-net
+    restart: unless-stopped
+
+  summary-ai:
+    build: ./summary-ai
+    container_name: gopan-summary-ai
+    ports:
+      - "9920:9920"
+    environment:
+      # 可选 LLM Key（任一存在即可，没有则用本地兜底摘要）
+      - MINIMAX_API_KEY=${MINIMAX_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+    volumes:
+      - whisper-cache:/root/.cache
+    networks:
+      - gopan-net
+    restart: unless-stopped
+
 volumes:
   mysql-data:
   redis-data:
   minio-data:
   es-data:
   kafka-data:
+  hf-cache:
+  whisper-cache:
   grafana-data:
 
 networks:
