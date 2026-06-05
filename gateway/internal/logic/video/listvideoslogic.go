@@ -51,6 +51,7 @@ func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.List
 				Title:           v.Title,
 				CoverUrl:        v.CoverUrl,
 				UserId:          v.UserId,
+				Username:        v.Username,
 				PlayCount:       v.PlayCount,
 				LikeCount:       v.LikeCount,
 				Duration:        int(v.Duration),

@@ -14,6 +14,7 @@ type Video struct {
 	Title           string       `db:"title"`             // 视频标题，最大 512 字符
 	Description     string       `db:"description"`       // 视频简介（用户上传时填写的原始内容，作为 ES 语义向量化源）
 	UserId          int64        `db:"user_id"`           // 上传者用户 ID
+	Username        string       `db:"username"`           // 上传者用户名（联表 users 查询）
 	ObjectKey       string       `db:"object_key"`        // 在 MinIO 中的源文件 key
 	CoverUrl        string       `db:"cover_url"`         // 封面图片 URL
 	Category        string       `db:"category"`          // 分类标签

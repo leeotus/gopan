@@ -58,6 +58,7 @@ func toVideoInfo(m *model.Video) *video.VideoInfo {
 		Id:              m.Id,
 		Title:           m.Title,
 		UserId:          m.UserId,
+		Username:        m.Username,
 		CoverUrl:        m.CoverUrl,
 		PlayCount:       m.PlayCount,
 		LikeCount:       m.LikeCount,
