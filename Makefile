@@ -5,7 +5,7 @@ APP_NAME := gopan
 BUILD_DIR := build
 
 # 服务列表
-SERVICES := gateway user video transcode stream interact search
+SERVICES := gateway user video transcode stream interact search admin
 
 # 服务端口映射
 GATEWAY_PORT    := 8888
@@ -14,7 +14,7 @@ VIDEO_PORT      := 8082
 TRANSCODE_PORT  := 8083
 STREAM_PORT     := 8084
 INTERACT_PORT   := 8085
-SEARCH_PORT     := 8086
+ADMIN_PORT     := 8087
 
 # 默认目标
 all: build
@@ -42,6 +42,7 @@ help:
 	@echo "    make run-stream           仅启动 stream-svc"
 	@echo "    make run-interact         仅启动 interact-svc"
 	@echo "    make run-search           仅启动 search-svc"
+	@echo "    make run-admin            仅启动 admin-svc"
 	@echo ""
 	@echo "  停止:"
 	@echo "    make stop                 停止所有后台运行的服务"
@@ -118,6 +119,11 @@ build-search:
 	go build -o $(BUILD_DIR)/search-svc ./rpc/search/
 	@echo "  ✓ search-svc"
 
+build-admin:
+	@mkdir -p $(BUILD_DIR)
+	go build -o $(BUILD_DIR)/admin-svc ./rpc/admin/
+	@echo "  ✓ admin-svc"
+
 # ─── 运行 ────────────────────────────────────────
 LOG_DIR := logs
 PID_DIR := $(LOG_DIR)/pids
@@ -130,9 +136,10 @@ TRANS_YAML := $(shell [ -f rpc/transcode/etc/transcode.local.yaml ] && echo "tra
 STRM_YAML := $(shell [ -f rpc/stream/etc/stream.local.yaml ] && echo "stream.local.yaml" || echo "stream.yaml")
 INT_YAML := $(shell [ -f rpc/interact/etc/interact.local.yaml ] && echo "interact.local.yaml" || echo "interact.yaml")
 SRCH_YAML := $(shell [ -f rpc/search/etc/search.local.yaml ] && echo "search.local.yaml" || echo "search.yaml")
+ADM_YAML  := $(shell [ -f rpc/admin/etc/admin.local.yaml ] && echo "admin.local.yaml" || echo "admin.yaml")
 
 run: stop build
-	@mkdir -p $(LOG_DIR) $(PID_DIR) logs/gateway logs/user logs/video logs/transcode logs/stream logs/interact logs/search
+	@mkdir -p $(LOG_DIR) $(PID_DIR) logs/gateway logs/user logs/video logs/transcode logs/stream logs/interact logs/search logs/admin
 	@echo ">>> 启动所有服务 (使用 *.local.yaml)..."
 
 	@nohup $(BUILD_DIR)/user-svc -f rpc/user/etc/$(USR_YAML) > logs/user/user.log 2>&1 & echo $$! > $(PID_DIR)/user.pid
@@ -146,6 +153,8 @@ run: stop build
 	@nohup $(BUILD_DIR)/interact-svc -f rpc/interact/etc/$(INT_YAML) > logs/interact/interact.log 2>&1 & echo $$! > $(PID_DIR)/interact.pid
 	@sleep 1
 	@nohup $(BUILD_DIR)/search-svc -f rpc/search/etc/$(SRCH_YAML) > logs/search/search.log 2>&1 & echo $$! > $(PID_DIR)/search.pid
+	@sleep 1
+	@nohup $(BUILD_DIR)/admin-svc -f rpc/admin/etc/$(ADM_YAML) > logs/admin/admin.log 2>&1 & echo $$! > $(PID_DIR)/admin.pid
 	@sleep 2
 	@nohup $(BUILD_DIR)/gateway -f gateway/etc/$(GW_YAML) > logs/gateway/gateway.log 2>&1 & echo $$! > $(PID_DIR)/gateway.pid
 
@@ -186,6 +195,11 @@ run-search:
 	@mkdir -p $(LOG_DIR) $(PID_DIR)
 	@nohup $(BUILD_DIR)/search-svc -f rpc/search/etc/$(SRCH_YAML) > logs/search.log 2>&1 & echo $$! > $(PID_DIR)/search.pid
 	@echo "  search-svc → :$(SEARCH_PORT)"
+
+run-admin:
+	@mkdir -p $(LOG_DIR) $(PID_DIR)
+	@nohup $(BUILD_DIR)/admin-svc -f rpc/admin/etc/$(ADM_YAML) > logs/admin.log 2>&1 & echo $$! > $(PID_DIR)/admin.pid
+	@echo "  admin-svc → :$(ADMIN_PORT)"
 
 # ─── 停止 ────────────────────────────────────────
 stop:
@@ -229,7 +243,8 @@ logs:
 		logs/transcode/transcode.log \
 		logs/stream/stream.log \
 		logs/interact/interact.log \
-		logs/search/search.log 2>/dev/null
+		logs/search/search.log \
+		logs/admin/admin.log 2>/dev/null
 
 logs-gateway:
 	@tail -f logs/gateway/gateway.log
@@ -245,6 +260,8 @@ logs-interact:
 	@tail -f logs/interact/interact.log
 logs-search:
 	@tail -f logs/search/search.log
+logs-admin:
+	@tail -f logs/admin/admin.log
 
 # ─── 清理 ────────────────────────────────────────
 clean:
