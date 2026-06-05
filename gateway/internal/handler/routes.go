@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	admin "gopan/gateway/internal/handler/admin"
 	search "gopan/gateway/internal/handler/search"
 	user "gopan/gateway/internal/handler/user"
 	video "gopan/gateway/internal/handler/video"
@@ -15,6 +16,22 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/login",
+				Handler: admin.AdminLoginHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/videos",
+				Handler: admin.AdminListVideosHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/admin"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
@@ -53,9 +70,25 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.Auth},
 			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/list",
+					Handler: video.ListVideosHandler(serverCtx),
+				},
+			},
+			rest.WithPrefix("/api/video"),
+		)
+
+	server.AddRoutes(
+			rest.WithMiddlewares(
+				[]rest.Middleware{serverCtx.Auth},
+				[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/ai-analyze",
+					Handler: video.AIAnalyzeHandler(serverCtx),
+				},
 				{
 					Method:  http.MethodPost,
 					Path:    "/comment",
@@ -112,14 +145,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.UnlikeVideoHandler(serverCtx),
 				},
 				{
-					Method:  http.MethodGet,
-					Path:    "/list",
-					Handler: video.ListVideosHandler(serverCtx),
-				},
-				{
 					Method:  http.MethodPost,
 					Path:    "/merge-chunks",
 					Handler: video.MergeChunksHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/play-progress",
+					Handler: video.SavePlayProgressHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/play-progress",
+					Handler: video.GetPlayProgressHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodGet,
@@ -137,9 +175,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.UploadChunkHandler(serverCtx),
 				},
 				{
+					Method:  http.MethodPost,
+					Path:    "/upload-cover",
+					Handler: video.UploadCoverHandler(serverCtx),
+				},
+				{
 					Method:  http.MethodGet,
 					Path:    "/upload-status",
 					Handler: video.UploadStatusHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/danmakus",
+					Handler: video.GetDanmakusHandler(serverCtx),
 				},
 			}...,
 		),

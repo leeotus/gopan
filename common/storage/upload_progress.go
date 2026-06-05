@@ -1,4 +1,5 @@
 // package storage 提供上传进度的 Redis 操作（分片断点上传用）。
+// TODO: 改用bitmap来记录上传进度
 package storage
 
 import (

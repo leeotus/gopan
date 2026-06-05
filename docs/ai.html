@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ai.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="gopan-ai-集成方案">GoPan AI 集成方案</h1>
+<p>GoPan 平台集成了两个 Python AI 微服务，分别承担「语义搜索向量化」和「视频内容听译摘要」两个独立职责。本文档梳理两条链路的架构、数据流、关键代码与部署运维。</p>
+<hr>
+<h2 id="1-服务定位">1. 服务定位</h2>
+<table>
+<thead>
+<tr>
+<th>服务</th>
+<th>端口</th>
+<th>模型</th>
+<th>触发点</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>semantic-ai</code></td>
+<td>9900</td>
+<td>OFA-Sys/chinese-clip-vit-base-patch16</td>
+<td>视频索引 ES 时 + 用户搜索时</td>
+<td>把中文文本/图片转成 512 维向量，供 ES KNN 检索</td>
+</tr>
+<tr>
+<td><code>summary-ai</code></td>
+<td>9920</td>
+<td>OpenAI Whisper tiny + MiniMax/DeepSeek LLM</td>
+<td>视频转码完成后</td>
+<td>抽音轨 → 听译 → 大模型生成 150 字摘要</td>
+</tr>
+</tbody>
+</table>
+<p>两个服务完全独立，<strong>互不依赖</strong>。<code>semantic-ai</code> 走同步 HTTP 调用（请求耗时 ms 级），<code>summary-ai</code> 走 <strong>Kafka 异步任务队列</strong>（请求耗时分钟级，不能阻塞主链路）。</p>
+<hr>
+<h2 id="2-semantic-ai语义搜索链路">2. semantic-ai：语义搜索链路</h2>
+<h3 id="21-整体数据流">2.1 整体数据流</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    subgraph 索引阶段
+      A1[用户上传视频] --> A2[转码完成 TranscodeCallback]
+      A2 -->|"description (用户原文)"| A3[search-svc.IndexVideo]
+      A3 --> A4[es.IndexVideo]
+      A4 -->|HTTP POST /embed/text| AI1[semantic-ai:9900]
+      AI1 -->|512维向量| A4
+      A4 --> A5[(Elasticsearch<br/>video_vector)]
+    end
+
+    subgraph 搜索阶段
+      B1[用户输入搜索词] --> B2[gateway /search]
+      B2 --> B3[search-svc.SearchVideos]
+      B3 --> B4[es.SearchVideos]
+      B4 -->|HTTP POST /embed/text| AI1
+      AI1 -->|512维向量| B4
+      B4 -->|KNN 余弦相似度| A5
+      A5 -->|Top N 命中| B4
+      B4 --> B5[返回视频列表]
+    end
+</div></code></pre>
+<h3 id="22-关键代码">2.2 关键代码</h3>
+<p><strong>触发点：<code>common/es/es.go</code></strong></p>
+<ul>
+<li><code>IndexVideo()</code>：写入索引时调用 <code>getEmbeddingVector(title + description)</code> 生成向量并存入 <code>video_vector</code> 字段</li>
+<li><code>SearchVideos()</code>：先把 keyword 向量化，再用 ES <code>knn</code> 查询</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-comment">// getEmbeddingVector 发送 HTTP 转换向量</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getEmbeddingVector</span><span class="hljs-params">(ctx context.Context, keyword <span class="hljs-type">string</span>)</span></span> ([]<span class="hljs-type">float32</span>, <span class="hljs-type">error</span>) {
+    aiURL := os.Getenv(<span class="hljs-string">&quot;AI_SERVICE_URL&quot;</span>)
+    <span class="hljs-keyword">if</span> aiURL == <span class="hljs-string">&quot;&quot;</span> {
+        aiURL = <span class="hljs-string">&quot;http://127.0.0.1:9900&quot;</span>
+    }
+    <span class="hljs-comment">// POST {aiURL}/embed/text → {&quot;vector&quot;: [...]}</span>
+}
+</div></code></pre>
+<p><strong>Python 端：<code>semantic-ai/main.py</code></strong></p>
+<ul>
+<li>启动时一次性 <code>from_pretrained</code> 装载 ChineseCLIP 模型到 GPU/CPU</li>
+<li><code>POST /embed/text</code> → 文本塔前向传播 → L2 归一化 → 返回 512 维向量</li>
+<li><code>POST /embed/image</code> → 视觉塔前向传播 → 同上（当前主链路未用到）</li>
+</ul>
+<h3 id="23-配置">2.3 配置</h3>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>配置项</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker-compose.yml</code> (search-svc)</td>
+<td><code>AI_SERVICE_URL</code></td>
+<td><code>http://semantic-ai:9900</code></td>
+</tr>
+<tr>
+<td><code>semantic-ai/Dockerfile</code></td>
+<td>端口</td>
+<td>9900</td>
+</tr>
+</tbody>
+</table>
+<p><strong>重要</strong>：<code>description</code> 在用户上传时填入数据库，<strong>永不被 AI 改写</strong>。<code>semantic-ai</code> 只读不写，搜索用的是用户原始简介的语义。</p>
+<hr>
+<h2 id="3-summary-ai视频内容摘要链路">3. summary-ai：视频内容摘要链路</h2>
+<h3 id="31-异步整体数据流">3.1 异步整体数据流</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    A[用户上传 + 转码完成] --> B[video-svc.TranscodeCallback]
+    B -->|status=2| B1[更新 ai_summary_status=1]
+    B1 --> C[投递 Kafka SummaryTask]
+    C --> K[(Kafka<br/>gopan.video.summary.tasks)]
+    K --> D[video-svc SummaryConsumer]
+    D -->|HTTP POST /analyze<br/>video_url| AI[summary-ai:9920]
+    AI -->|1.下载视频| MinIO[(MinIO)]
+    AI -->|2.FFmpeg 抽音| AI
+    AI -->|3.Whisper 听译| AI
+    AI -->|4.LLM 摘要| LLM[MiniMax/DeepSeek]
+    LLM --> AI
+    AI -->|返回 summary| D
+    D -->|UpdateAiSummary| DB[(MySQL videos.ai_summary<br/>ai_summary_status=2)]
+
+    F[前端 VideoDetail 轮询] -->|POST /api/video/ai-analyze| G[gateway]
+    G --> H[video-svc.GetVideo]
+    H --> DB
+    DB -->|status+summary| F
+</div></code></pre>
+<h3 id="32-状态机">3.2 状态机</h3>
+<pre><code class="language-mermaid"><div class="mermaid">stateDiagram-v2
+    [*] --> 未生成 : 视频刚上传
+    未生成 --> 生成中 : TranscodeCallback 投递 Kafka
+    生成中 --> 已完成 : summary-ai 返回 + UpdateAiSummary
+    生成中 --> 失败 : 网络/LLM/FFmpeg 错误
+    已完成 --> [*]
+    失败 --> [*]
+
+    note right of 未生成 : ai_summary_status=0
+    note right of 生成中 : ai_summary_status=1
+    note right of 已完成 : ai_summary_status=2
+    note right of 失败 : ai_summary_status=3
+</div></code></pre>
+<h3 id="33-关键代码">3.3 关键代码</h3>
+<p><strong>生产者：<code>rpc/video/internal/logic/transcodecallbacklogic.go</code></strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment">// 转码 status=2 时</span>
+<span class="hljs-keyword">if</span> vidStatus == <span class="hljs-number">2</span> {
+    v, _ := l.svcCtx.VideoStore.FindById(...)
+    <span class="hljs-keyword">if</span> v != <span class="hljs-literal">nil</span> {
+        <span class="hljs-keyword">go</span> l.indexToES(v)          <span class="hljs-comment">// 异步入 ES</span>
+        l.dispatchSummaryTask(v.Id) <span class="hljs-comment">// 投递 Kafka SummaryTask</span>
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(l *TranscodeCallbackLogic)</span></span> dispatchSummaryTask(videoId <span class="hljs-type">int64</span>) {
+    <span class="hljs-comment">// 1. 置 ai_summary_status = 1（生成中）</span>
+    l.svcCtx.VideoStore.UpdateAiSummaryStatus(l.ctx, videoId, <span class="hljs-number">1</span>)
+    <span class="hljs-comment">// 2. 投递 Kafka</span>
+    body, _ := json.Marshal(commonkafka.SummaryTask{
+        VideoId:  videoId,
+        VideoUrl: fmt.Sprintf(<span class="hljs-string">&quot;%s/videos/%d/source.mp4&quot;</span>, prefix, videoId),
+    })
+    writer.WriteMessages(l.ctx, kafkago.Message{Key: ..., Value: body})
+}
+</div></code></pre>
+<p><strong>消费者：<code>rpc/video/internal/consume/summaryconsumer.go</code></strong></p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">StartSummaryConsumer</span><span class="hljs-params">(ctx, svcCtx)</span></span> {
+    reader := kafka.NewConsumer(brokers, topic)
+    <span class="hljs-keyword">for</span> {
+        msg, _ := reader.FetchMessage(ctx)
+        <span class="hljs-keyword">var</span> task kafka.SummaryTask
+        json.Unmarshal(msg.Value, &amp;task)
+
+        <span class="hljs-keyword">if</span> err := process(ctx, svcCtx, &amp;task); err != <span class="hljs-literal">nil</span> {
+            <span class="hljs-comment">// 失败：标 status=3</span>
+            svcCtx.VideoStore.UpdateAiSummaryStatus(ctx, task.VideoId, <span class="hljs-number">3</span>)
+        }
+        reader.CommitMessages(ctx, msg) <span class="hljs-comment">// 成功失败都 commit，避免毒消息死循环</span>
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">process</span><span class="hljs-params">(ctx, svcCtx, task)</span></span> <span class="hljs-type">error</span> {
+    <span class="hljs-comment">// 1. 标 status=1</span>
+    svcCtx.VideoStore.UpdateAiSummaryStatus(ctx, task.VideoId, <span class="hljs-number">1</span>)
+    <span class="hljs-comment">// 2. POST {url}/analyze 携带 video_url，超时 300s</span>
+    resp := http.Post(url+<span class="hljs-string">&quot;/analyze&quot;</span>, {<span class="hljs-string">&quot;video_url&quot;</span>: task.VideoUrl})
+    <span class="hljs-comment">// 3. UpdateAiSummary(写文本 + 自动置 status=2)</span>
+    <span class="hljs-keyword">return</span> svcCtx.VideoStore.UpdateAiSummary(ctx, task.VideoId, aiResp.Summary)
+}
+</div></code></pre>
+<p><strong>Python 端：<code>summary-ai/main.py</code></strong></p>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    A[POST /analyze] --> B[urllib 下载视频]
+    B --> C[ffmpeg 抽 16k mono wav]
+    C --> D[whisper.transcribe]
+    D --> E{LLM Key?}
+    E -->|MINIMAX_API_KEY| F[MiniMax abab6.5g]
+    E -->|DEEPSEEK_API_KEY| G[DeepSeek chat]
+    E -->|都没有| H[本地兜底文案]
+    F --> I[返回 summary+vtt+srt]
+    G --> I
+    H --> I
+</div></code></pre>
+<h3 id="34-网关查询接口">3.4 网关查询接口</h3>
+<p><code>POST /api/video/ai-analyze</code> 由原来的&quot;同步触发 Whisper&quot;改为<strong>纯查询</strong>：</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// gateway/internal/logic/video/aianalyzelogic.go</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(l *AIAnalyzeLogic)</span></span> AIAnalyze(req *types.AIAnalyzeReq) (*types.AIAnalyzeResp, <span class="hljs-type">error</span>) {
+    r, _ := l.svcCtx.VideoClient.GetVideo(...)
+    resp := &amp;types.AIAnalyzeResp{Status: <span class="hljs-type">int</span>(r.Video.AiSummaryStatus)}
+    <span class="hljs-keyword">if</span> r.Video.AiSummaryStatus == <span class="hljs-number">2</span> {
+        resp.Summary = r.Video.AiSummary
+    }
+    <span class="hljs-keyword">return</span> resp, <span class="hljs-literal">nil</span>
+}
+</div></code></pre>
+<p>返回字段：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td>0 未生成 / 1 生成中 / 2 已完成 / 3 失败</td>
+</tr>
+<tr>
+<td><code>summary</code></td>
+<td>status=2 时才有值</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-数据模型">4. 数据模型</h2>
+<p><code>videos</code> 表新增两列：</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">ALTER TABLE</span> videos
+  <span class="hljs-keyword">ADD</span> <span class="hljs-keyword">COLUMN</span> ai_summary TEXT <span class="hljs-keyword">NOT NULL</span> AFTER status,
+  <span class="hljs-keyword">ADD</span> <span class="hljs-keyword">COLUMN</span> ai_summary_status TINYINT <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span>
+    COMMENT <span class="hljs-string">&#x27;0:未生成 1:生成中 2:已完成 3:失败&#x27;</span> AFTER ai_summary;
+</div></code></pre>
+<p><code>description</code>（用户原文，搜索语义源）和 <code>ai_summary</code>（AI 听译结果，展示用）<strong>彻底分离</strong>，互不影响。</p>
+<hr>
+<h2 id="5-kafka-topic">5. Kafka Topic</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>生产者</th>
+<th>消费者</th>
+<th>消息体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gopan.transcode.tasks</code></td>
+<td>video-svc</td>
+<td>transcode-svc</td>
+<td><code>TranscodeTask{VideoId, ObjectKey}</code></td>
+</tr>
+<tr>
+<td><code>gopan.video.merge.tasks</code></td>
+<td>video-svc</td>
+<td>transcode-svc</td>
+<td><code>MergeTask{VideoId, ChunkKeys, ...}</code></td>
+</tr>
+<tr>
+<td><code>gopan.video.summary.tasks</code></td>
+<td><strong>video-svc (新)</strong></td>
+<td><strong>video-svc (新)</strong></td>
+<td><code>SummaryTask{VideoId, VideoUrl}</code></td>
+</tr>
+</tbody>
+</table>
+<p>注意 Summary topic 生产者和消费者都在 video-svc 内（解耦同进程：转码回调入口 → Kafka → 消费 goroutine）。</p>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    TC[TranscodeCallback Logic] -->|投递| K[(Kafka summary.tasks)]
+    K -->|消费| SC[SummaryConsumer<br/>goroutine in video-svc]
+    SC --> AI[summary-ai HTTP]
+    SC --> DB[(MySQL)]
+</div></code></pre>
+<p>为什么生产消费都在 video-svc？</p>
+<ul>
+<li>解耦同步链路（转码回调 100ms 返回，AI 计算几分钟）</li>
+<li>消费失败可重试、可监控、不影响转码回调</li>
+<li>同进程内复用 VideoStore，免去额外 RPC</li>
+</ul>
+<hr>
+<h2 id="6-前端集成">6. 前端集成</h2>
+<h3 id="61-视频详情页-ui-状态分支">6.1 视频详情页 UI 状态分支</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    A[onMounted: fetchDetail] --> B{ai_summary_status}
+    B -->|2| C[打字机渲染 ai_summary]
+    B -->|0 或 1| D[骨架屏 + 启动 5s 轮询]
+    B -->|3| E[失败提示]
+
+    D --> F[POST /api/video/ai-analyze]
+    F --> G{响应 status}
+    G -->|2| H[停轮询 + 打字机]
+    G -->|3| I[停轮询 + 失败提示]
+    G -->|其它| D
+</div></code></pre>
+<h3 id="62-轮询参数">6.2 轮询参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>间隔</td>
+<td>5000ms</td>
+<td>平衡实时性与服务压力</td>
+</tr>
+<tr>
+<td>最大次数</td>
+<td>120</td>
+<td>总时长 10 分钟兜底，超时停轮询</td>
+</tr>
+<tr>
+<td>清理</td>
+<td><code>onUnmounted</code> 必清 timer</td>
+<td>防内存泄漏</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-部署">7. 部署</h2>
+<h3 id="71-docker-compose-服务条目">7.1 docker-compose 服务条目</h3>
+<pre class="hljs"><code><div><span class="hljs-attr">semantic-ai:</span>
+  <span class="hljs-attr">build:</span> <span class="hljs-string">./semantic-ai</span>
+  <span class="hljs-attr">container_name:</span> <span class="hljs-string">gopan-semantic-ai</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;9900:9900&quot;</span>
+  <span class="hljs-attr">volumes:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">hf-cache:/root/.cache/huggingface</span>   <span class="hljs-comment"># 持久化 ChineseCLIP 模型</span>
+  <span class="hljs-attr">networks:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">gopan-net</span>
+
+<span class="hljs-attr">summary-ai:</span>
+  <span class="hljs-attr">build:</span> <span class="hljs-string">./summary-ai</span>
+  <span class="hljs-attr">container_name:</span> <span class="hljs-string">gopan-summary-ai</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;9920:9920&quot;</span>
+  <span class="hljs-attr">environment:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">MINIMAX_API_KEY=${MINIMAX_API_KEY:-}</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}</span>
+  <span class="hljs-attr">volumes:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">whisper-cache:/root/.cache</span>          <span class="hljs-comment"># 持久化 Whisper 模型</span>
+  <span class="hljs-attr">networks:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">gopan-net</span>
+</div></code></pre>
+<h3 id="72-配置入口">7.2 配置入口</h3>
+<table>
+<thead>
+<tr>
+<th>服务</th>
+<th>入口</th>
+<th>配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>search-svc</td>
+<td><code>AI_SERVICE_URL</code> env</td>
+<td><code>http://semantic-ai:9900</code></td>
+</tr>
+<tr>
+<td>video-svc</td>
+<td><code>SummaryAI.URL</code> yaml</td>
+<td><code>http://summary-ai:9920</code></td>
+</tr>
+<tr>
+<td>video-svc</td>
+<td><code>SummaryAI.MinIO</code> yaml</td>
+<td><code>http://minio:9000/gopan-videos</code></td>
+</tr>
+<tr>
+<td>video-svc</td>
+<td><code>Kafka.SummaryTopic</code> yaml</td>
+<td><code>gopan.video.summary.tasks</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-minio-桶必须公开读">7.3 MinIO 桶必须公开读</h3>
+<p><code>summary-ai</code> 用 <code>urllib.request.urlretrieve</code> 直接 GET 视频 URL，无鉴权。需要把桶设为匿名 download：</p>
+<pre class="hljs"><code><div>docker run --<span class="hljs-built_in">rm</span> --network gopan_gopan-net \
+  -e MC_HOST_local=http://minioadmin:minioadmin@minio:9000 \
+  docker.m.daocloud.io/minio/mc anonymous <span class="hljs-built_in">set</span> download <span class="hljs-built_in">local</span>/gopan-videos
+</div></code></pre>
+<h3 id="74-启动顺序">7.4 启动顺序</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># 1. 全栈</span>
+docker compose up -d --build
+
+<span class="hljs-comment"># 2. MinIO 桶公开</span>
+docker run --<span class="hljs-built_in">rm</span> --network gopan_gopan-net ... mc anonymous <span class="hljs-built_in">set</span> download <span class="hljs-built_in">local</span>/gopan-videos
+
+<span class="hljs-comment"># 3. 验证</span>
+curl http://localhost:9900/health    <span class="hljs-comment"># semantic-ai</span>
+curl http://localhost:9920/health    <span class="hljs-comment"># summary-ai</span>
+docker logs gopan-video-svc | grep SummaryConsumer
+</div></code></pre>
+<hr>
+<h2 id="8-排查指南">8. 排查指南</h2>
+<h3 id="81-端到端日志关键字">8.1 端到端日志关键字</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>容器</th>
+<th>关键日志</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>投递</td>
+<td>video-svc</td>
+<td><code>[Summary] summary task sent: video_id=</code></td>
+</tr>
+<tr>
+<td>消费</td>
+<td>video-svc</td>
+<td><code>[SummaryConsumer] received task</code></td>
+</tr>
+<tr>
+<td>调 AI</td>
+<td>summary-ai</td>
+<td><code>[Step 1] Loading video file from MinIO</code></td>
+</tr>
+<tr>
+<td>听译</td>
+<td>summary-ai</td>
+<td><code>[Step 3] Transcription finished in X seconds</code></td>
+</tr>
+<tr>
+<td>摘要</td>
+<td>summary-ai</td>
+<td><code>[LLM Summary] Calling MiniMax/DeepSeek API</code></td>
+</tr>
+<tr>
+<td>落库</td>
+<td>video-svc</td>
+<td><code>[SummaryConsumer] done: video_id=</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-故障速查表">8.2 故障速查表</h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>排查命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai_summary_status</code> 一直为 0</td>
+<td>转码未完成 / Kafka 投递失败</td>
+<td><code>docker logs gopan-video-svc | grep -E &quot;Summary|Transcode&quot;</code></td>
+</tr>
+<tr>
+<td>一直为 1</td>
+<td>summary-ai 不可达 / 超时</td>
+<td><code>curl http://localhost:9920/health</code></td>
+</tr>
+<tr>
+<td>一直为 3</td>
+<td>summary-ai 内部错误</td>
+<td><code>docker logs gopan-summary-ai | tail -50</code></td>
+</tr>
+<tr>
+<td>summary-ai 拉视频 403</td>
+<td>MinIO 桶没设 anonymous</td>
+<td>重跑 <code>mc anonymous set download</code></td>
+</tr>
+<tr>
+<td>summary-ai 摘要为 mock 文案</td>
+<td>未配 LLM Key</td>
+<td><code>docker exec gopan-summary-ai env | grep API_KEY</code></td>
+</tr>
+<tr>
+<td>搜索结果不准</td>
+<td>semantic-ai 不可达 / 向量未入库</td>
+<td><code>curl http://localhost:9900/health</code>，检查 ES <code>video_vector</code> 字段</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-db-直查">8.3 DB 直查</h3>
+<pre class="hljs"><code><div>docker <span class="hljs-built_in">exec</span> gopan-mysql mysql -uroot -pgopan123 gopan -e \
+  <span class="hljs-string">&quot;SELECT id, title, ai_summary_status, LEFT(ai_summary, 80) AS summary
+   FROM videos ORDER BY id DESC LIMIT 10;&quot;</span>
+</div></code></pre>
+<h3 id="84-kafka-直查">8.4 Kafka 直查</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># 查看 topic 是否存在</span>
+docker <span class="hljs-built_in">exec</span> gopan-kafka /opt/kafka/bin/kafka-topics.sh \
+  --bootstrap-server localhost:9092 --list | grep summary
+
+<span class="hljs-comment"># 查看消息堆积</span>
+docker <span class="hljs-built_in">exec</span> gopan-kafka /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092 --describe --all-groups | grep summary
+</div></code></pre>
+<h3 id="85-es-向量检查">8.5 ES 向量检查</h3>
+<pre class="hljs"><code><div>curl -s <span class="hljs-string">&#x27;http://localhost:9200/gopan_videos/_search?pretty&#x27;</span> \
+  -H <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> -d<span class="hljs-string">&#x27;{
+    &quot;_source&quot;: [&quot;video_id&quot;,&quot;title&quot;,&quot;video_vector&quot;],
+    &quot;size&quot;: 3
+  }&#x27;</span>
+<span class="hljs-comment"># 期望每条都有 video_vector 数组（512 维 float）</span>
+</div></code></pre>
+<hr>
+<h2 id="9-设计权衡-faq">9. 设计权衡 FAQ</h2>
+<h3 id="q1-为什么-summary-不直接覆盖-description">Q1: 为什么 summary 不直接覆盖 description？</h3>
+<p><code>description</code> 是用户上传时的原创简介，是搜索语义的「事实源」。AI 摘要是&quot;对内容的二次解读&quot;，两者应<strong>并行展示</strong>：用户可以看到「作者怎么写」和「AI 怎么总结」对比，也避免 AI 幻觉污染搜索质量。</p>
+<h3 id="q2-为什么用-kafka-而不是-video-svc-直接同步调-summary-ai">Q2: 为什么用 Kafka 而不是 video-svc 直接同步调 summary-ai？</h3>
+<ul>
+<li>Whisper 听译 + LLM 摘要总耗时几十秒到几分钟，<strong>不能阻塞</strong>转码回调（gRPC 默认 60s 超时）</li>
+<li>失败需要重试、需要监控、需要可观测，Kafka 天生提供</li>
+<li>后续可水平扩展消费者，吞吐线性提升</li>
+</ul>
+<h3 id="q3-为什么消费者不是独立服务">Q3: 为什么消费者不是独立服务？</h3>
+<ul>
+<li>当前只有一个消费者职责，独立部署运维成本不划算</li>
+<li>video-svc 内嵌 goroutine 复用了 <code>VideoStore</code>，免一次 RPC</li>
+<li>后续业务变复杂可平移到独立 <code>summary-worker</code> 服务</li>
+</ul>
+<h3 id="q4-前端为什么不用-websocket-推送">Q4: 前端为什么不用 WebSocket 推送？</h3>
+<ul>
+<li>AI 摘要一个视频只触发一次，<strong>不是高频事件</strong></li>
+<li>5s 轮询的 HTTP 开销小于维护 WS 连接</li>
+<li>现有 WS 已用于弹幕，避免 channel 复用复杂度</li>
+</ul>
+<h3 id="q5-模型缓存挂卷的必要性">Q5: 模型缓存挂卷的必要性？</h3>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>大小</th>
+<th>不挂卷</th>
+<th>挂卷后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChineseCLIP</td>
+<td>~600MB</td>
+<td>每次容器重建都重下</td>
+<td>首次后 0 重下</td>
+</tr>
+<tr>
+<td>Whisper tiny</td>
+<td>~70MB</td>
+<td>同上</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<p><code>hf-cache</code> 和 <code>whisper-cache</code> 两个 named volume 必须保留。</p>
+<hr>
+<h2 id="10-改动文件清单">10. 改动文件清单</h2>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB</td>
+<td><code>etc/init.sql</code>（加 <code>ai_summary</code> + <code>ai_summary_status</code>）</td>
+</tr>
+<tr>
+<td>Model</td>
+<td><code>rpc/video/model/video.go</code></td>
+</tr>
+<tr>
+<td>Store</td>
+<td><code>rpc/video/store/video.go</code>（<code>UpdateAiSummary</code> / <code>UpdateAiSummaryStatus</code>）</td>
+</tr>
+<tr>
+<td>Proto</td>
+<td><code>rpc/video/video.proto</code> → 重新生成 pb.go</td>
+</tr>
+<tr>
+<td>Logic</td>
+<td><code>rpc/video/internal/logic/{transcodecallbacklogic,getvideologic}.go</code></td>
+</tr>
+<tr>
+<td>新建消费者</td>
+<td><code>rpc/video/internal/consume/summaryconsumer.go</code></td>
+</tr>
+<tr>
+<td>Main</td>
+<td><code>rpc/video/video.go</code>（启 SummaryConsumer goroutine）</td>
+</tr>
+<tr>
+<td>Config</td>
+<td><code>rpc/video/internal/config/config.go</code>、<code>etc/video*.yaml</code></td>
+</tr>
+<tr>
+<td>Common</td>
+<td><code>common/kafka/kafka.go</code>（<code>SummaryTask</code> + <code>TopicSummaryTasks</code>）</td>
+</tr>
+<tr>
+<td>Gateway</td>
+<td><code>gateway/internal/logic/video/aianalyzelogic.go</code>（改查询模式）</td>
+</tr>
+<tr>
+<td>Gateway types</td>
+<td><code>gateway/internal/types/types.go</code>、<code>api/gateway.api</code></td>
+</tr>
+<tr>
+<td>前端</td>
+<td><code>frontend/src/pages/VideoDetail.vue</code>（状态分支 + 轮询）</td>
+</tr>
+<tr>
+<td>Docker</td>
+<td><code>semantic-ai/Dockerfile</code>、<code>summary-ai/Dockerfile</code>、<code>docker-compose.yml</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>至此 GoPan AI 双链路落成，前端、后端、AI 服务、消息队列、数据库均完成对接，可水平扩展、可观测、可降级。</p>
+
+</body>
+</html>

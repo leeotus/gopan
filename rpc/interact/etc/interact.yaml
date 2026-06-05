@@ -1,6 +1,12 @@
 Name: interact.rpc
 ListenOn: 0.0.0.0:8085
 Mode: dev
+
+MaxConns: 10000
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
 Etcd:
   Hosts:
   - etcd:2379
@@ -12,3 +18,8 @@ CacheRedis:
   Port: 6379
   Password: ""
   DB: 0
+Telemetry:
+  Name: interact-svc
+  Endpoint: jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp

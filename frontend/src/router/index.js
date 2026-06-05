@@ -8,6 +8,8 @@ const routes = [
   { path: "/search", name: "Search", component: () => import("../pages/Search.vue"), meta: { title: "搜索" } },
   { path: "/profile", name: "Profile", component: () => import("../pages/Profile.vue"), meta: { title: "我的" } },
   { path: "/upload", name: "Upload", component: () => import("../pages/Upload.vue"), meta: { title: "上传", auth: true } },
+  { path: "/admin", name: "Admin", component: () => import("../pages/Admin.vue"), meta: { title: "管理后台" } },
+  { path: "/live", name: "Live", component: () => import("../pages/Live.vue"), meta: { title: "直播" } },
 ];
 
 const router = createRouter({ history: createWebHistory(), routes });

@@ -26,6 +26,12 @@ service Video {
   rpc TranscodeCallback(TranscodeCallbackReq) returns (TranscodeCallbackResp);
   // 获取用户视频列表
   rpc ListUserVideos(ListUserVideosReq) returns (ListVideosResp);
+  // 保存播放进度
+  rpc SavePlayProgress(SavePlayProgressReq) returns (SavePlayProgressResp);
+  // 获取播放进度
+  rpc GetPlayProgress(GetPlayProgressReq) returns (GetPlayProgressResp);
+  // 更新视频封面
+  rpc UpdateCover(UpdateCoverReq) returns (UpdateCoverResp);
 }
 
 // ─── InitUpload ───
@@ -105,6 +111,10 @@ message VideoInfo {
   int32 status = 9;          // 0:上传中 1:转码中 2:正常 3:失败 4:已下架
   int64 created_at = 10;
   repeated TranscodeInfo transcodes = 11;
+  string description = 12;   // 视频简介（用户上传时的原始内容）
+  string category = 13;      // 视频分类
+  string ai_summary = 14;    // AI 听译生成的摘要文本（仅前端展示用）
+  int32 ai_summary_status = 15; // 0:未生成 1:生成中 2:已完成 3:失败
 }
 
 message TranscodeInfo {
@@ -152,4 +162,32 @@ message ListUserVideosReq {
   int64 user_id = 1;
   int64 cursor = 2;
   int32 limit = 3;
+}
+
+// ─── 播放进度 ───
+message SavePlayProgressReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  double position = 3;  // 秒
+}
+
+message SavePlayProgressResp {}
+
+message GetPlayProgressReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+}
+
+message GetPlayProgressResp {
+  double position = 1;
+}
+
+// ─── 封面更新 ───
+message UpdateCoverReq {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  string cover_url = 3;
+}
+
+message UpdateCoverResp {
 }

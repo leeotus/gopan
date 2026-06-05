@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package admin;
+
+option go_package = "./admin";
+
+service Admin {
+  rpc AdminLogin(AdminLoginReq) returns (AdminLoginResp);
+  rpc ListVideos(AdminListVideosReq) returns (AdminListVideosResp);
+  rpc ApproveVideo(ApproveVideoReq) returns (ApproveVideoResp);
+  rpc RejectVideo(RejectVideoReq) returns (RejectVideoResp);
+  rpc DeleteVideo(AdminDeleteVideoReq) returns (AdminDeleteVideoResp);
+}
+
+message AdminLoginReq {
+  string username = 1;
+  string password = 2;
+}
+
+message AdminLoginResp {
+  string token = 1;
+  int64 user_id = 2;
+  string username = 3;
+}
+
+message AdminListVideosReq {
+  int64 cursor = 1;
+  int32 limit = 2;
+  int32 status = 3; // -1 表示全部
+}
+
+message AdminVideoInfo {
+  int64 id = 1;
+  string title = 2;
+  string cover_url = 3;
+  int64 user_id = 4;
+  string username = 5;
+  int32 status = 6;
+  int64 play_count = 7;
+  int64 created_at = 8;
+}
+
+message AdminListVideosResp {
+  repeated AdminVideoInfo videos = 1;
+  int64 next_cursor = 2;
+  bool has_more = 3;
+}
+
+message ApproveVideoReq {
+  int64 video_id = 1;
+  int64 admin_id = 2;
+}
+
+message ApproveVideoResp {}
+
+message RejectVideoReq {
+  int64 video_id = 1;
+  int64 admin_id = 2;
+}
+
+message RejectVideoResp {}
+
+message AdminDeleteVideoReq {
+  int64 video_id = 1;
+  int64 admin_id = 2;
+}
+
+message AdminDeleteVideoResp {}

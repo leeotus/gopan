@@ -21,7 +21,7 @@ func SendDanmakuHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := video.NewSendDanmakuLogic(r.Context(), svcCtx)
-		resp, err := l.SendDanmaku(&req)
+			resp, err := l.SendDanmaku(r, &req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

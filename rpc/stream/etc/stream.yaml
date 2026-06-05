@@ -1,10 +1,26 @@
 Name: stream.rpc
 ListenOn: 0.0.0.0:8084
 Mode: dev
+
+MaxConns: 10000
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
 Etcd:
   Hosts:
   - etcd:2379
   Key: stream.rpc
 CDN:
-  BaseURL: http://localhost:9000/gopan-videos
+  BaseURL: http://minio:9000/gopan-videos
   SecretKey: gopan-cdn-secret
+CacheRedis:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0
+Telemetry:
+  Name: stream-svc
+  Endpoint: jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp

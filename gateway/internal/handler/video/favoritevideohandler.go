@@ -14,7 +14,7 @@ import (
 func FavoriteVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewFavoriteVideoLogic(r.Context(), svcCtx)
-		resp, err := l.FavoriteVideo()
+		resp, err := l.FavoriteVideo(r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

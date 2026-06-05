@@ -24,14 +24,25 @@ func (s *InteractStore) InsertLike(ctx context.Context, userId, videoId int64) e
 		INSERT INTO likes (user_id, video_id, created_at) VALUES (?, ?, NOW())
 		ON DUPLICATE KEY UPDATE created_at = NOW()
 	`, userId, videoId)
-	return err
+	if err != nil {
+		return err
+	}
+	_, _ = s.conn.ExecCtx(ctx, `UPDATE videos SET like_count = like_count + 1 WHERE id = ?`, videoId)
+	return nil
 }
 
 func (s *InteractStore) DeleteLike(ctx context.Context, userId, videoId int64) error {
-	_, err := s.conn.ExecCtx(ctx, `
+	result, err := s.conn.ExecCtx(ctx, `
 		DELETE FROM likes WHERE user_id = ? AND video_id = ?
 	`, userId, videoId)
-	return err
+	if err != nil {
+		return err
+	}
+	affected, _ := result.RowsAffected()
+	if affected > 0 {
+		_, _ = s.conn.ExecCtx(ctx, `UPDATE videos SET like_count = GREATEST(like_count - 1, 0) WHERE id = ?`, videoId)
+	}
+	return nil
 }
 
 // IsLiked 查询用户是否已点赞某个视频。
@@ -44,6 +55,13 @@ func (s *InteractStore) IsLiked(ctx context.Context, userId, videoId int64) (boo
 		return false, err
 	}
 	return count > 0, nil
+}
+
+// CountLikes 查询视频的点赞总数。
+func (s *InteractStore) CountLikes(ctx context.Context, videoId int64) int64 {
+	var count int64
+	_ = s.conn.QueryRowCtx(ctx, &count, `SELECT COUNT(1) FROM likes WHERE video_id = ?`, videoId)
+	return count
 }
 
 // ─────────── 收藏 ───────────

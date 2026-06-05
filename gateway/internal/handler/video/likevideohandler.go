@@ -14,7 +14,7 @@ import (
 func LikeVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewLikeVideoLogic(r.Context(), svcCtx)
-		resp, err := l.LikeVideo()
+		resp, err := l.LikeVideo(r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

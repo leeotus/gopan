@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS `videos` (
     `total_chunks` INT NOT NULL DEFAULT 0 COMMENT '分片总数（断点上传）',
     `upload_id` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '上传会话ID',
     `status` TINYINT NOT NULL DEFAULT 0 COMMENT '0:上传中 1:转码中 2:正常 3:失败 4:已下架',
+    `ai_summary` TEXT NOT NULL COMMENT 'AI 听译生成的内容摘要（区别于用户原始 description）',
+    `ai_summary_status` TINYINT NOT NULL DEFAULT 0 COMMENT 'AI 摘要状态 0:未生成 1:生成中 2:已完成 3:失败',
     `play_count` BIGINT NOT NULL DEFAULT 0,
     `like_count` BIGINT NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

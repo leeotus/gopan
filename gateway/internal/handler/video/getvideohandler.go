@@ -13,8 +13,10 @@ import (
 
 func GetVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		videoIdStr := r.URL.Query().Get("video_id")
+
 		l := video.NewGetVideoLogic(r.Context(), svcCtx)
-		resp, err := l.GetVideo()
+		resp, err := l.GetVideo(videoIdStr)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

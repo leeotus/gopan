@@ -1,6 +1,7 @@
 Name: stream.rpc
 ListenOn: 0.0.0.0:8084
 Mode: dev
+MaxConns: 10000
 Etcd:
   Hosts:
   - 127.0.0.1:2379
@@ -8,3 +9,14 @@ Etcd:
 CDN:
   BaseURL: http://127.0.0.1:9000/gopan-videos
   SecretKey: gopan-cdn-secret
+CacheRedis:
+  Host: 127.0.0.1
+  Port: 6379
+  Password: ""
+  DB: 0
+
+Telemetry:
+  Name: stream
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

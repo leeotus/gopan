@@ -1,24 +1,21 @@
 // gateway 是 GoPan 平台的 API 网关入口。
-// 作用：接收客户端 HTTP 请求 → JWT 鉴权 → 路由到对应的 RPC 服务 → 返回统一格式 JSON。
-//
-// 启动: go run gateway.go -f etc/gateway.yaml
-// 端口: 8888 (由 yaml 配置)
 package main
 
 import (
 	"flag"
 	"fmt"
+	"net/http"
 
 	"gopan/gateway/internal/config"
 	"gopan/gateway/internal/handler"
 	"gopan/gateway/internal/svc"
+	"gopan/gateway/internal/ws"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/go-zero/rest"
 )
 
-// -f 指定配置文件路径，默认为 etc/gateway.yaml
-// for example: go run gateway.go -f etc/gateway.yaml
 var configFile = flag.String("f", "etc/gateway.yaml", "配置文件路径")
 
 func main() {
@@ -27,19 +24,41 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 
+	// 启动 OpenTelemetry 分布式追踪
+	trace.StartAgent(c.Telemetry)
+	defer trace.StopAgent()
 
-	// 创建 REST server / HTTP Server
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
 
-	// 初始化 ServiceContext（依赖注入容器）
-	// @NOTE 显示构造每个RPC Client, 并将它们作为服务上下文传递到下游服务中
-	// 避免每个handler/logic自己new连接， 导致连接池爆炸
-	// @NOTE 单例模式
+	// CORS 中间件（必须最先注册，允许前端直连 8888 进行 multipart 上传）
+	server.Use(func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+			next(w, r)
+		}
+	})
+
 	ctx := svc.NewServiceContext(c)
 
-	// 注册所有路由（goctl 自动生成）
+	// 全局兜底限流 —— 所有 /api/* 请求的统一保护（500/s, burst 1000）
+	server.Use(ctx.RateLimiter)
+
+	// 注册 REST 路由
 	handler.RegisterHandlers(server, ctx)
+
+	// 注册 WebSocket 路由
+	server.AddRoute(rest.Route{
+		Method:  "GET",
+		Path:    "/ws/danmaku",
+		Handler: ws.DanmakuHandler(ctx),
+	})
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

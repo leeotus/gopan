@@ -2,6 +2,7 @@
 package consume
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -16,12 +17,13 @@ import (
 	"gopan/rpc/transcode/internal/svc"
 	"gopan/rpc/video/videoclient"
 
+	kafkago "github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // StartConsumer 启动 Kafka 消费者（阻塞运行）。
 func StartConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
-	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.TranscodeTopic)
+	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.TranscodeTopic, "gopan-transcode-worker")
 	defer reader.Close()
 
 	for {
@@ -56,10 +58,10 @@ func StartConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
 }
 
 // processTranscode 执行单条转码任务：
-//   1. 从 MinIO 下载源文件到工作目录
-//   2. FFmpeg 1080p HLS 转码（libx264 + AAC，hls_time=10s）
-//   3. 上传 HLS 切片 + index.m3u8 到 MinIO
-//   4. 回调 video-svc.TranscodeCallback（status=2 成功，3 失败）
+//  1. 从 MinIO 下载源文件到工作目录
+//  2. FFmpeg 1080p HLS 转码（libx264 + AAC，hls_time=10s）
+//  3. 上传 HLS 切片 + index.m3u8 到 MinIO
+//  4. 回调 video-svc.TranscodeCallback（status=2 成功，3 失败）
 func processTranscode(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.TranscodeTask) error {
 	workDir := svcCtx.Config.WorkDir
 	if workDir == "" {
@@ -150,11 +152,85 @@ func uploadToMinio(ctx context.Context, client *storage.MinioClient, localPath, 
 		return err
 	}
 	defer f.Close()
+	fi, err := f.Stat()
+	if err != nil {
+		return err
+	}
 	contentType := "application/octet-stream"
 	if strings.HasSuffix(minioKey, ".m3u8") {
 		contentType = "application/vnd.apple.mpegurl"
 	} else if strings.HasSuffix(minioKey, ".ts") {
 		contentType = "video/mp2t"
 	}
-	return client.PutObject(ctx, minioKey, f, 0, contentType)
+	return client.PutObject(ctx, minioKey, f, fi.Size(), contentType)
+}
+
+// StartMergeConsumer 消费合并任务——下载 chunks → 合并 → 上传 → 回写状态 → 发转码任务
+func StartMergeConsumer(ctx context.Context, svcCtx *svc.ServiceContext) {
+	if svcCtx.Config.Kafka.MergeTopic == "" {
+		return
+	}
+	reader := kafka.NewConsumer(svcCtx.Config.Kafka.Brokers, svcCtx.Config.Kafka.MergeTopic, "gopan-merge-worker")
+	defer reader.Close()
+
+	for {
+		msg, err := reader.FetchMessage(ctx)
+		if err != nil {
+			if err == context.Canceled {
+				return
+			}
+			logx.Errorf("merge kafka fetch error: %v", err)
+			continue
+		}
+
+		var task kafka.MergeTask
+		if err := json.Unmarshal(msg.Value, &task); err != nil {
+			reader.CommitMessages(ctx, msg)
+			continue
+		}
+
+		logx.Infof("merge consumer: video_id=%d chunks=%d", task.VideoId, len(task.ChunkKeys))
+		if err := processMerge(ctx, svcCtx, &task); err != nil {
+			logx.Errorf("merge failed: video_id=%d err=%v", task.VideoId, err)
+		}
+		reader.CommitMessages(ctx, msg)
+	}
+}
+
+func processMerge(ctx context.Context, svcCtx *svc.ServiceContext, task *kafka.MergeTask) error {
+	var buf bytes.Buffer
+	for _, key := range task.ChunkKeys {
+		reader, err := svcCtx.MinioClient.GetObject(ctx, key)
+		if err != nil {
+			return fmt.Errorf("get chunk %s: %w", key, err)
+		}
+		if _, err := io.Copy(&buf, reader); err != nil {
+			reader.Close()
+			return err
+		}
+		reader.Close()
+	}
+
+	destKey := fmt.Sprintf("videos/%d/source.mp4", task.VideoId)
+	if err := svcCtx.MinioClient.PutObject(ctx, destKey, bytes.NewReader(buf.Bytes()), int64(buf.Len()), "video/mp4"); err != nil {
+		return fmt.Errorf("put merged: %w", err)
+	}
+
+	logx.Infof("merge async done: video_id=%d", task.VideoId)
+
+	// 发转码任务
+	transcodeTask := kafka.TranscodeTask{VideoId: task.VideoId, ObjectKey: destKey}
+	taskBody, _ := json.Marshal(transcodeTask)
+	if svcCtx.KafkaWriter != nil {
+		if err := svcCtx.KafkaWriter.WriteMessages(ctx, kafkago.Message{
+			Key:   []byte(fmt.Sprintf("transcode-video-%d", task.VideoId)),
+			Value: taskBody,
+		}); err != nil {
+			logx.Errorf("kafka write transcode task after merge error: %v", err)
+		} else {
+			logx.Infof("transcode task sent after merge: video_id=%d", task.VideoId)
+		}
+	}
+
+	return nil
 }

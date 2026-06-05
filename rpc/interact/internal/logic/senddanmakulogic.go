@@ -3,6 +3,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"gopan/rpc/interact/internal/svc"
 	"gopan/rpc/interact/interact"
@@ -30,6 +31,14 @@ func (l *SendDanmakuLogic) SendDanmaku(in *interact.SendDanmakuReq) (*interact.S
 		l.Logger.Errorf("insert danmaku error: %v", err)
 		return nil, status.Error(codes.Internal, "发送弹幕失败")
 	}
+
+	// Redis Pub/Sub 实时推送
+	message := fmt.Sprintf(`{"id":%d,"user_id":%d,"content":"%s","time":%.1f,"color":"%s","mode":%d}`,
+		danmakuId, in.UserId, in.Content, in.Time, in.Color, in.Mode)
+	if err := l.svcCtx.Redis.Publish(l.ctx, fmt.Sprintf("danmaku:%d", in.VideoId), message).Err(); err != nil {
+		l.Logger.Errorf("redis publish danmaku error: %v", err)
+	}
+
 	return &interact.SendDanmakuResp{DanmakuId: danmakuId}, nil
 }
 

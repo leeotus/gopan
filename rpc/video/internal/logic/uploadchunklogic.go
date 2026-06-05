@@ -36,7 +36,7 @@ func (l *UploadChunkLogic) UploadChunk(in *video.UploadChunkReq) (*video.UploadC
 	// 2. 标记 Redis 进度
 	if err := l.svcCtx.UploadProgress.MarkReceived(l.ctx, in.UploadId, in.ChunkIndex); err != nil {
 		l.Logger.Errorf("redis mark received error: %v", err)
-		// 不阻断，upload-status 会暴露缺失
+		// 不阻断，upload-status 会暴露缺失, 断点续传
 	}
 
 	return &video.UploadChunkResp{ReceivedIndex: in.ChunkIndex}, nil

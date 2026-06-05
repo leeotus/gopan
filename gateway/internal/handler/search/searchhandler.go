@@ -5,6 +5,7 @@ package search
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"gopan/gateway/internal/logic/search"
@@ -14,10 +15,23 @@ import (
 
 func SearchHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.SearchReq
-		if err := httpx.Parse(r, &req); err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
-			return
+		q := r.URL.Query()
+
+		page, _ := strconv.Atoi(q.Get("page"))
+		if page <= 0 {
+			page = 1
+		}
+		size, _ := strconv.Atoi(q.Get("size"))
+		if size <= 0 {
+			size = 20
+		}
+
+		req := types.SearchReq{
+			Keyword:  q.Get("keyword"),
+			Page:     page,
+			Size:     size,
+			Category: q.Get("category"),
+			Sort:     q.Get("sort"),
 		}
 
 		l := search.NewSearchLogic(r.Context(), svcCtx)

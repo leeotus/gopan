@@ -42,3 +42,5 @@ docker-compose.override.yml
 
 # ─── VSCode ───
 .vscode/settings.json
+
+.venv

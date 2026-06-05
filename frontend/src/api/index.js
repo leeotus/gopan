@@ -15,12 +15,26 @@ export const videoApi = {
   list: (params) => request.get("/video/list", { params }),
   detail: (params) => request.get("/video/detail", { params }),
   getPlayUrl: (params) => request.get("/video/play-url", { params }),
-  initUpload: (data) => request.post("/video/init-upload", data),
-  uploadChunk: (formData) => direct.post("http://localhost:8888/api/video/upload-chunk", formData),
-  uploadChunkRaw: (data) => request.post("/video/upload-chunk", data),  // base64 JSON 方式
+  initUpload: (data) => {
+    const token = localStorage.getItem("token");
+    return request.post("/video/init-upload", data, {
+      headers: token ? { Authorization: "Bearer " + token } : {},
+    });
+  },
+  uploadChunk: (formData) => {
+    return request.post("/video/upload-chunk", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+  uploadChunkRaw: (data) => request.post("/video/upload-chunk", data),
   uploadStatus: (params) => request.get("/video/upload-status", { params }),
   mergeChunks: (data) => request.post("/video/merge-chunks", data),
   update: (data) => request.put("/video/update", data),
+  uploadCover: (formData) => {
+    return request.post("/video/upload-cover", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
   delete: (params) => request.delete("/video/delete", { params }),
   like: () => request.post("/video/like"),
   unlike: () => request.delete("/video/like"),
@@ -30,6 +44,7 @@ export const videoApi = {
   listComments: (params) => request.get("/video/comments", { params }),
   deleteComment: (params) => request.delete("/video/comment", { params }),
   sendDanmaku: (data) => request.post("/video/danmaku", data),
+  getDanmakus: (params) => request.get("/video/danmakus", { params }),
 };
 
 export const searchApi = {

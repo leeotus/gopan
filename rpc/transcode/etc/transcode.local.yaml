@@ -1,6 +1,7 @@
 Name: transcode.rpc
 ListenOn: 0.0.0.0:8083
 Mode: dev
+MaxConns: 10000
 Etcd:
   Hosts:
   - 127.0.0.1:2379
@@ -22,3 +23,9 @@ Kafka:
   Brokers:
     - 127.0.0.1:9092
   TranscodeTopic: gopan.transcode.tasks
+
+Telemetry:
+  Name: transcode
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

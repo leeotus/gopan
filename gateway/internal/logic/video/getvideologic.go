@@ -3,6 +3,7 @@ package video
 
 import (
 	"context"
+	"strconv"
 
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
@@ -25,8 +26,8 @@ func NewGetVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetVideo
 	}
 }
 
-func (l *GetVideoLogic) GetVideo() (resp *types.VideoDetailResp, err error) {
-	videoId := int64(1) // TODO: from query param
+func (l *GetVideoLogic) GetVideo(videoIdStr string) (resp *types.VideoDetailResp, err error) {
+	videoId, _ := strconv.ParseInt(videoIdStr, 10, 64)
 	r, err := l.svcCtx.VideoClient.GetVideo(l.ctx, &videoclient.GetVideoReq{VideoId: videoId})
 	if err != nil {
 		return nil, err
@@ -37,22 +38,26 @@ func (l *GetVideoLogic) GetVideo() (resp *types.VideoDetailResp, err error) {
 	for _, t := range v.Transcodes {
 		transcodes = append(transcodes, types.TranscodeInfo{
 			Resolution: t.Resolution,
-			M3U8Url:    t.M3U8Url,
+			M3u8Url:    t.M3U8Url,
 			Bitrate:    int(t.Bitrate),
 		})
 	}
 	return &types.VideoDetailResp{
 		Video: types.VideoInfo{
-			Id:         v.Id,
-			Title:      v.Title,
-			CoverUrl:   v.CoverUrl,
-			UserId:     v.UserId,
-			PlayCount:  v.PlayCount,
-			LikeCount:  v.LikeCount,
-			Duration:   int(v.Duration),
-			Status:     int(v.Status),
-			CreatedAt:  v.CreatedAt,
-			Transcodes: transcodes,
+			Id:              v.Id,
+			Title:           v.Title,
+			CoverUrl:        v.CoverUrl,
+			UserId:          v.UserId,
+			PlayCount:       v.PlayCount,
+			LikeCount:       v.LikeCount,
+			Duration:        int(v.Duration),
+			Status:          int(v.Status),
+			Category:        v.Category,
+			Description:     v.Description,
+			AiSummary:       v.AiSummary,
+			AiSummaryStatus: int(v.AiSummaryStatus),
+			CreatedAt:       v.CreatedAt,
+			Transcodes:      transcodes,
 		},
 	}, nil
 }

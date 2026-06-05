@@ -21,6 +21,8 @@ import (
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
+	"github.com/zeromicro/go-zero/core/trace"
+	
 	"google.golang.org/grpc/reflection"
 )
 
@@ -31,11 +33,15 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	trace.StartAgent(c.Telemetry)
+	defer trace.StopAgent()
+
 
 	ctx := svc.NewServiceContext(c)
 
 	// 启动 Kafka Consumer（异步消费转码任务）
 	go consume.StartConsumer(context.Background(), ctx)
+	go consume.StartMergeConsumer(context.Background(), ctx)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		transcode.RegisterTranscodeServer(grpcServer, server.NewTranscodeServer(ctx))

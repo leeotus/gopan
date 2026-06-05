@@ -1,12 +1,10 @@
-// MergeChunksLogic 检查完整性 → 流式合并分片 → 发送 Kafka → 清理。
+// MergeChunksLogic 检查完整性 → 发 Kafka 异步合并 → 立即返回。
 package logic
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 
 	commonkafka "gopan/common/kafka"
 	"gopan/rpc/video/internal/svc"
@@ -41,52 +39,34 @@ func (l *MergeChunksLogic) MergeChunks(in *video.MergeChunksReq) (*video.MergeCh
 	}
 
 	if int32(count) < v.TotalChunks {
-		received, _ := l.svcCtx.UploadProgress.GetReceived(l.ctx, in.UploadId)
-		receivedSet := make(map[int32]bool)
-		for _, r := range received { receivedSet[r] = true }
-		var missing []int32
-		for i := int32(0); i < v.TotalChunks; i++ {
-			if !receivedSet[i] { missing = append(missing, i) }
-		}
-		return &video.MergeChunksResp{Status: "incomplete", MissingChunks: missing}, nil
+		return &video.MergeChunksResp{Status: "incomplete"}, nil
 	}
 
-	// 流式合并：从 MinIO 逐个下载分片 → 拼接 → 上传完整文件
+	// 构造 chunk key 列表
 	prefix := fmt.Sprintf("parts/%d", in.VideoId)
-	var buf bytes.Buffer
+	chunkKeys := make([]string, v.TotalChunks)
 	for i := int32(0); i < v.TotalChunks; i++ {
-		key := fmt.Sprintf(prefix+"/chunk_%d", i)
-		reader, err := l.svcCtx.MinioClient.GetObject(l.ctx, key)
-		if err != nil {
-			l.Logger.Errorf("minio get chunk error: key=%s err=%v", key, err)
-			return nil, status.Error(codes.Internal, "读取分片失败")
-		}
-		if _, err := io.Copy(&buf, reader); err != nil {
-			reader.Close()
-			return nil, status.Error(codes.Internal, "读取分片失败")
-		}
-		reader.Close()
+		chunkKeys[i] = fmt.Sprintf(prefix+"/chunk_%d", i)
 	}
 
-	destKey := fmt.Sprintf("videos/%d/source.mp4", in.VideoId)
-	if err := l.svcCtx.MinioClient.PutObject(l.ctx, destKey, bytes.NewReader(buf.Bytes()), int64(buf.Len()), "video/mp4"); err != nil {
-		l.Logger.Errorf("minio put merged video error: %v", err)
-		return nil, status.Error(codes.Internal, "合并视频失败")
+	// 发 Kafka 异步合并任务
+	task := commonkafka.MergeTask{
+		VideoId:   in.VideoId,
+		UploadId:  in.UploadId,
+		ChunkKeys: chunkKeys,
+		TotalChunks: v.TotalChunks,
 	}
-	l.Logger.Infof("merge completed: video_id=%d dest=%s size=%d", in.VideoId, destKey, buf.Len())
-
-	_ = l.svcCtx.VideoStore.UpdateStatus(l.ctx, in.VideoId, 1)
-	_ = l.svcCtx.UploadProgress.Clear(l.ctx, in.UploadId)
-
-	task := commonkafka.TranscodeTask{VideoId: in.VideoId, ObjectKey: destKey}
 	body, _ := json.Marshal(task)
-	key := []byte(fmt.Sprintf("video-%d", in.VideoId))
-	err = l.svcCtx.KafkaWriter.WriteMessages(l.ctx, kafkago.Message{Key: key, Value: body})
+	err = l.svcCtx.KafkaMergeWriter.WriteMessages(l.ctx, kafkago.Message{
+		Key:   []byte(fmt.Sprintf("merge-video-%d", in.VideoId)),
+		Value: body,
+	})
 	if err != nil {
-		l.Logger.Errorf("kafka write transcode task error: %v", err)
-	} else {
-		l.Logger.Infof("kafka transcode task sent: video_id=%d", in.VideoId)
+		l.Logger.Errorf("kafka write merge task error: %v", err)
+		return nil, status.Error(codes.Internal, "提交合并任务失败")
 	}
 
-	return &video.MergeChunksResp{Status: "complete", ObjectKey: destKey}, nil
+	l.Logger.Infof("kafka merge task sent: video_id=%d chunks=%d", in.VideoId, v.TotalChunks)
+
+	return &video.MergeChunksResp{Status: "complete", ObjectKey: fmt.Sprintf("videos/%d/source.mp4", in.VideoId)}, nil
 }
