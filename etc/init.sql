@@ -1,5 +1,7 @@
 -- GoPan VOD Platform - 数据库初始化脚本
 
+USE gopan;
+
 -- 用户表
 CREATE TABLE IF NOT EXISTS `users` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,

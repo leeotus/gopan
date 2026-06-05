@@ -3,6 +3,7 @@ build/
 *.exe
 *.test
 *.out
+__debug_bin*
 
 # ─── 依赖 ───
 vendor/
@@ -42,5 +43,6 @@ docker-compose.override.yml
 
 # ─── VSCode ───
 .vscode/settings.json
+__debug_bin*
 
 .venv
