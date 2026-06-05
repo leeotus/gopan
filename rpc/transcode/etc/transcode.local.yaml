@@ -23,9 +23,12 @@ Kafka:
   Brokers:
     - 127.0.0.1:9092
   TranscodeTopic: gopan.transcode.tasks
-
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
 Telemetry:
   Name: transcode
-  Endpoint: http://127.0.0.1:14268/api/traces
+  Endpoint: http://127.0.0.1:4318
   Sampler: 1.0
-  Batcher: jaeger
+  Batcher: otlphttp
