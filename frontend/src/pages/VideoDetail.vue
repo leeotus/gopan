@@ -15,7 +15,40 @@
         <span>{{ formatTime(video.created_at) }}</span>
         <span v-if="video.category" class="tag tag-cyan">{{ video.category }}</span>
       </div>
-      <p class="video-desc" v-if="video.description">{{ video.description }}</p>
+
+      <!-- 1. 原创视频简介（永远处于顶端保全层） -->
+      <p class="video-desc" :class="{ 'desc-empty': !video.description }">
+        {{ video.description || "🚀 该视频目前暂无作者简介。你可以试用顶端的 GoPan AI 智能语义检索，输入任何关于视频画面的长句（如“一只小狗在沙滩上冲浪”），AI 即可帮你直接跨越障碍搜索定位到该视频！" }}
+      </p>
+
+      <!-- 2. AI 智能听译总结区域（始终保持常驻显示，内嵌平滑状态切换，保障零布局偏置抖动） -->
+      <div class="ai-summary-box">
+        <div class="ai-summary-header">
+          <span class="ai-badge-neon">🤖 AI 语音听译大纲摘要</span>
+          <!-- 动感闪烁信标：在听译计算中处于红蓝交替闪烁，计算完化身常规信号灯 -->
+          <div class="pulse-spark" :class="{ 'spark-active': aiSummaryStatus === 1 || aiSummaryStatus === 0 }"></div>
+        </div>
+
+        <!-- 子状态 A：AI 仍在分析音频中（status=1 生成中 或 0 等待入队） -->
+        <div v-if="aiSummaryStatus === 1 || aiSummaryStatus === 0" class="ai-loading-container">
+          <div class="skeleton-bar bar-long"></div>
+          <div class="skeleton-bar bar-medium"></div>
+          <div class="skeleton-bar bar-short"></div>
+          <p class="loading-subtext">
+            🤖 AI 正在后台听译音轨并生成摘要，请稍候...（一般需要几十秒到几分钟，完成后会自动刷新）
+          </p>
+        </div>
+
+        <!-- 子状态 B：摘要已就绪（status=2），流式打字机输出 -->
+        <p v-else-if="aiSummaryStatus === 2" class="ai-summary-text">
+          {{ typewriterText }}
+        </p>
+
+        <!-- 子状态 C：摘要生成失败（status=3） -->
+        <div v-else-if="aiSummaryStatus === 3" class="ai-failed-container">
+          <p class="ai-failed-text">❌ AI 摘要生成失败。可能是 Whisper 服务暂时不可用，请稍后刷新页面重试。</p>
+        </div>
+      </div>
     </div>
 
     <!-- Action bar -->
@@ -78,6 +111,17 @@ const comments = ref([]);
 const commentText = ref("");
 const danmakuText = ref("");
 const commentsEl = ref(null);
+
+// AI 智能听译总结相关状态
+// aiSummaryStatus: 0=未生成 1=生成中 2=已完成 3=失败
+const aiSummaryStatus = ref(0);
+const aiSummary = ref("");
+const typewriterText = ref("");
+let typewriterTimer = null;
+let aiPollTimer = null;
+const AI_POLL_INTERVAL = 5000; // 5 秒轮询一次
+const AI_POLL_MAX = 120;       // 最多轮询 10 分钟（120 * 5s），避免无限请求
+let aiPollCount = 0;
 
 // ── Danmaku system ──
 const danmakuPool = new Map();
@@ -198,6 +242,11 @@ function connectDanmakuWS(videoId) {
 onMounted(async () => {
   await videoStore.fetchDetail(Number(route.params.id));
   video.value = videoStore.currentVideo;
+  
+  if (video.value) {
+    initAISummary(video.value);
+  }
+
   if (video.value && videoEl.value) {
     const transcodes = video.value.transcodes || [];
     if (transcodes.length) {
@@ -231,6 +280,8 @@ onMounted(async () => {
 onUnmounted(() => {
   if (saveProgressTimer) clearInterval(saveProgressTimer); savePlayProgress();
   if (ws) ws.close(); if (renderRaf) cancelAnimationFrame(renderRaf);
+  if (typewriterTimer) clearInterval(typewriterTimer);
+  if (aiPollTimer) clearInterval(aiPollTimer);
   if (videoEl.value) { videoEl.value.removeEventListener("timeupdate", onVideoTimeUpdate); videoEl.value.removeEventListener("seeked", onVideoSeeked); }
   danmakuPool.clear(); loadedSegments.clear(); flyingDanmakus.length = 0;
 });
@@ -268,6 +319,86 @@ async function fetchComments() {
   } catch {}
 }
 function scrollToComments() { commentsEl.value?.scrollIntoView({ behavior: "smooth" }); }
+
+// AI 智能转译大纲：
+// 不再"一进页面就同步等待 Whisper 跑完"，而是按视频自带的 ai_summary_status 字段进行分支处理。
+// status=2：直接展示已有摘要，跑打字机。
+// status=0/1：等待中，启动 5s 轮询，直到完成或失败为止。
+// status=3：展示失败提示。
+function initAISummary(v) {
+  // 同步当前状态到响应式变量
+  aiSummaryStatus.value = Number(v.ai_summary_status ?? 0);
+  aiSummary.value = v.ai_summary || "";
+
+  if (aiSummaryStatus.value === 2 && aiSummary.value) {
+    startTypewriter(aiSummary.value);
+    return;
+  }
+  if (aiSummaryStatus.value === 0 || aiSummaryStatus.value === 1) {
+    startAISummaryPoll(v.id);
+  }
+  // status === 3 直接由模板渲染失败 UI，无需轮询
+}
+
+function startAISummaryPoll(videoId) {
+  if (aiPollTimer) clearInterval(aiPollTimer);
+  aiPollCount = 0;
+  aiPollTimer = setInterval(async () => {
+    aiPollCount++;
+    if (aiPollCount > AI_POLL_MAX) {
+      clearInterval(aiPollTimer);
+      aiPollTimer = null;
+      console.warn("[AI Analyze] polling timeout, give up");
+      return;
+    }
+    try {
+      const token = auth.token || localStorage.getItem("token");
+      const res = await axios.post("/api/video/ai-analyze", { video_id: videoId }, {
+        headers: token ? { Authorization: "Bearer " + token } : {},
+      });
+      const data = res.data?.data || res.data || {};
+      const status = Number(data.status ?? 0);
+      const summary = data.summary || "";
+
+      aiSummaryStatus.value = status;
+
+      if (status === 2 && summary) {
+        aiSummary.value = summary;
+        // 同步回 video 对象，方便其他地方使用
+        if (video.value) {
+          video.value.ai_summary = summary;
+          video.value.ai_summary_status = 2;
+        }
+        startTypewriter(summary);
+        clearInterval(aiPollTimer);
+        aiPollTimer = null;
+      } else if (status === 3) {
+        // 失败：停止轮询，UI 渲染失败状态
+        clearInterval(aiPollTimer);
+        aiPollTimer = null;
+      }
+      // status 0 / 1：继续轮询
+    } catch (err) {
+      console.error("[AI Analyze] poll error:", err);
+      // 单次失败不中断轮询，等下次再试
+    }
+  }, AI_POLL_INTERVAL);
+}
+
+function startTypewriter(fullText) {
+  if (typewriterTimer) clearInterval(typewriterTimer);
+  typewriterText.value = "";
+  let idx = 0;
+  typewriterTimer = setInterval(() => {
+    if (idx < fullText.length) {
+      typewriterText.value += fullText[idx];
+      idx++;
+    } else {
+      clearInterval(typewriterTimer);
+      typewriterTimer = null;
+    }
+  }, 35); // 逐字流式打字输出
+}
 </script>
 
 <style scoped>
@@ -277,7 +408,61 @@ function scrollToComments() { commentsEl.value?.scrollIntoView({ behavior: "smoo
 .video-title { font-size: 18px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; }
 .info-row { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .dot { color: var(--border); }
-.video-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.video-desc { font-size: 13px; color: var(--text-secondary); line-line-height: 1.6; }
+.video-desc.desc-empty { font-style: italic; color: var(--text-muted); opacity: 0.8; font-size: 11.5px; border-left: 2px solid var(--border); padding-left: 10px; margin-top: 10px; line-height: 1.5; }
+
+/* AI Summary Display Box below author description */
+.ai-summary-box {
+  margin-top: 14px;
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px dashed rgba(0, 240, 255, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.02);
+}
+.ai-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ai-badge-neon {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  font-weight: bold;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.1);
+}
+.ai-summary-text {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.ai-loading-container {
+  margin-top: 10px;
+}
+.loading-subtext {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 8px;
+  animation: spark-blink 1.2s infinite alternate;
+}
+.pulse-spark.spark-active {
+  animation: spark-blink 0.8s infinite alternate;
+}
+@keyframes ai-pulse-anim {
+  0% { text-shadow: 0 0 5px rgba(0,240,255,0.05); opacity: 0.7; }
+  50% { text-shadow: 0 0 12px rgba(0,240,255,0.45); opacity: 1.0; color: var(--cyan); }
+  100% { text-shadow: 0 0 5px rgba(0,240,255,0.05); opacity: 0.7; }
+}
+.ai-pulse {
+  animation: ai-pulse-anim 1.6s infinite ease-in-out;
+  font-weight: 500;
+}
 .action-bar { margin: 10px 14px; display: flex; justify-content: space-around; padding: 12px 0; }
 .action-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color var(--duration); }
 .action-btn.active { color: var(--pink); }
@@ -293,4 +478,74 @@ function scrollToComments() { commentsEl.value?.scrollIntoView({ behavior: "smoo
 .comment-user { font-size: 13px; font-weight: 600; }
 .comment-time { font-size: 10px; color: var(--text-muted); }
 .comment-body { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+/* AI Premium Neon Skeleton Card */
+.ai-skeleton-card {
+  margin-top: 12px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+.ai-skeleton-card::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.2), transparent);
+  transform: translateX(-100%);
+  animation: shimmer-anim 1.8s infinite;
+}
+@keyframes shimmer-anim {
+  100% { transform: translateX(100%); }
+}
+.ai-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.ai-chip-groping {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+}
+.pulse-spark {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #9d4edd;
+  box-shadow: 0 0 8px #9d4edd;
+  animation: spark-blink 1s infinite alternate;
+}
+@keyframes spark-blink {
+  0% { transform: scale(0.8); background: #9d4edd; opacity: 0.5; }
+  100% { transform: scale(1.3); background: #00f0ff; box-shadow: 0 0 12px #00f0ff; opacity: 1; }
+}
+.skeleton-bar {
+  height: 8px;
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.skeleton-bar.bar-long { width: 90%; }
+.skeleton-bar.bar-medium { width: 75%; }
+.skeleton-bar.bar-short { width: 40%; margin-bottom: 0; }
+.ai-failed-container {
+  margin-top: 6px;
+}
+.ai-failed-text {
+  font-size: 12px;
+  color: #ff6b9d;
+  line-height: 1.5;
+  font-style: italic;
+}
 </style>

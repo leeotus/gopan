@@ -172,19 +172,22 @@ type VideoDetailResp struct {
 }
 
 type VideoInfo struct {
-	Id         int64           `json:"id"`
-	Title      string          `json:"title"`
-	CoverUrl   string          `json:"cover_url"`
-	UserId     int64           `json:"user_id"`
-	Username   string          `json:"username"`
-	PlayCount  int64           `json:"play_count"`
-	LikeCount  int64           `json:"like_count"`
-	Duration   int             `json:"duration"`
-	Status     int             `json:"status"`
-	Category   string          `json:"category,optional"`
-		CreatedAt  int64           `json:"created_at"`
-		Transcodes []TranscodeInfo `json:"transcodes,optional"`
-	}
+	Id              int64           `json:"id"`
+	Title           string          `json:"title"`
+	CoverUrl        string          `json:"cover_url"`
+	UserId          int64           `json:"user_id"`
+	Username        string          `json:"username"`
+	PlayCount       int64           `json:"play_count"`
+	LikeCount       int64           `json:"like_count"`
+	Duration        int             `json:"duration"`
+	Status          int             `json:"status"`
+	Category        string          `json:"category,optional"`
+	Description     string          `json:"description,optional"`
+	AiSummary       string          `json:"ai_summary,optional"`
+	AiSummaryStatus int             `json:"ai_summary_status,optional"`
+	CreatedAt       int64           `json:"created_at"`
+	Transcodes      []TranscodeInfo `json:"transcodes,optional"`
+}
 
 	// --- 管理员相关类型 ---
 	type AdminVideoInfo struct {
@@ -203,4 +206,13 @@ type VideoInfo struct {
 		NextCursor int64            `json:"next_cursor"`
 		HasMore    bool             `json:"has_more"`
 	}
+
+type AIAnalyzeReq struct {
+	VideoId int64 `json:"video_id"`
+}
+
+type AIAnalyzeResp struct {
+	Status  int    `json:"status"`  // 0:未生成 1:生成中 2:已完成 3:失败
+	Summary string `json:"summary"` // status=2 时有内容
+}
 	

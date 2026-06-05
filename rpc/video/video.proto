@@ -111,6 +111,10 @@ message VideoInfo {
   int32 status = 9;          // 0:上传中 1:转码中 2:正常 3:失败 4:已下架
   int64 created_at = 10;
   repeated TranscodeInfo transcodes = 11;
+  string description = 12;   // 视频简介（用户上传时的原始内容）
+  string category = 13;      // 视频分类
+  string ai_summary = 14;    // AI 听译生成的摘要文本（仅前端展示用）
+  int32 ai_summary_status = 15; // 0:未生成 1:生成中 2:已完成 3:失败
 }
 
 message TranscodeInfo {

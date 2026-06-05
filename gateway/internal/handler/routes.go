@@ -28,21 +28,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/videos",
 				Handler: admin.AdminListVideosHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/approve",
-				Handler: admin.ApproveVideoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/reject",
-				Handler: admin.RejectVideoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodDelete,
-				Path:    "/video",
-				Handler: admin.DeleteVideoHandler(serverCtx),
-			},
 		},
 		rest.WithPrefix("/api/admin"),
 	)
@@ -58,58 +43,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		rest.WithPrefix("/api/search"),
 	)
 
-	// 测试路由：与 /api/video/list 完全一致，但不挂限流中间件，用于压测对比
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/list",
-				Handler: video.ListVideosHandler(serverCtx),
-			},
-		},
-		rest.WithPrefix("/api/test"),
-	)
-
-	// POST /play-progress 不走 Auth 中间件（sendBeacon 无法带自定义 header）
 	server.AddRoutes(
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/play-progress",
-				Handler: video.SavePlayProgressHandler(serverCtx),
+				Path:    "/login",
+				Handler: user.LoginHandler(serverCtx),
 			},
-		},
-		rest.WithPrefix("/api/video"),
-	)
-
-	// 视频列表和详情公开访问（带限流保护）
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.RateLimiterList},
-			rest.Route{Method: http.MethodGet, Path: "/list", Handler: video.ListVideosHandler(serverCtx)},
-		),
-		rest.WithPrefix("/api/video"),
-	)
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.RateLimiterDetail},
-			rest.Route{Method: http.MethodGet, Path: "/detail", Handler: video.GetVideoHandler(serverCtx)},
-		),
-		rest.WithPrefix("/api/video"),
-	)
-
-	// 登录: 公开访问但需要防撞库限流
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.RateLimiterLogin},
-			rest.Route{Method: http.MethodPost, Path: "/login", Handler: user.LoginHandler(serverCtx)},
-			rest.Route{Method: http.MethodPost, Path: "/register", Handler: user.RegisterHandler(serverCtx)},
-		),
-		rest.WithPrefix("/api/user"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
 			{
 				Method:  http.MethodGet,
 				Path:    "/profile",
@@ -120,14 +60,35 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/profile",
 				Handler: user.UpdateProfileHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/register",
+				Handler: user.RegisterHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/api/user"),
 	)
 
 	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.Auth},
 			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/list",
+					Handler: video.ListVideosHandler(serverCtx),
+				},
+			},
+			rest.WithPrefix("/api/video"),
+		)
+
+	server.AddRoutes(
+			rest.WithMiddlewares(
+				[]rest.Middleware{serverCtx.Auth},
+				[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/ai-analyze",
+					Handler: video.AIAnalyzeHandler(serverCtx),
+				},
 				{
 					Method:  http.MethodPost,
 					Path:    "/comment",
@@ -137,11 +98,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodDelete,
 					Path:    "/comment",
 					Handler: video.DeleteCommentHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/upload-cover",
-					Handler: video.UploadCoverHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodGet,
@@ -154,17 +110,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.SendDanmakuHandler(serverCtx),
 				},
 				{
-					Method:  http.MethodGet,
-					Path:    "/danmakus",
-					Handler: video.GetDanmakusHandler(serverCtx),
-				},
-				{
 					Method:  http.MethodDelete,
 					Path:    "/delete",
 					Handler: video.DeleteVideoHandler(serverCtx),
 				},
-					{
-						Method:  http.MethodPost,
+				{
+					Method:  http.MethodGet,
+					Path:    "/detail",
+					Handler: video.GetVideoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
 					Path:    "/favorite",
 					Handler: video.FavoriteVideoHandler(serverCtx),
 				},
@@ -188,16 +144,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/like",
 					Handler: video.UnlikeVideoHandler(serverCtx),
 				},
-					{
-						Method:  http.MethodPost,
-						Path:    "/merge-chunks",
+				{
+					Method:  http.MethodPost,
+					Path:    "/merge-chunks",
 					Handler: video.MergeChunksHandler(serverCtx),
 				},
-					{
-						Method:  http.MethodGet,
-						Path:    "/play-progress",
-						Handler: video.GetPlayProgressHandler(serverCtx),
-					},
+				{
+					Method:  http.MethodPost,
+					Path:    "/play-progress",
+					Handler: video.SavePlayProgressHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/play-progress",
+					Handler: video.GetPlayProgressHandler(serverCtx),
+				},
 				{
 					Method:  http.MethodGet,
 					Path:    "/play-url",
@@ -214,9 +175,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: video.UploadChunkHandler(serverCtx),
 				},
 				{
+					Method:  http.MethodPost,
+					Path:    "/upload-cover",
+					Handler: video.UploadCoverHandler(serverCtx),
+				},
+				{
 					Method:  http.MethodGet,
 					Path:    "/upload-status",
 					Handler: video.UploadStatusHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/danmakus",
+					Handler: video.GetDanmakusHandler(serverCtx),
 				},
 			}...,
 		),

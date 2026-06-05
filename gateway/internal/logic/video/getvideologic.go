@@ -44,16 +44,20 @@ func (l *GetVideoLogic) GetVideo(videoIdStr string) (resp *types.VideoDetailResp
 	}
 	return &types.VideoDetailResp{
 		Video: types.VideoInfo{
-			Id:         v.Id,
-			Title:      v.Title,
-			CoverUrl:   v.CoverUrl,
-			UserId:     v.UserId,
-			PlayCount:  v.PlayCount,
-			LikeCount:  v.LikeCount,
-			Duration:   int(v.Duration),
-			Status:     int(v.Status),
-			CreatedAt:  v.CreatedAt,
-			Transcodes: transcodes,
+			Id:              v.Id,
+			Title:           v.Title,
+			CoverUrl:        v.CoverUrl,
+			UserId:          v.UserId,
+			PlayCount:       v.PlayCount,
+			LikeCount:       v.LikeCount,
+			Duration:        int(v.Duration),
+			Status:          int(v.Status),
+			Category:        v.Category,
+			Description:     v.Description,
+			AiSummary:       v.AiSummary,
+			AiSummaryStatus: int(v.AiSummaryStatus),
+			CreatedAt:       v.CreatedAt,
+			Transcodes:      transcodes,
 		},
 	}, nil
 }

@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY . .
 
-# 编译所有服务
+# build cache bust: 2026-06-05-12-50
 RUN CGO_ENABLED=0 GOOS=linux go build -o /build/gateway ./gateway/
 RUN CGO_ENABLED=0 GOOS=linux go build -o /build/user-svc ./rpc/user/
 RUN CGO_ENABLED=0 GOOS=linux go build -o /build/video-svc ./rpc/video/

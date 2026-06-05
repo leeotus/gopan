@@ -24,9 +24,14 @@ Kafka:
     - 127.0.0.1:9092
   TranscodeTopic: gopan.transcode.tasks
   MergeTopic: gopan.video.merge.tasks
+  SummaryTopic: gopan.video.summary.tasks
 UploadRedis:
   Host: 127.0.0.1:6379
   Pass: ""
+SummaryAI:
+  URL: http://127.0.0.1:9920
+  MinIO: http://127.0.0.1:9000/gopan-videos
+  Timeout: 300
 Telemetry:
   Name: video-svc
   Endpoint: 127.0.0.1:4318

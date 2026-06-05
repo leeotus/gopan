@@ -1,6 +1,7 @@
 Name: gateway
 Host: 0.0.0.0
 Port: 8888
+Timeout: 60000
 Mode: dev
 MaxBytes: 104857600
 Log:
