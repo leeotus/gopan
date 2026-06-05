@@ -70,9 +70,20 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.Auth},
 			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/list",
+					Handler: video.ListVideosHandler(serverCtx),
+				},
+			},
+			rest.WithPrefix("/api/video"),
+		)
+
+	server.AddRoutes(
+			rest.WithMiddlewares(
+				[]rest.Middleware{serverCtx.Auth},
+				[]rest.Route{
 				{
 					Method:  http.MethodPost,
 					Path:    "/ai-analyze",
@@ -132,11 +143,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodDelete,
 					Path:    "/like",
 					Handler: video.UnlikeVideoHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/list",
-					Handler: video.ListVideosHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodPost,
