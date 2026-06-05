@@ -1,6 +1,7 @@
 Name: admin.rpc
 ListenOn: 0.0.0.0:8087
 Mode: dev
+MaxConns: 10000
 Etcd:
   Hosts:
   - etcd:2379
@@ -10,3 +11,12 @@ DB:
 JWT:
   AccessSecret: "gopan-secret-key-change-in-production"
   AccessExpire: 86400
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
+Telemetry:
+  Name: admin-svc
+  Endpoint: jaeger:4318
+  Sampler: 1.0
+  Batcher: otlphttp

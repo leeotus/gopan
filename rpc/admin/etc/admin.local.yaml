@@ -11,3 +11,12 @@ DB:
 JWT:
   AccessSecret: "gopan-secret-key-change-in-production"
   AccessExpire: 86400
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
+Telemetry:
+  Name: admin
+  Endpoint: http://127.0.0.1:4318
+  Sampler: 1.0
+  Batcher: otlphttp
