@@ -21,7 +21,7 @@ func GetPlayUrlHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := video.NewGetPlayUrlLogic(r.Context(), svcCtx)
-		resp, err := l.GetPlayUrl(&req)
+		resp, err := l.GetPlayUrl(r, &req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

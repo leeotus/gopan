@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>deploy_multi_machine.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="gopan-多机部署指南">GoPan 多机部署指南</h1>
+<h2 id="为什么需要多机部署">为什么需要多机部署</h2>
+<p>GoPan 当前所有服务跑在一台机器上，适用于开发和低流量场景。当用户量增加时，需要把服务拆到多台机器：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>单机</th>
+<th>多机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单点故障</td>
+<td>挂了全站不可用</td>
+<td>单台挂了不影响</td>
+</tr>
+<tr>
+<td>资源竞争</td>
+<td>MySQL/Redis/ES/FFmpeg 共享 CPU</td>
+<td>各服务独立资源</td>
+</tr>
+<tr>
+<td>弹性扩容</td>
+<td>只能升级配置</td>
+<td>按需加机器</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="部署架构">部署架构</h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    INTERNET[互联网]
+    NGINX_OUTER["<b>外层 Nginx</b><br/>机器 A（公网入口）<br/>• HTTPS 终止<br/>• 域名解析<br/>• 全局限流"]
+
+    GW1["<b>Gateway-1</b><br/>机器 B<br/>:8888"]
+    GW2["<b>Gateway-2</b><br/>机器 C<br/>:8888"]
+    GW3["<b>Gateway-3</b><br/>机器 D<br/>:8888"]
+
+    ETCD["<b>etcd 集群</b><br/>服务发现"]
+
+    VIDEO["<b>video-svc × 3</b><br/>机器 E/F/G"]
+    USER["<b>user-svc × 2</b><br/>机器 E"]
+    INTERACT["<b>interact-svc × 2</b><br/>机器 F"]
+    OTHERS["<b>其他 RPC 服务</b><br/>stream / transcode<br/>search / admin"]
+
+    INTERNET --> NGINX_OUTER
+    NGINX_OUTER --> GW1 & GW2 & GW3
+    GW1 & GW2 & GW3 --> ETCD
+    ETCD --> VIDEO & USER & INTERACT & OTHERS
+</div></code></pre>
+<hr>
+<h2 id="服务发现与负载均衡流程">服务发现与负载均衡流程</h2>
+<h3 id="启动阶段rpc-服务注册到-etcd">启动阶段：RPC 服务注册到 etcd</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant V1 as video-svc-1<br/>192.168.1.10:8082
+    participant V2 as video-svc-2<br/>192.168.1.11:8082
+    participant ETCD as etcd 集群
+    participant GW as Gateway
+
+    V1->>ETCD: 注册 /video.rpc → 10:8082
+    V2->>ETCD: 注册 /video.rpc → 11:8082
+    GW->>ETCD: 查询 "/video.rpc" 有哪些节点？
+    ETCD-->>GW: [10:8082, 11:8082]
+    GW->>GW: 建立到两个节点的 gRPC 连接池
+</div></code></pre>
+<h3 id="请求阶段自动负载均衡">请求阶段：自动负载均衡</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant Client as 浏览器
+    participant GW as Gateway
+    participant ETCD as etcd
+    participant V1 as video-svc-1
+    participant V2 as video-svc-2
+
+    Client->>GW: 请求 1: GET /api/video/list
+    GW->>GW: 轮询选择 video-svc-1
+    GW->>V1: gRPC ListVideos()
+    V1-->>GW: response
+    GW-->>Client: JSON
+
+    Client->>GW: 请求 2: GET /api/video/list
+    GW->>GW: 轮询选择 video-svc-2
+    GW->>V2: gRPC ListVideos()
+    V2-->>GW: response
+    GW-->>Client: JSON
+
+    Client->>GW: 请求 3: GET /api/video/list
+    GW->>GW: 轮询回到 video-svc-1
+    GW->>V1: gRPC ListVideos()
+    V1-->>GW: response
+    GW-->>Client: JSON
+</div></code></pre>
+<h3 id="故障阶段自动摘除">故障阶段：自动摘除</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant V1 as video-svc-1 ❌ 宕机
+    participant V2 as video-svc-2
+    participant ETCD as etcd
+    participant GW as Gateway
+    participant Client as 浏览器
+
+    V1--xETCD: 心跳断开
+    ETCD->>ETCD: 移除 /video.rpc 中的 10:8082
+    GW->>ETCD: 订阅变更通知
+    ETCD-->>GW: 节点变更: 只剩 [11:8082]
+    GW->>GW: 从连接池移除 video-svc-1
+
+    Client->>GW: GET /api/video/list
+    GW->>V2: 直接发到 video-svc-2
+    V2-->>GW: response
+    GW-->>Client: JSON (完全无感知)
+</div></code></pre>
+<hr>
+<h2 id="各层配置要点">各层配置要点</h2>
+<h3 id="1-etcd-集群">1. etcd 集群</h3>
+<ul>
+<li><strong>必须部署独立机器或多台</strong>（至少 3 节点保证高可用）</li>
+<li>所有服务的 etcd 地址指向同一集群</li>
+<li>每个 RPC 服务使用相同的 <code>Key</code> 注册（如 <code>video.rpc</code>）</li>
+</ul>
+<h3 id="2-gateway-层">2. Gateway 层</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>etcd:2379</code></td>
+<td>指向 etcd 集群地址</td>
+</tr>
+<tr>
+<td><code>Key: video.rpc</code></td>
+<td>通过 etcd 发现所有 video-svc 实例</td>
+</tr>
+<tr>
+<td><code>MaxConns: 10000</code></td>
+<td>每个 gateway 实例的最大并发连接数</td>
+</tr>
+<tr>
+<td>负载均衡</td>
+<td>go-zero 内置，自动轮询所有 RPC 实例</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gateway 本身不需要在 etcd 注册</strong>——它是 HTTP 入口，由外层 Nginx 做负载均衡。</p>
+<h3 id="3-rpc-服务层">3. RPC 服务层</h3>
+<p>每个 RPC 服务可部署多份，只需在 yaml 中保持 <code>Etcd.Key</code> 一致：</p>
+<pre class="hljs"><code><div><span class="hljs-comment"># 机器 E 上的 video-svc</span>
+<span class="hljs-attr">Etcd:</span>
+  <span class="hljs-attr">Hosts:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">etcd:2379</span>
+  <span class="hljs-attr">Key:</span> <span class="hljs-string">video.rpc</span>   <span class="hljs-comment"># ← 关键：多实例必须用相同的 Key</span>
+
+<span class="hljs-comment"># 机器 F 上的 video-svc</span>
+<span class="hljs-attr">Etcd:</span>
+  <span class="hljs-attr">Hosts:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">etcd:2379</span>
+  <span class="hljs-attr">Key:</span> <span class="hljs-string">video.rpc</span>   <span class="hljs-comment"># ← 相同的 Key</span>
+</div></code></pre>
+<h3 id="4-中间件">4. 中间件</h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>部署方式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MySQL</td>
+<td>独立机器/云数据库</td>
+<td>所有服务连接同一数据库</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>独立机器/云 Redis</td>
+<td>缓存 + Pub/Sub + 限流</td>
+</tr>
+<tr>
+<td>MinIO</td>
+<td>独立机器/云对象存储</td>
+<td>视频文件存储</td>
+</tr>
+<tr>
+<td>Kafka</td>
+<td>3 节点集群（最小）</td>
+<td>转码任务削峰</td>
+</tr>
+<tr>
+<td>Elasticsearch</td>
+<td>独立机器</td>
+<td>视频搜索</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="水平扩展表">水平扩展表</h2>
+<table>
+<thead>
+<tr>
+<th>服务</th>
+<th>扩展策略</th>
+<th>触发条件</th>
+<th>新实例需要改什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway</td>
+<td>增加机器</td>
+<td>CPU &gt; 70% 或 QPS 接近 MaxConns</td>
+<td>不改代码，改外层 Nginx upstream</td>
+</tr>
+<tr>
+<td>video-svc</td>
+<td>增加机器</td>
+<td>MySQL 连接池耗尽或延迟增大</td>
+<td>不改代码，yaml 中 <code>Etcd.Key</code> 相同即可</td>
+</tr>
+<tr>
+<td>user-svc</td>
+<td>增加机器</td>
+<td>同上</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>interact-svc</td>
+<td>增加机器</td>
+<td>弹幕/评论写入延迟增大</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>transcode-svc</td>
+<td>增加机器</td>
+<td>Kafka 消费 lag 持续增长</td>
+<td>不改代码，加入同一 Consumer Group</td>
+</tr>
+<tr>
+<td>stream-svc</td>
+<td>增加机器</td>
+<td>播放 URL 请求量过大</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="cdn-与-hls-缓存三层缓存架构">CDN 与 HLS 缓存：三层缓存架构</h2>
+<h3 id="概念澄清">概念澄清</h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>是什么</th>
+<th>部署在哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CDN（Content Delivery Network）</strong></td>
+<td>全球分布的缓存节点网络，离用户最近的节点提供内容</td>
+<td>各地区节点（北京、上海、东京等）</td>
+</tr>
+<tr>
+<td><strong>源站 Nginx proxy_cache</strong></td>
+<td>源站本地磁盘缓存，减少后端 MinIO 的请求压力</td>
+<td>你的 Gateway 机器上</td>
+</tr>
+<tr>
+<td><strong>回源</strong></td>
+<td>CDN 节点没有缓存时，回到你的源站拉取文件</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>项目中的 <code>nginx.conf</code> 配置的 proxy_cache 不是 CDN，而是源站侧的本地缓存层</strong>——用于加速 CDN 回源请求。</p>
+<h3 id="三层缓存架构">三层缓存架构</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    USER["<b>用户浏览器</b><br/>（世界各地）"]
+
+    CDN["<b>CDN 边缘节点</b><br/>（各地区部署）<br/>缓存 .ts / .m3u8<br/>命中率 95%+<br/>延迟 < 5ms"]
+
+    SOURCE_NGINX["<b>源站外层 Nginx</b><br/>（你的机器）<br/>HTTPS 终止 + 域名解析"]
+
+    SOURCE_CACHE["<b>源站内层 Nginx proxy_cache</b><br/>（Gateway 机器本地磁盘）<br/>缓存 HLS 切片<br/>延迟 < 1ms"]
+
+    MINIO["<b>MinIO 对象存储</b><br/>最终数据源"]
+
+    USER -->|"MISS 时回源"| CDN
+    CDN -->|"MISS 时回源"| SOURCE_NGINX
+    SOURCE_NGINX --> SOURCE_CACHE
+    SOURCE_CACHE -->|"MISS 时回源"| MINIO
+</div></code></pre>
+<h3 id="各层职责">各层职责</h3>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>缓存位置</th>
+<th>命中后延迟</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CDN 边缘节点</td>
+<td>全球各数据中心</td>
+<td>&lt; 5ms</td>
+<td>离用户最近，减少跨地域网络延迟</td>
+</tr>
+<tr>
+<td>源站 proxy_cache</td>
+<td>源站本地磁盘</td>
+<td>&lt; 1ms</td>
+<td>减少 MinIO 请求，CDN 回源时加速</td>
+</tr>
+<tr>
+<td>MinIO</td>
+<td>源站 Docker 容器</td>
+<td>~10ms</td>
+<td>视频文件的最终存储</td>
+</tr>
+</tbody>
+</table>
+<h3 id="请求流程">请求流程</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant U as 用户（北京）
+    participant CDN as CDN 北京节点
+    participant NGINX as 源站 Nginx
+    participant CACHE as 源站 proxy_cache
+    participant MINIO as MinIO
+
+    U->>CDN: GET /videos/5/1080p/segment_000.ts
+    alt CDN 有缓存
+        CDN-->>U: 直接从北京节点返回（< 5ms）
+    else CDN 缓存 MISS
+        CDN->>NGINX: 回源请求
+        NGINX->>CACHE: 检查本地磁盘缓存
+        alt 源站有缓存
+            CACHE-->>NGINX: 命中（< 1ms）
+        else 源站缓存 MISS
+            NGINX->>MINIO: 从对象存储读取
+            MINIO-->>CACHE: 写入磁盘缓存
+        end
+        NGINX-->>CDN: 返回 .ts 文件
+        CDN-->>U: 返回给用户 + CDN 缓存此文件
+    end
+</div></code></pre>
+<h3 id="为什么需要三层缓存">为什么需要三层缓存</h3>
+<ol>
+<li><strong>CDN 边缘节点</strong>（第一层）：用户离源站可能很远（北京↔深圳），CDN 把内容拉到离用户最近的节点，延迟从 50ms 降到 5ms</li>
+<li><strong>源站 proxy_cache</strong>（第二层）：如果 CDN 有 10 个边缘节点都缓存 MISS，源站只需要从 MinIO 取一次，其余 9 次从本地磁盘返回——保护 MinIO 不被大量并发回源请求打崩</li>
+<li><strong>MinIO</strong>（第三层）：最终数据源，只在缓存全部 MISS 时才被访问</li>
+</ol>
+<h3 id="当前项目的实现">当前项目的实现</h3>
+<p>项目中的 <code>nginx/nginx.conf</code> 已配置 <code>proxy_cache</code> 作为源站本地缓存。CDN 边缘节点需要在外部 CDN 服务商（阿里云 CDN / Cloudflare）配置，将源站指向你的域名即可。</p>
+<hr>
+<h2 id="外层-nginx-vs-内层-nginx">外层 Nginx vs 内层 Nginx</h2>
+<p>两者都部署在你自己的机器上（与 CDN 不同，CDN 是外部服务商部署在全球各地的机器）。区别在于<strong>职责和位置</strong>：</p>
+<h3 id="对比">对比</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>外层 Nginx</th>
+<th>内层 Nginx</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>部署位置</strong></td>
+<td>公网入口机器（机器 A）</td>
+<td>每台 Gateway 机器上（机器 B/C/D）</td>
+</tr>
+<tr>
+<td><strong>数量</strong></td>
+<td>1-2 台（主 + 备）</td>
+<td>Gateway 有几台就有几台</td>
+</tr>
+<tr>
+<td><strong>面对谁</strong></td>
+<td>互联网用户 / CDN</td>
+<td>外层 Nginx</td>
+</tr>
+<tr>
+<td><strong>职责</strong></td>
+<td>HTTPS 终止、域名解析、全局限流、反向代理</td>
+<td>HLS 磁盘缓存、反向代理到 MinIO</td>
+</tr>
+<tr>
+<td><strong>是否做缓存</strong></td>
+<td>否</td>
+<td>是（proxy_cache 缓存 .ts/.m3u8）</td>
+</tr>
+<tr>
+<td><strong>配置文件</strong></td>
+<td>需单独编写</td>
+<td>项目现有的 <code>nginx/nginx.conf</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="架构图">架构图</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    USER["<b>互联网用户</b><br/>（世界各地）"]
+    CDN["<b>CDN 边缘节点</b><br/>（外部服务商，全球部署）"]
+
+    subgraph YOUR_MACHINES["<b>你自己的机器</b>"]
+        OUTER["<b>外层 Nginx</b><br/>机器 A（公网入口）<br/>• HTTPS 终止<br/>• 域名解析<br/>• 全局限流<br/>• 反向代理到 Gateway<br/>• <b>不做缓存</b>"]
+
+        subgraph GW_MACHINES["<b>Gateway 机器 B/C/D</b>"]
+            INNER1["<b>内层 Nginx</b><br/>• proxy_cache HLS 缓存<br/>• 反代到 MinIO<br/>• <b>做磁盘缓存</b>"]
+            GW1["<b>Gateway :8888</b>"]
+        end
+
+        MINIO["<b>MinIO</b><br/>视频文件存储"]
+    end
+
+    USER --> CDN
+    CDN -->|"回源"| OUTER
+    OUTER -->|"/api/*"| GW1
+    OUTER -->|"/videos/*"| INNER1
+    INNER1 -->|"缓存 MISS"| MINIO
+    GW1 --> INNER1
+</div></code></pre>
+<h3 id="为什么需要外层--内层两层">为什么需要外层 + 内层两层？</h3>
+<table>
+<thead>
+<tr>
+<th>原因</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>职责分离</strong></td>
+<td>外层只管&quot;接客&quot;（HTTPS、域名、限流），内层只管&quot;缓存视频&quot;</td>
+</tr>
+<tr>
+<td><strong>水平扩展</strong></td>
+<td>Gateway 从 1 台扩到 10 台，外层 Nginx 不用动，只需要加 upstream 里的 IP。内层 Nginx 随着 Gateway 走，每台 Gateway 机器自带</td>
+</tr>
+<tr>
+<td><strong>缓存本地化</strong></td>
+<td>内层 Nginx 在每台 Gateway 机器上，HLS 缓存存在本地磁盘。不需要网络共享，命中率极高</td>
+</tr>
+<tr>
+<td><strong>故障隔离</strong></td>
+<td>如果内层 Nginx 宕机，只影响一台 Gateway。外层 Nginx 宕机则全站不可用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="单机部署时的简化">单机部署时的简化</h3>
+<p>当前项目只有一台机器时，外层和内层可以合并为一个 Nginx（如当前 <code>docker-compose.yml</code> 中的 <code>nginx</code> 服务既做反向代理又做 HLS 缓存）。拆到多机后，外层单独一台，内层跟随每台 Gateway。</p>
+<h3 id="两层-nginx-的请求路径">两层 Nginx 的请求路径</h3>
+<pre><code class="language-mermaid"><div class="mermaid">sequenceDiagram
+    participant U as 用户
+    participant CDN as CDN
+    participant OUTER as 外层 Nginx<br/>（机器A）
+    participant INNER as 内层 Nginx<br/>（Gateway 机器）
+    participant MINIO as MinIO
+
+    U->>CDN: GET /videos/5/segment.ts
+    CDN->>OUTER: 回源请求
+    OUTER->>INNER: 转发 /videos/* 到内层
+    INNER->>INNER: 查本地磁盘缓存
+    alt 缓存 HIT
+        INNER-->>OUTER: 从磁盘返回（<1ms）
+    else 缓存 MISS
+        INNER->>MINIO: 从 MinIO 下载
+        MINIO-->>INNER: 写入磁盘 + 返回
+    end
+    OUTER-->>CDN: 返回文件
+    CDN-->>U: 返回 + CDN 缓存此文件
+</div></code></pre>
+<hr>
+<h2 id="nginx-部署说明">Nginx 部署说明</h2>
+<h3 id="外层-nginx公网入口1-台">外层 Nginx（公网入口，1 台）</h3>
+<pre class="hljs"><code><div><span class="hljs-section">upstream</span> gateway {
+    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.20:8888</span> weight=<span class="hljs-number">1</span>;  <span class="hljs-comment"># Gateway-1</span>
+    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.21:8888</span> weight=<span class="hljs-number">1</span>;  <span class="hljs-comment"># Gateway-2</span>
+    <span class="hljs-attribute">server</span> <span class="hljs-number">192.168.1.22:8888</span> weight=<span class="hljs-number">1</span>;  <span class="hljs-comment"># Gateway-3</span>
+    <span class="hljs-attribute">keepalive</span> <span class="hljs-number">100</span>;
+}
+
+<span class="hljs-section">server</span> {
+    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;
+    <span class="hljs-section">location</span> /api/ {
+        <span class="hljs-attribute">proxy_pass</span> http://gateway;
+    }
+    <span class="hljs-section">location</span> /ws/ {
+        <span class="hljs-attribute">proxy_pass</span> http://gateway;
+        <span class="hljs-attribute">proxy_http_version</span> <span class="hljs-number">1</span>.<span class="hljs-number">1</span>;
+        <span class="hljs-attribute">proxy_set_header</span> Upgrade <span class="hljs-variable">$http_upgrade</span>;
+        <span class="hljs-attribute">proxy_set_header</span> Connection <span class="hljs-string">&quot;upgrade&quot;</span>;
+    }
+}
+</div></code></pre>
+<h3 id="内层-nginx每台-gateway-机器上做-hls-缓存">内层 Nginx（每台 Gateway 机器上，做 HLS 缓存）</h3>
+<p>当前已配置在 <code>nginx/nginx.conf</code> 中，部署到每台 Gateway 机器即可。</p>
+<hr>
+<h2 id="部署步骤">部署步骤</h2>
+<h3 id="1-准备机器">1. 准备机器</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    A["<b>机器 A</b><br/>公网入口 + 外层 Nginx"]
+    B["<b>机器 B/C/D</b><br/>Gateway<br/>（只需 gateway 服务）"]
+    E["<b>机器 E/F/G</b><br/>RPC 服务 + 中间件"]
+</div></code></pre>
+<h3 id="2-配置-etcd">2. 配置 etcd</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># 在所有机器上，将 etcd 地址指向同一个集群</span>
+etcd.endpoints = [<span class="hljs-string">&quot;etcd-cluster-1:2379&quot;</span>, <span class="hljs-string">&quot;etcd-cluster-2:2379&quot;</span>, <span class="hljs-string">&quot;etcd-cluster-3:2379&quot;</span>]
+</div></code></pre>
+<h3 id="3-部署-rpc-服务">3. 部署 RPC 服务</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># 在每台 RPC 机器上</span>
+docker compose up -d user-svc video-svc interact-svc stream-svc transcode-svc search-svc admin-svc
+</div></code></pre>
+<h3 id="4-部署-gateway">4. 部署 Gateway</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># 在每台 Gateway 机器上</span>
+docker compose up -d gateway nginx
+</div></code></pre>
+<h3 id="5-配置外层-nginx机器-a">5. 配置外层 Nginx（机器 A）</h3>
+<p>更新 upstream 指向所有 Gateway 机器 IP。</p>
+<h3 id="6-验证">6. 验证</h3>
+<pre class="hljs"><code><div><span class="hljs-comment"># 查看 etcd 注册情况</span>
+etcdctl get --prefix /video.rpc
+
+<span class="hljs-comment"># 压测验证负载均衡</span>
+wrk -c 100 -d 30s http://外层Nginx/api/video/list
+</div></code></pre>
+<hr>
+<h2 id="注意事项">注意事项</h2>
+<ol>
+<li><strong>etcd 必须先部署</strong>：它是服务发现的基石，至少 3 节点保证高可用</li>
+<li><strong>RPC Key 必须一致</strong>：同一服务的所有实例在 yaml 中 <code>Etcd.Key</code> 必须完全相同</li>
+<li><strong>Gateway 无状态</strong>：可以任意扩缩容，不存储任何会话数据</li>
+<li><strong>JWT 密钥一致</strong>：所有 Gateway 实例必须配置相同的 <code>Auth.AccessSecret</code></li>
+<li><strong>Redis 共享</strong>：令牌桶、弹幕 Pub/Sub、播放进度都依赖 Redis，各节点需连同一 Redis</li>
+<li><strong>HLS 缓存本地化</strong>：内层 Nginx 的 <code>proxy_cache</code> 缓存在各自机器的 <code>/tmp/nginx_cache</code>，不需要共享</li>
+</ol>
+<hr>
+<h2 id="最小多机部署3-台机器">最小多机部署（3 台机器）</h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart LR
+    subgraph MACHINE_A["<b>机器 A</b>"]
+        NGINX["外层 Nginx"]
+        ETCD["etcd"]
+        MYSQL["MySQL"]
+        REDIS["Redis"]
+        MINIO["MinIO"]
+        KAFKA["Kafka"]
+    end
+
+    subgraph MACHINE_B["<b>机器 B</b>"]
+        GW1["Gateway + 内层 Nginx"]
+        V1["video-svc × 2"]
+        U1["user-svc"]
+    end
+
+    subgraph MACHINE_C["<b>机器 C</b>"]
+        GW2["Gateway + 内层 Nginx"]
+        I1["interact-svc × 2"]
+        T1["transcode-svc"]
+        S1["stream-svc"]
+    end
+
+    NGINX --> GW1 & GW2
+    GW1 & GW2 -.-> ETCD
+    ETCD -.-> V1 & U1 & I1 & T1 & S1
+    V1 --> MYSQL
+    U1 --> MYSQL
+    I1 --> MYSQL
+</div></code></pre>
+<hr>
+<h2 id="完整多机部署生产级">完整多机部署（生产级）</h2>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TB
+    subgraph ENTRY["入口层"]
+        N1["外层 Nginx (主)"]
+        N2["外层 Nginx (备)"]
+    end
+
+    subgraph INFRA["基础设施"]
+        ETCD_CLUSTER["etcd × 3"]
+        KAFKA_CLUSTER["Kafka × 3"]
+    end
+
+    subgraph GATEWAY["网关层"]
+        GW1["Gateway<br/>机器 C1 × 2"]
+        GW2["Gateway<br/>机器 C2 × 2"]
+    end
+
+    subgraph RPC["RPC 服务层"]
+        VIDEO["video-svc<br/>机器 D1/D2/D3 × 2/台"]
+        USER["user-svc<br/>机器 E1"]
+        ADMIN["admin-svc<br/>机器 E2"]
+        INTERACT["interact-svc<br/>机器 F1/F2 × 2/台"]
+        TRANSCODE["transcode-svc<br/>机器 G1/G2 × 2/台"]
+        STREAM["stream-svc<br/>机器 H1"]
+        SEARCH["search-svc<br/>机器 H1"]
+    end
+
+    subgraph CLOUD["云服务"]
+        MYSQL_CLOUD["MySQL"]
+        REDIS_CLOUD["Redis"]
+        MINIO_CLOUD["MinIO"]
+        ES_CLOUD["Elasticsearch"]
+    end
+
+    N1 & N2 --> GW1 & GW2
+    GW1 & GW2 -.-> ETCD_CLUSTER
+    ETCD_CLUSTER -.-> VIDEO & USER & ADMIN & INTERACT & TRANSCODE & STREAM & SEARCH
+    VIDEO & USER & ADMIN --> KAFKA_CLUSTER
+    KAFKA_CLUSTER --> TRANSCODE
+    TRANSCODE --> MYSQL_CLOUD
+    VIDEO & USER & INTERACT --> MYSQL_CLOUD
+    INTERACT --> REDIS_CLOUD
+    VIDEO --> MINIO_CLOUD
+    SEARCH --> ES_CLOUD
+</div></code></pre>
+<table>
+<thead>
+<tr>
+<th>机器</th>
+<th>部署内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1/A2</td>
+<td>外层 Nginx（主备）</td>
+</tr>
+<tr>
+<td>B1/B2/B3</td>
+<td>etcd 集群 + Kafka 集群</td>
+</tr>
+<tr>
+<td>C1/C2</td>
+<td>Gateway × 2/台</td>
+</tr>
+<tr>
+<td>D1/D2/D3</td>
+<td>video-svc × 2/台</td>
+</tr>
+<tr>
+<td>E1/E2</td>
+<td>user-svc + admin-svc</td>
+</tr>
+<tr>
+<td>F1/F2</td>
+<td>interact-svc × 2/台</td>
+</tr>
+<tr>
+<td>G1/G2</td>
+<td>transcode-svc × 2/台</td>
+</tr>
+<tr>
+<td>H1</td>
+<td>stream-svc + search-svc</td>
+</tr>
+<tr>
+<td>云服务</td>
+<td>MySQL、Redis、MinIO、Elasticsearch</td>
+</tr>
+</tbody>
+</table>
+
+</body>
+</html>

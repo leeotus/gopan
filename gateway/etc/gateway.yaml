@@ -2,7 +2,7 @@ Name: gateway
 Host: 0.0.0.0
 Mode: dev
 
-MaxConns: 100
+MaxConns: 1000000
 
 Telemetry:
   Name: gateway
@@ -10,6 +10,7 @@ Telemetry:
   Sampler: 1.0
   Batcher: otlphttp
 Port: 8888
+Timeout: 60000
 MaxBytes: 104857600
 Prometheus:
   Host: 0.0.0.0
@@ -23,38 +24,57 @@ Auth:
   AccessSecret: "gopan-secret-key-change-in-production"
   AccessExpire: 86400
 
+Redis:
+  Host: redis
+  Port: 6379
+  Password: ""
+  DB: 0
+
 UserRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: user.rpc
+  Timeout: 3000
 
 VideoRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: video.rpc
+  Timeout: 5000
 
 TranscodeRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: transcode.rpc
+  Timeout: 5000
 
 StreamRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: stream.rpc
+  Timeout: 3000
 
 InteractRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: interact.rpc
+  Timeout: 3000
 
 SearchRpc:
   Etcd:
     Hosts:
       - etcd:2379
     Key: search.rpc
+  Timeout: 5000
+
+AdminRpc:
+  Etcd:
+    Hosts:
+      - etcd:2379
+    Key: admin.rpc
+  Timeout: 3000

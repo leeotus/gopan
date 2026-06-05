@@ -4,6 +4,7 @@ package user
 import (
 	"context"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
 	"gopan/rpc/user/userclient"
@@ -26,7 +27,7 @@ func NewUpdateProfileLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 }
 
 func (l *UpdateProfileLogic) UpdateProfile(req *types.UpdateProfileReq) (resp *types.BaseResp, err error) {
-	userId := int64(1) // TODO: from context
+	userId := middleware.GetUserIdFromContext(l.ctx)
 	_, err = l.svcCtx.UserClient.UpdateProfile(l.ctx, &userclient.UpdateProfileReq{
 		UserId:    userId,
 		Avatar:    req.Avatar,

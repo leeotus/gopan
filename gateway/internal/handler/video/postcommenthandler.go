@@ -21,7 +21,7 @@ func PostCommentHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := video.NewPostCommentLogic(r.Context(), svcCtx)
-		resp, err := l.PostComment(&req)
+			resp, err := l.PostComment(r, &req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

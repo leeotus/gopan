@@ -14,7 +14,7 @@ import (
 func DeleteCommentHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewDeleteCommentLogic(r.Context(), svcCtx)
-		resp, err := l.DeleteComment()
+			resp, err := l.DeleteComment(r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

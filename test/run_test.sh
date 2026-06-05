@@ -7,8 +7,8 @@ RESULTS="test/results"
 mkdir -p "$RESULTS"
 
 # ── 可调参数 ──
-BENCH_CONCURRENCY=50    # HTTP 压测并发数
-BENCH_REQUESTS=100000      # HTTP 压测总请求数
+BENCH_CONCURRENCY=60    # HTTP 压测并发数
+BENCH_REQUESTS=80000      # HTTP 压测总请求数
 BENCH_URL="$GATEWAY/api/video/list?cursor=0&limit=10"  # 压测目标接口
 
 # 颜色

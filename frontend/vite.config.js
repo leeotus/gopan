@@ -11,12 +11,29 @@ export default defineConfig({
     }),
   ],
   server: {
+    host: "0.0.0.0",
     port: 3000,
     proxy: {
       "/api": {
-        target: "http://localhost:8888",
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
+      "/ws": {
+        target: "ws://localhost:8888",
+        ws: true,
+      },
+      "/videos": {
+        target: "http://localhost:80",
+        changeOrigin: true,
+      },
+      "/covers": {
+        target: "http://localhost:80",
         changeOrigin: true,
       },
     },
+  },
+  // 确保 Vite 不截断 multipart body
+  define: {
+    __VITE_PROXY_MULTIPART__: true,
   },
 });

@@ -42,22 +42,27 @@ func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.List
 		for _, t := range v.Transcodes {
 			transcodes = append(transcodes, types.TranscodeInfo{
 				Resolution: t.Resolution,
-				M3U8Url:    t.M3U8Url,
+				M3u8Url:    t.M3U8Url,
 				Bitrate:    int(t.Bitrate),
 			})
 		}
-		videos = append(videos, types.VideoInfo{
-			Id:         v.Id,
-			Title:      v.Title,
-			CoverUrl:   v.CoverUrl,
-			UserId:     v.UserId,
-			PlayCount:  v.PlayCount,
-			LikeCount:  v.LikeCount,
-			Duration:   int(v.Duration),
-			Status:     int(v.Status),
-			CreatedAt:  v.CreatedAt,
-			Transcodes: transcodes,
-		})
+			videos = append(videos, types.VideoInfo{
+				Id:              v.Id,
+				Title:           v.Title,
+				CoverUrl:        v.CoverUrl,
+				UserId:          v.UserId,
+				Username:        v.Username,
+				PlayCount:       v.PlayCount,
+				LikeCount:       v.LikeCount,
+				Duration:        int(v.Duration),
+				Status:          int(v.Status),
+				Category:        v.Category,
+				Description:     v.Description,
+				AiSummary:       v.AiSummary,
+				AiSummaryStatus: int(v.AiSummaryStatus),
+				CreatedAt:       v.CreatedAt,
+				Transcodes:      transcodes,
+			})
 	}
 	return &types.ListVideosResp{
 		Videos:     videos,

@@ -14,7 +14,7 @@ import (
 func UnlikeVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := video.NewUnlikeVideoLogic(r.Context(), svcCtx)
-		resp, err := l.UnlikeVideo()
+			resp, err := l.UnlikeVideo(r)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

@@ -6,28 +6,33 @@ import (
 	"gopan/rpc/transcode/internal/config"
 	"gopan/rpc/video/videoclient"
 
-	"github.com/zeromicro/go-zero/core/logx"
+	kafkago "github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
 	Config      config.Config
-	MinioClient *storage.MinioClient // MinIO 客户端（下载源文件 + 上传 HLS 切片）
-	VideoClient videoclient.Video    // video-svc gRPC 客户端（回调用）
+	MinioClient *storage.MinioClient
+	VideoClient videoclient.Video
+	KafkaWriter *kafkago.Writer
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	minioClient, err := storage.NewMinioClient(
+	minioClient, _ := storage.NewMinioClient(
 		c.MinIO.Endpoint, c.MinIO.AccessKey, c.MinIO.SecretKey,
 		c.MinIO.Bucket, c.MinIO.UseSSL,
 	)
-	if err != nil {
-		logx.Errorf("minio init failed: %v", err)
+
+	kw := &kafkago.Writer{
+		Addr:     kafkago.TCP(c.Kafka.Brokers...),
+		Topic:    c.Kafka.TranscodeTopic,
+		Balancer: &kafkago.LeastBytes{},
 	}
 
 	return &ServiceContext{
 		Config:      c,
 		MinioClient: minioClient,
 		VideoClient: videoclient.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
+		KafkaWriter: kw,
 	}
 }

@@ -8,6 +8,7 @@ import (
 
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
+	"gopan/rpc/search/search"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,7 +28,38 @@ func NewSearchLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SearchLogi
 }
 
 func (l *SearchLogic) Search(req *types.SearchReq) (resp *types.SearchResp, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.SearchClient.SearchVideos(l.ctx, &search.SearchVideosReq{
+		Keyword:  req.Keyword,
+		Category: req.Category,
+		Page:     int32(req.Page),
+		Size:     int32(req.Size),
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	return
+	videos := make([]types.SearchVideoInfo, 0, len(rpcResp.Videos))
+	for _, v := range rpcResp.Videos {
+		videos = append(videos, types.SearchVideoInfo{
+			Id:          v.Id,
+			Title:       v.Title,
+			CoverUrl:    v.CoverUrl,
+			UserId:      v.UserId,
+			Username:    v.Username,
+			PlayCount:   v.PlayCount,
+			LikeCount:   v.LikeCount,
+			Description: v.Description,
+			Duration:    int(v.Duration),
+			Category:    v.Category,
+			CreatedAt:   v.CreatedAt,
+			Score:       v.Score,
+		})
+	}
+
+	return &types.SearchResp{
+		Videos: videos,
+		Total:  rpcResp.Total,
+		Page:   int(rpcResp.Page),
+		Size:   int(rpcResp.Size),
+	}, nil
 }

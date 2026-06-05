@@ -52,17 +52,22 @@ func (l *GetVideoLogic) GetVideo(in *video.GetVideoReq) (*video.GetVideoResp, er
 	return &video.GetVideoResp{Video: info}, nil
 }
 
-// toVideoInfo 将 model.Video 转换为 proto 定义的 VideoInfo。
+// toVideoInfo 将 model.Video 转换为 proto 定义 of VideoInfo。
 func toVideoInfo(m *model.Video) *video.VideoInfo {
 	return &video.VideoInfo{
-		Id:        m.Id,
-		Title:     m.Title,
-		UserId:    m.UserId,
-		CoverUrl:  m.CoverUrl,
-		PlayCount: m.PlayCount,
-		LikeCount: m.LikeCount,
-		Duration:  m.Duration,
-		Status:    m.Status,
-		CreatedAt: m.CreatedAt.Unix(),
+		Id:              m.Id,
+		Title:           m.Title,
+		UserId:          m.UserId,
+		Username:        m.Username,
+		CoverUrl:        m.CoverUrl,
+		PlayCount:       m.PlayCount,
+		LikeCount:       m.LikeCount,
+		Duration:        m.Duration,
+		Status:          m.Status,
+		CreatedAt:       m.CreatedAt.Unix(),
+		Description:     m.Description,
+		Category:        m.Category,
+		AiSummary:       m.AiSummary,
+		AiSummaryStatus: m.AiSummaryStatus,
 	}
 }

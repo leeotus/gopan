@@ -2,7 +2,7 @@
 GoPan HTTP 压测脚本
 
 使用方式：
-  go run test/bench/http_bench.go -c 10 -n 100
+  go run test/bench/http/http_bench.go -c 10 -n 100
 
 参数：
   -c  并发数（默认 10）
@@ -12,7 +12,7 @@ GoPan HTTP 压测脚本
 输出：
   - QPS
   - P50 / P95 / P99 延迟
-  - 错误率
+  - 成功 / 限流(429) / 失败 分类统计
   - 同时打印 Prometheus 指标查询链接
 */
 package main
@@ -32,7 +32,7 @@ import (
 var (
 	concurrency = flag.Int("c", 10, "并发数")
 	totalReqs   = flag.Int("n", 100, "总请求数")
-	url = flag.String("u", "http://localhost:8888/api/video/list?cursor=0&limit=10", "API 地址")
+	url         = flag.String("u", "http://localhost:8888/api/video/list?cursor=0&limit=10", "API 地址")
 	token       = flag.String("t", "", "JWT token（需要登录的接口必填）")
 )
 
@@ -44,8 +44,18 @@ func main() {
 	fmt.Println("╚══════════════════════════════════════════╝")
 	fmt.Printf("\n目标: %s\n并发: %d | 总请求: %d\n\n", *url, *concurrency, *totalReqs)
 
+	// 用独立 Transport 支持 Keep-Alive，避免客户端端口耗尽
+	cli := &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost: *concurrency,
+			MaxConnsPerHost:     *concurrency * 2,
+			IdleConnTimeout:     30 * time.Second,
+		},
+		Timeout: 10 * time.Second,
+	}
+
 	var wg sync.WaitGroup
-	var success, fail int64
+	var success, fail, throttled int64
 	var latencies []time.Duration
 	var mu sync.Mutex
 	sem := make(chan struct{}, *concurrency)
@@ -65,7 +75,7 @@ func main() {
 				req.Header.Set("Authorization", "Bearer "+*token)
 			}
 
-			resp, err := http.DefaultClient.Do(req)
+			resp, err := cli.Do(req)
 			reqEnd := time.Since(reqStart)
 
 			mu.Lock()
@@ -79,6 +89,10 @@ func main() {
 			io.Copy(io.Discard, resp.Body)
 			resp.Body.Close()
 
+			if resp.StatusCode == 429 {
+				atomic.AddInt64(&throttled, 1)
+				return
+			}
 			if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 				atomic.AddInt64(&success, 1)
 			} else {
@@ -92,15 +106,17 @@ func main() {
 
 	sort.Slice(latencies, func(i, j int) bool { return latencies[i] < latencies[j] })
 
-	p50 := latencies[len(latencies)*50/100]
-	p95 := latencies[len(latencies)*95/100]
-	p99 := latencies[len(latencies)*99/100]
+	lenLats := len(latencies)
+	p50 := latencies[lenLats*50/100]
+	p95 := latencies[lenLats*95/100]
+	p99 := latencies[lenLats*99/100]
 	avgMs := float64(elapsed.Milliseconds()) / float64(*totalReqs)
 
-	// ── 打印报告 ──
+	// —— 打印报告 ——
 	fmt.Println(strings.Repeat("─", 50))
 	fmt.Printf("总耗时:     %v\n", elapsed.Round(time.Millisecond))
 	fmt.Printf("成功:       %d\n", success)
+	fmt.Printf("限流(429):  %d\n", throttled)
 	fmt.Printf("失败:       %d\n", fail)
 	fmt.Printf("QPS:        %.1f req/s\n", float64(*totalReqs)/elapsed.Seconds())
 	fmt.Println(strings.Repeat("─", 50))
@@ -111,7 +127,7 @@ func main() {
 	fmt.Println(strings.Repeat("─", 50))
 
 	// Prometheus 查询链接
-	if strings.Contains(*url, ":8888") {
+	if strings.Contains(*url, ":8888") || strings.Contains(*url, "localhost") {
 		host := strings.Replace(*url, "http://", "", 1)
 		host = strings.Split(host, ":")[0] + ":9090"
 		fmt.Printf("\nPrometheus 指标:\n")
