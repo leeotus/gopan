@@ -124,16 +124,16 @@ func (c *Client) searchVideosByKNN(ctx context.Context, vector []float32, catego
 	}
 
 	// ES 8.x 官方原生 k-NN 近邻检索模型配置
-	query := map[string]any{
-		"knn": map[string]any{
-			"field":         "video_vector",
-			"query_vector": vector,
-			"k":             size,
-			"num_candidates": 50,
-		},
-		"from": from,
-		"size": size,
-	}
+		query := map[string]any{
+			"knn": map[string]any{
+				"field":         "video_vector",
+				"query_vector": vector,
+				"k":             size,
+				"num_candidates": 50,
+			},
+			"from": from,
+			"size": size,
+		}
 
 	// 支持混合式分类硬筛选
 	if category != "" {
@@ -324,24 +324,29 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 
 // 解析统一查询返回值
 func parseSearchResponse(body io.ReadCloser) (*SearchResult, error) {
-	var result struct {
-		Hits struct {
-			Total struct {
-				Value int64 `json:"value"`
-			} `json:"total"`
-			Hits []struct {
-				Source VideoDoc `json:"_source"`
+		var result struct {
+			Hits struct {
+				Total struct {
+					Value int64 `json:"value"`
+				} `json:"total"`
+				Hits []struct {
+					Score  float64  `json:"_score"`
+					Source VideoDoc `json:"_source"`
+				} `json:"hits"`
 			} `json:"hits"`
-		} `json:"hits"`
-	}
-	if err := json.NewDecoder(body).Decode(&result); err != nil {
-		return nil, err
-	}
+		}
+		if err := json.NewDecoder(body).Decode(&result); err != nil {
+			return nil, err
+		}
 
-	sr := &SearchResult{Total: result.Hits.Total.Value}
-	for _, h := range result.Hits.Hits {
-		doc := h.Source
-		sr.Hits = append(sr.Hits, &doc)
+		sr := &SearchResult{Total: result.Hits.Total.Value}
+		for _, h := range result.Hits.Hits {
+			if h.Score < 0.85 {
+				continue
+			}
+			doc := h.Source
+			sr.Hits = append(sr.Hits, &doc)
+		}
+		sr.Total = int64(len(sr.Hits))
+		return sr, nil
 	}
-	return sr, nil
-}
