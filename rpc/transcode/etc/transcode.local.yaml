@@ -2,6 +2,10 @@ Name: transcode.rpc
 ListenOn: 0.0.0.0:8083
 Mode: dev
 MaxConns: 10000
+Log:
+  Level: debug
+  Encoding: plain
+  Stat: false
 Etcd:
   Hosts:
   - 127.0.0.1:2379
@@ -23,12 +27,13 @@ Kafka:
   Brokers:
     - 127.0.0.1:9092
   TranscodeTopic: gopan.transcode.tasks
+  MergeTopic: gopan.video.merge.tasks
 Prometheus:
   Host: 0.0.0.0
-  Port: 9101
+  Port: 9108
   Path: /metrics
 Telemetry:
   Name: transcode
-  Endpoint: http://127.0.0.1:4318
-  Sampler: 1.0
+  Endpoint: ""
+  Sampler: 0
   Batcher: otlphttp

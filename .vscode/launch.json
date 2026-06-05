@@ -5,7 +5,7 @@
       "name": "Debug user-svc",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/rpc/user",
       "args": ["-f", "etc/user.local.yaml"],
       "cwd": "${workspaceFolder}/rpc/user"
@@ -14,7 +14,7 @@
       "name": "Debug video-svc",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/rpc/video",
       "args": ["-f", "etc/video.local.yaml"],
       "cwd": "${workspaceFolder}/rpc/video"
@@ -23,7 +23,7 @@
       "name": "Debug transcode-svc",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/rpc/transcode",
       "args": ["-f", "etc/transcode.local.yaml"],
       "cwd": "${workspaceFolder}/rpc/transcode"
@@ -32,7 +32,7 @@
       "name": "Debug stream-svc",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/rpc/stream",
       "args": ["-f", "etc/stream.local.yaml"],
       "cwd": "${workspaceFolder}/rpc/stream"
@@ -41,7 +41,7 @@
       "name": "Debug interact-svc",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/rpc/interact",
       "args": ["-f", "etc/interact.local.yaml"],
       "cwd": "${workspaceFolder}/rpc/interact"
@@ -50,16 +50,25 @@
       "name": "Debug search-svc",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/rpc/search",
       "args": ["-f", "etc/search.local.yaml"],
       "cwd": "${workspaceFolder}/rpc/search"
     },
     {
+      "name": "Debug admin-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/rpc/admin",
+      "args": ["-f", "etc/admin.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/admin"
+    },
+    {
       "name": "Debug gateway",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/gateway",
       "args": ["-f", "etc/gateway.local.yaml"],
       "cwd": "${workspaceFolder}/gateway"
@@ -68,19 +77,34 @@
       "name": "Debug gateway + user-svc (复合)",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "program": "${workspaceFolder}/gateway",
       "args": ["-f", "etc/gateway.local.yaml"],
       "cwd": "${workspaceFolder}/gateway"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "调试 gateway+用户服务",
+      "configurations": [
+        "Debug user-svc",
+        "Debug gateway"
+      ],
+      "stopAll": true
     },
     {
-      "name": "Debug admin-svc",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "program": "${workspaceFolder}/rpc/admin",
-      "args": ["-f", "etc/admin.local.yaml"],
-      "cwd": "${workspaceFolder}/rpc/admin"
+      "name": "调试全部服务",
+      "configurations": [
+        "Debug user-svc",
+        "Debug video-svc",
+        "Debug search-svc",
+        "Debug stream-svc",
+        "Debug interact-svc",
+        "Debug transcode-svc",
+        "Debug admin-svc",
+        "Debug gateway"
+      ],
+      "stopAll": true
     }
   ]
 }

@@ -2,6 +2,10 @@ Name: interact.rpc
 ListenOn: 0.0.0.0:8085
 Mode: dev
 MaxConns: 10000
+Log:
+  Level: debug
+  Encoding: plain
+  Stat: false
 Etcd:
   Hosts:
   - 127.0.0.1:2379
@@ -15,10 +19,10 @@ CacheRedis:
   DB: 0
 Prometheus:
   Host: 0.0.0.0
-  Port: 9101
+  Port: 9106
   Path: /metrics
 Telemetry:
   Name: interact
-  Endpoint: http://127.0.0.1:4318
-  Sampler: 1.0
+  Endpoint: ""
+  Sampler: 0
   Batcher: otlphttp

@@ -2,6 +2,10 @@ Name: user.rpc
 ListenOn: 0.0.0.0:8081
 Mode: dev
 MaxConns: 10000
+Log:
+  Level: debug
+  Encoding: plain
+  Stat: false
 Etcd:
   Hosts:
   - 127.0.0.1:2379
@@ -13,10 +17,10 @@ JWT:
   AccessExpire: 86400
 Prometheus:
   Host: 0.0.0.0
-  Port: 9101
+  Port: 9102
   Path: /metrics
 Telemetry:
   Name: user
-  Endpoint: http://127.0.0.1:4318
-  Sampler: 1.0
+  Endpoint: ""
+  Sampler: 0
   Batcher: otlphttp

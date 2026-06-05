@@ -5,9 +5,9 @@ Timeout: 60000
 Mode: dev
 MaxBytes: 104857600
 Log:
-  Level: error
+  Level: debug
   Encoding: plain
-  Stat: false
+  Stat: true
 
 Auth:
   AccessSecret: "gopan-secret-key-change-in-production"
@@ -24,47 +24,46 @@ UserRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: user.rpc
-  Timeout: 3000
+  Timeout: 30000
 
 VideoRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
     Key: video.rpc
-  Timeout: 5000
+  Timeout: 30000
 
 TranscodeRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
     Key: transcode.rpc
-  Timeout: 5000
+  Timeout: 30000
 
 StreamRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
     Key: stream.rpc
-  Timeout: 3000
+  Timeout: 30000
 
 InteractRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
     Key: interact.rpc
-  Timeout: 3000
+  Timeout: 30000
 
 SearchRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
     Key: search.rpc
-  Timeout: 5000
+  Timeout: 30000
 
 Telemetry:
   Name: gateway
-  Endpoint: http://127.0.0.1:4318
-  Sampler: 1.0
+  Sampler: 0
   Batcher: otlphttp
 
 AdminRpc:
@@ -72,4 +71,4 @@ AdminRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: admin.rpc
-  Timeout: 3000
+  Timeout: 30000

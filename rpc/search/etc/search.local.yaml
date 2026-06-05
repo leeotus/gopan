@@ -2,6 +2,10 @@ Name: search.rpc
 ListenOn: 0.0.0.0:8086
 Mode: dev
 MaxConns: 10000
+Log:
+  Level: debug
+  Encoding: plain
+  Stat: false
 Etcd:
   Hosts:
   - 127.0.0.1:2379
@@ -13,10 +17,10 @@ Elasticsearch:
   Password: ""
 Prometheus:
   Host: 0.0.0.0
-  Port: 9101
+  Port: 9103
   Path: /metrics
 Telemetry:
   Name: search
-  Endpoint: http://127.0.0.1:4318
-  Sampler: 1.0
+  Endpoint: ""
+  Sampler: 0
   Batcher: otlphttp
