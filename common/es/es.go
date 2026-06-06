@@ -108,7 +108,12 @@ func (c *Client) SearchVideos(ctx context.Context, keyword string, category stri
 	vec, aiErr := getEmbeddingVector(ctx, keyword)
 	if aiErr == nil && len(vec) == 512 {
 		fmt.Printf("[AI Search OK] Performing Vector k-NN Search for: '%s'\n", keyword)
-		return c.searchVideosByKNN(ctx, vec, category, page, size)
+		res, err := c.searchVideosByKNN(ctx, vec, category, page, size)
+		if err == nil {
+			return res, nil
+		}
+		// KNN 检索出错，降级到传统 BM25 词频检索（保留原始关键词）
+		fmt.Printf("[KNN Fallback] KNN search failed (%v), falling back to lexical search for: '%s'\n", err, keyword)
 	}
 
 	// 触发安全降级
@@ -124,16 +129,16 @@ func (c *Client) searchVideosByKNN(ctx context.Context, vector []float32, catego
 	}
 
 	// ES 8.x 官方原生 k-NN 近邻检索模型配置
-		query := map[string]any{
-			"knn": map[string]any{
-				"field":         "video_vector",
-				"query_vector": vector,
-				"k":             size,
-				"num_candidates": 50,
-			},
-			"from": from,
-			"size": size,
-		}
+	query := map[string]any{
+		"knn": map[string]any{
+			"field":          "video_vector",
+			"query_vector":   vector,
+			"k":              size,
+			"num_candidates": 50,
+		},
+		"from": from,
+		"size": size,
+	}
 
 	// 支持混合式分类硬筛选
 	if category != "" {
@@ -154,8 +159,9 @@ func (c *Client) searchVideosByKNN(ctx context.Context, vector []float32, catego
 	defer res.Body.Close()
 
 	if res.IsError() {
-		// 如果索引可能未完成升级，记录错误并降级到传统词频检索
-		return nil, fmt.Errorf("es knn response error: %s", res.String())
+		bodyBytes, _ := io.ReadAll(res.Body)
+		res.Body.Close()
+		return nil, fmt.Errorf("es knn search error: %s", string(bodyBytes))
 	}
 
 	return parseSearchResponse(res.Body)
@@ -229,6 +235,7 @@ func (c *Client) RemoveVideo(ctx context.Context, videoId int64) error {
 }
 
 // EnsureIndex 确保索引存在，不存在则初始化并挂载 DENSE_VECTOR 密集向量图。
+// 如果索引已存在但缺少 video_vector 的 dense_vector 映射，则自动补全。
 func (c *Client) EnsureIndex(ctx context.Context) error {
 	res, err := c.cli.Indices.Exists([]string{c.index})
 	if err != nil {
@@ -261,16 +268,74 @@ func (c *Client) EnsureIndex(ctx context.Context) error {
 				}
 			}
 		}`
-			res, err = c.cli.Indices.Create(
-				c.index,
-				c.cli.Indices.Create.WithContext(ctx),
-				c.cli.Indices.Create.WithBody(bytes.NewReader([]byte(mapping))),
-			)
+		res, err = c.cli.Indices.Create(
+			c.index,
+			c.cli.Indices.Create.WithContext(ctx),
+			c.cli.Indices.Create.WithBody(bytes.NewReader([]byte(mapping))),
+		)
 		if err != nil {
 			return err
 		}
 		res.Body.Close()
 		fmt.Println("[ES Schema Patch] Index 'gopan_videos' successfully created with 512-dim Dense Vector capability!")
+	} else {
+		// 索引已存在，检查并补全 video_vector 的 dense_vector 映射
+		// 如果索引创建时没有 dense_vector 映射，KNN 查询会失败
+		getMapping, err := c.cli.Indices.GetMapping(
+			c.cli.Indices.GetMapping.WithIndex(c.index),
+		)
+		if err != nil {
+			return err
+		}
+		defer getMapping.Body.Close()
+
+		var mappingResult map[string]any
+		if err := json.NewDecoder(getMapping.Body).Decode(&mappingResult); err != nil {
+			return err
+		}
+
+		// 检查 video_vector 字段是否已存在且为 dense_vector 类型
+		indexMapping, ok := mappingResult[c.index].(map[string]any)
+		if !ok {
+			return nil
+		}
+		mappings, ok := indexMapping["mappings"].(map[string]any)
+		if !ok {
+			return nil
+		}
+		properties, ok := mappings["properties"].(map[string]any)
+		if !ok {
+			return nil
+		}
+		videoVectorField, exists := properties["video_vector"].(map[string]any)
+		fieldType, _ := videoVectorField["type"].(string)
+
+		if !exists || fieldType != "dense_vector" {
+			// 补全 video_vector 的 dense_vector 映射
+			putMapping := `{
+				"properties": {
+					"video_vector": {
+						"type": "dense_vector",
+						"dims": 512,
+						"index": true,
+						"similarity": "cosine"
+					}
+				}
+			}`
+			putRes, err := c.cli.Indices.PutMapping(
+				[]string{c.index},
+				bytes.NewReader([]byte(putMapping)),
+				c.cli.Indices.PutMapping.WithContext(ctx),
+			)
+			if err != nil {
+				return err
+			}
+			putRes.Body.Close()
+			if putRes.IsError() {
+				return fmt.Errorf("es put mapping error: %s", putRes.String())
+			}
+			fmt.Println("[ES Schema Patch] Added 'video_vector' dense_vector mapping to existing index 'gopan_videos'!")
+		}
 	}
 	return nil
 }
@@ -293,7 +358,7 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
-	
+
 	// 2. 如果发生网络错，且用的是默认 9900，优雅转向 9901（CPU 本地测试端）
 	if err != nil && aiURL == "http://127.0.0.1:9900" {
 		req2, retryErr := http.NewRequestWithContext(ctx, "POST", "http://127.0.0.1:9901/embed/text", bytes.NewReader(payload))
@@ -313,8 +378,8 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 	}
 
 	var parsed struct {
-		Dimension int         `json:"dimension"`
-		Vector    []float32   `json:"vector"`
+		Dimension int       `json:"dimension"`
+		Vector    []float32 `json:"vector"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&parsed); err != nil {
 		return nil, err
@@ -324,29 +389,25 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 
 // 解析统一查询返回值
 func parseSearchResponse(body io.ReadCloser) (*SearchResult, error) {
-		var result struct {
-			Hits struct {
-				Total struct {
-					Value int64 `json:"value"`
-				} `json:"total"`
-				Hits []struct {
-					Score  float64  `json:"_score"`
-					Source VideoDoc `json:"_source"`
-				} `json:"hits"`
+	var result struct {
+		Hits struct {
+			Total struct {
+				Value int64 `json:"value"`
+			} `json:"total"`
+			Hits []struct {
+				Score  float64  `json:"_score"`
+				Source VideoDoc `json:"_source"`
 			} `json:"hits"`
-		}
-		if err := json.NewDecoder(body).Decode(&result); err != nil {
-			return nil, err
-		}
-
-		sr := &SearchResult{Total: result.Hits.Total.Value}
-		for _, h := range result.Hits.Hits {
-			if h.Score < 0.85 {
-				continue
-			}
-			doc := h.Source
-			sr.Hits = append(sr.Hits, &doc)
-		}
-		sr.Total = int64(len(sr.Hits))
-		return sr, nil
+		} `json:"hits"`
 	}
+	if err := json.NewDecoder(body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	sr := &SearchResult{Total: result.Hits.Total.Value}
+	for _, h := range result.Hits.Hits {
+		doc := h.Source
+		sr.Hits = append(sr.Hits, &doc)
+	}
+	return sr, nil
+}

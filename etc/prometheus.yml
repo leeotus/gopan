@@ -2,27 +2,24 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: gateway
-    static_configs:
-      - targets: ["gateway:9102"]
   - job_name: user-svc
     static_configs:
-      - targets: ["user-svc:9101"]
-  - job_name: video-svc
-    static_configs:
-      - targets: ["video-svc:9101"]
-  - job_name: transcode-svc
-    static_configs:
-      - targets: ["transcode-svc:9101"]
-  - job_name: stream-svc
-    static_configs:
-      - targets: ["stream-svc:9101"]
-  - job_name: interact-svc
-    static_configs:
-      - targets: ["interact-svc:9101"]
+      - targets: ["host.docker.internal:9102"]
   - job_name: search-svc
     static_configs:
-      - targets: ["search-svc:9101"]
+      - targets: ["host.docker.internal:9103"]
   - job_name: admin-svc
     static_configs:
-      - targets: ["admin-svc:9101"]
+      - targets: ["host.docker.internal:9104"]
+  - job_name: interact-svc
+    static_configs:
+      - targets: ["host.docker.internal:9106"]
+  - job_name: stream-svc
+    static_configs:
+      - targets: ["host.docker.internal:9107"]
+  - job_name: transcode-svc
+    static_configs:
+      - targets: ["host.docker.internal:9108"]
+  - job_name: video-svc
+    static_configs:
+      - targets: ["host.docker.internal:9109"]

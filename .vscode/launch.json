@@ -11,22 +11,13 @@
       "cwd": "${workspaceFolder}/rpc/user"
     },
     {
-      "name": "Debug video-svc",
+      "name": "Debug search-svc",
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "${workspaceFolder}/rpc/video",
-      "args": ["-f", "etc/video.local.yaml"],
-      "cwd": "${workspaceFolder}/rpc/video"
-    },
-    {
-      "name": "Debug transcode-svc",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/rpc/transcode",
-      "args": ["-f", "etc/transcode.local.yaml"],
-      "cwd": "${workspaceFolder}/rpc/transcode"
+      "program": "${workspaceFolder}/rpc/search",
+      "args": ["-f", "etc/search.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/search"
     },
     {
       "name": "Debug stream-svc",
@@ -47,15 +38,6 @@
       "cwd": "${workspaceFolder}/rpc/interact"
     },
     {
-      "name": "Debug search-svc",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "program": "${workspaceFolder}/rpc/search",
-      "args": ["-f", "etc/search.local.yaml"],
-      "cwd": "${workspaceFolder}/rpc/search"
-    },
-    {
       "name": "Debug admin-svc",
       "type": "go",
       "request": "launch",
@@ -65,16 +47,25 @@
       "cwd": "${workspaceFolder}/rpc/admin"
     },
     {
-      "name": "Debug gateway",
+      "name": "Debug video-svc",
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "${workspaceFolder}/gateway",
-      "args": ["-f", "etc/gateway.local.yaml"],
-      "cwd": "${workspaceFolder}/gateway"
+      "program": "${workspaceFolder}/rpc/video",
+      "args": ["-f", "etc/video.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/video"
     },
     {
-      "name": "Debug gateway + user-svc (复合)",
+      "name": "Debug transcode-svc",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/rpc/transcode",
+      "args": ["-f", "etc/transcode.local.yaml"],
+      "cwd": "${workspaceFolder}/rpc/transcode"
+    },
+    {
+      "name": "Debug gateway",
       "type": "go",
       "request": "launch",
       "mode": "debug",
@@ -85,7 +76,7 @@
   ],
   "compounds": [
     {
-      "name": "调试 gateway+用户服务",
+      "name": "1️⃣ 最简调试（gateway+user）",
       "configurations": [
         "Debug user-svc",
         "Debug gateway"
@@ -93,15 +84,15 @@
       "stopAll": true
     },
     {
-      "name": "debug all in once",
+      "name": "2️⃣ 全部启动（推荐顺序）",
       "configurations": [
         "Debug user-svc",
-        "Debug video-svc",
         "Debug search-svc",
         "Debug stream-svc",
         "Debug interact-svc",
-        "Debug transcode-svc",
         "Debug admin-svc",
+        "Debug video-svc",
+        "Debug transcode-svc",
         "Debug gateway"
       ],
       "stopAll": true
