@@ -14,14 +14,16 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 3000,
     proxy: {
+      // API → gateway 直连（本地调试 gateway 在 8888 端口）
       "/api": {
-        target: "http://localhost:80",
+        target: "http://localhost:8888",
         changeOrigin: true,
       },
       "/ws": {
         target: "ws://localhost:8888",
         ws: true,
       },
+      // HLS 视频切片和静态文件 → nginx → MinIO（nginx 有 CORS + 缓存）
       "/videos": {
         target: "http://localhost:80",
         changeOrigin: true,
