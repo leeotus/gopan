@@ -93,7 +93,7 @@
       "stopAll": true
     },
     {
-      "name": "调试全部服务",
+      "name": "debug all in once",
       "configurations": [
         "Debug user-svc",
         "Debug video-svc",

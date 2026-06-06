@@ -88,28 +88,30 @@ services:
       - gopan-net
 
   kafka:
-    image: docker.m.daocloud.io/apache/kafka:4.0.0
-    container_name: gopan-kafka
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    ports:
-      - "9092:9092"
-    volumes:
-      - kafka-data:/var/lib/kafka/data
-    healthcheck:
-      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-    networks:
-      - gopan-net
+      image: apache/kafka:4.0.0
+      container_name: gopan-kafka
+      environment:
+        KAFKA_NODE_ID: 1
+        KAFKA_PROCESS_ROLES: broker,controller
+        KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092
+        KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+        KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+        KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      ports:
+        - "9092:9092"
+      volumes:
+        - kafka-data:/var/lib/kafka/data
+      healthcheck:
+        test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+        interval: 10s
+        timeout: 10s
+        retries: 10
+      networks:
+        - gopan-net
 
   user-svc:
     build: .
