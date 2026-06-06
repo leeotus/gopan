@@ -298,6 +298,8 @@ services:
       - hf-cache:/root/.cache/huggingface
     networks:
       - gopan-net
+    environment:
+      - HF_ENDPOINT=https://hf-mirror.com
     restart: unless-stopped
 
   summary-ai:
