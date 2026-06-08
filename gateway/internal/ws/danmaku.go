@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"strings"
 
+	"gopan/gateway/internal/svc"
+
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/redis/go-redis/v9"
-	"gopan/gateway/internal/svc"
 
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -22,12 +23,14 @@ var upgrader = websocket.Upgrader{
 // 连接参数: ws://host/ws/danmaku?video_id=123&token=xxx
 //   - JWT token 验证通过后，订阅 Redis danmaku:{video_id} 频道，实时推送弹幕到客户端。
 func DanmakuHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+	// 连接一次redis，返回闭包函数，之后每次有用户发送过来ws请求，都会调用这个闭包函数
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", svcCtx.Config.Redis.Host, svcCtx.Config.Redis.Port),
 		Password: svcCtx.Config.Redis.Password,
 		DB:       svcCtx.Config.Redis.DB,
 	})
 
+	// 闭包
 	return func(w http.ResponseWriter, r *http.Request) {
 		videoId := r.URL.Query().Get("video_id")
 		if videoId == "" {
@@ -69,6 +72,7 @@ func DanmakuHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		defer conn.Close()
 
 		channel := "danmaku:" + videoId
+		// 订阅 Redis 频道，实时推送弹幕到客户端
 		pubsub := rdb.Subscribe(r.Context(), channel)
 		defer pubsub.Close()
 

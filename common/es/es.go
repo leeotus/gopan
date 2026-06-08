@@ -124,16 +124,16 @@ func (c *Client) searchVideosByKNN(ctx context.Context, vector []float32, catego
 	}
 
 	// ES 8.x 官方原生 k-NN 近邻检索模型配置
-		query := map[string]any{
-			"knn": map[string]any{
-				"field":         "video_vector",
-				"query_vector": vector,
-				"k":             size,
-				"num_candidates": 50,
-			},
-			"from": from,
-			"size": size,
-		}
+	query := map[string]any{
+		"knn": map[string]any{
+			"field":          "video_vector",
+			"query_vector":   vector,
+			"k":              size,
+			"num_candidates": 50,
+		},
+		"from": from,
+		"size": size,
+	}
 
 	// 支持混合式分类硬筛选
 	if category != "" {
@@ -168,6 +168,7 @@ func (c *Client) searchVideosByLexical(ctx context.Context, keyword string, cate
 		from = 0
 	}
 
+	// title^3, description:标题匹配权重是描述的3倍
 	query := map[string]any{
 		"query": map[string]any{
 			"bool": map[string]any{
@@ -261,11 +262,11 @@ func (c *Client) EnsureIndex(ctx context.Context) error {
 				}
 			}
 		}`
-			res, err = c.cli.Indices.Create(
-				c.index,
-				c.cli.Indices.Create.WithContext(ctx),
-				c.cli.Indices.Create.WithBody(bytes.NewReader([]byte(mapping))),
-			)
+		res, err = c.cli.Indices.Create(
+			c.index,
+			c.cli.Indices.Create.WithContext(ctx),
+			c.cli.Indices.Create.WithBody(bytes.NewReader([]byte(mapping))),
+		)
 		if err != nil {
 			return err
 		}
@@ -293,7 +294,7 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
-	
+
 	// 2. 如果发生网络错，且用的是默认 9900，优雅转向 9901（CPU 本地测试端）
 	if err != nil && aiURL == "http://127.0.0.1:9900" {
 		req2, retryErr := http.NewRequestWithContext(ctx, "POST", "http://127.0.0.1:9901/embed/text", bytes.NewReader(payload))
@@ -313,8 +314,8 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 	}
 
 	var parsed struct {
-		Dimension int         `json:"dimension"`
-		Vector    []float32   `json:"vector"`
+		Dimension int       `json:"dimension"`
+		Vector    []float32 `json:"vector"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&parsed); err != nil {
 		return nil, err
@@ -324,29 +325,29 @@ func getEmbeddingVector(ctx context.Context, keyword string) ([]float32, error) 
 
 // 解析统一查询返回值
 func parseSearchResponse(body io.ReadCloser) (*SearchResult, error) {
-		var result struct {
-			Hits struct {
-				Total struct {
-					Value int64 `json:"value"`
-				} `json:"total"`
-				Hits []struct {
-					Score  float64  `json:"_score"`
-					Source VideoDoc `json:"_source"`
-				} `json:"hits"`
+	var result struct {
+		Hits struct {
+			Total struct {
+				Value int64 `json:"value"`
+			} `json:"total"`
+			Hits []struct {
+				Score  float64  `json:"_score"`
+				Source VideoDoc `json:"_source"`
 			} `json:"hits"`
-		}
-		if err := json.NewDecoder(body).Decode(&result); err != nil {
-			return nil, err
-		}
-
-		sr := &SearchResult{Total: result.Hits.Total.Value}
-		for _, h := range result.Hits.Hits {
-			if h.Score < 0.85 {
-				continue
-			}
-			doc := h.Source
-			sr.Hits = append(sr.Hits, &doc)
-		}
-		sr.Total = int64(len(sr.Hits))
-		return sr, nil
+		} `json:"hits"`
 	}
+	if err := json.NewDecoder(body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	sr := &SearchResult{Total: result.Hits.Total.Value}
+	for _, h := range result.Hits.Hits {
+		if h.Score < 0.85 {
+			continue
+		}
+		doc := h.Source
+		sr.Hits = append(sr.Hits, &doc)
+	}
+	sr.Total = int64(len(sr.Hits))
+	return sr, nil
+}
