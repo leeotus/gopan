@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"gopan/gateway/internal/logic/admin"
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -13,7 +14,7 @@ import (
 func ApproveVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		videoId, _ := strconv.ParseInt(r.URL.Query().Get("video_id"), 10, 64)
-		adminId, _ := strconv.ParseInt(r.URL.Query().Get("admin_id"), 10, 64)
+		adminId := middleware.GetUserIdFromContext(r.Context())
 
 		l := admin.NewApproveVideoLogic(r.Context(), svcCtx)
 		resp, err := l.ApproveVideo(videoId, adminId)

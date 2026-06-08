@@ -2,8 +2,9 @@ package admin
 
 import (
 	"context"
-	"strconv"
+	"errors"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
 	"gopan/rpc/admin/adminclient"
@@ -22,6 +23,10 @@ func NewDeleteVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delet
 }
 
 func (l *DeleteVideoLogic) DeleteVideo(videoId, adminId int64) (resp *types.BaseResp, err error) {
+	if middleware.GetRoleFromContext(l.ctx) != 1 {
+		return &types.BaseResp{Message: "权限不足：仅管理员可操作"}, errors.New("permission denied")
+	}
+
 	_, rpcErr := l.svcCtx.AdminClient.DeleteVideo(l.ctx, &adminclient.AdminDeleteVideoReq{
 		VideoId: videoId,
 		AdminId: adminId,
@@ -31,5 +36,3 @@ func (l *DeleteVideoLogic) DeleteVideo(videoId, adminId int64) (resp *types.Base
 	}
 	return &types.BaseResp{Message: "ok"}, nil
 }
-
-var _ = strconv.Itoa

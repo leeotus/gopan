@@ -2,8 +2,10 @@ package admin
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
+	"gopan/gateway/internal/middleware"
 	"gopan/gateway/internal/svc"
 	"gopan/gateway/internal/types"
 	"gopan/rpc/admin/adminclient"
@@ -22,6 +24,10 @@ func NewAdminListVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *A
 }
 
 func (l *AdminListVideosLogic) AdminListVideos(cursor int64, status int32) (resp *types.AdminListVideosResp, err error) {
+	if middleware.GetRoleFromContext(l.ctx) != 1 {
+		return nil, errors.New("权限不足：仅管理员可操作")
+	}
+
 	r, rpcErr := l.svcCtx.AdminClient.ListVideos(l.ctx, &adminclient.AdminListVideosReq{
 		Cursor: cursor,
 		Limit:  20,

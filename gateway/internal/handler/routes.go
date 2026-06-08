@@ -17,20 +17,44 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/login",
-				Handler: admin.AdminLoginHandler(serverCtx),
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/login",
+					Handler: admin.AdminLoginHandler(serverCtx),
+				},
 			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/videos",
-				Handler: admin.AdminListVideosHandler(serverCtx),
-			},
-		},
-		rest.WithPrefix("/api/admin"),
-	)
+			rest.WithPrefix("/api/admin"),
+		)
+
+		server.AddRoutes(
+			rest.WithMiddlewares(
+				[]rest.Middleware{serverCtx.Auth},
+				[]rest.Route{
+					{
+						Method:  http.MethodGet,
+						Path:    "/videos",
+						Handler: admin.AdminListVideosHandler(serverCtx),
+					},
+					{
+						Method:  http.MethodPost,
+						Path:    "/approve",
+						Handler: admin.ApproveVideoHandler(serverCtx),
+					},
+					{
+						Method:  http.MethodPost,
+						Path:    "/reject",
+						Handler: admin.RejectVideoHandler(serverCtx),
+					},
+					{
+						Method:  http.MethodPost,
+						Path:    "/delete-video",
+						Handler: admin.DeleteVideoHandler(serverCtx),
+					},
+				}...,
+			),
+			rest.WithPrefix("/api/admin"),
+		)
 
 	server.AddRoutes(
 		[]rest.Route{

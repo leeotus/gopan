@@ -19,6 +19,8 @@ const (
 	CtxKeyUserId ctxKey = "user_id"
 	// CtxKeyUsername 存当前请求用户名的 context key。
 	CtxKeyUsername ctxKey = "username"
+	// CtxKeyRole 存当前请求用户角色的 context key。
+	CtxKeyRole ctxKey = "role"
 )
 
 // AuthMiddleware JWT 鉴权中间件。
@@ -90,6 +92,12 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 				ctx = context.WithValue(ctx, CtxKeyUsername, unameStr)
 			}
 		}
+		if role, ok := claims["role"]; ok {
+			roleFloat, ok := role.(float64)
+			if ok {
+				ctx = context.WithValue(ctx, CtxKeyRole, int64(roleFloat))
+			}
+		}
 
 		next(w, r.WithContext(ctx))
 	}
@@ -113,6 +121,16 @@ func GetUsernameFromContext(ctx context.Context) string {
 		return ""
 	}
 	return uname
+}
+
+// GetRoleFromContext 从 context 中提取 JWT 中注入的 role。
+// 如果 context 中不存在或类型错误，返回 0。
+func GetRoleFromContext(ctx context.Context) int64 {
+	role, ok := ctx.Value(CtxKeyRole).(int64)
+	if !ok {
+		return 0
+	}
+	return role
 }
 
 // InjectUserIdFromToken 解析 JWT token 并将 user_id/username 注入 context。
